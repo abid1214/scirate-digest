@@ -15,9 +15,10 @@ from __future__ import annotations
 import argparse
 import json
 import os
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, field
 from datetime import datetime, timezone
 from email.utils import format_datetime
+from html import escape as html_escape
 from pathlib import Path
 from xml.sax.saxutils import escape
 
@@ -45,6 +46,8 @@ class Episode:
     summary: str
     mp3_url: str
     mp3_bytes: int
+    # [{"rank", "uid", "title", "abs_url", "scirate_url", "scites"}], newest schema.
+    papers: list = field(default_factory=list)
 
     def pub_datetime(self) -> datetime:
         # Publish at the workflow's usual time so ordering is stable.
@@ -72,12 +75,23 @@ def upsert_episode(episodes: list[Episode], new: Episode) -> list[Episode]:
 
 
 def episode_from_run(date: str, mp3_path: Path, papers_path: Path) -> Episode:
-    papers = json.loads(papers_path.read_text()) if papers_path.exists() else []
-    titles = [p.get("title") or p.get("uid", "") for p in papers]
-    if titles:
-        summary = f"Today's {len(titles)} papers: " + "; ".join(titles) + "."
-    else:
-        summary = PODCAST_DESCRIPTION
+    raw = json.loads(papers_path.read_text()) if papers_path.exists() else []
+    papers = []
+    for rank, p in enumerate(raw, 1):
+        uid = p.get("uid", "")
+        papers.append({
+            "rank": rank,
+            "uid": uid,
+            "title": p.get("title") or uid,
+            "abs_url": p.get("abs_url") or f"https://arxiv.org/abs/{uid}",
+            "scirate_url": p.get("scirate_url") or f"https://scirate.com/arxiv/{uid}",
+            "scites": p.get("scites"),
+        })
+    titles = [p["title"] for p in papers]
+    summary = (
+        f"Today's {len(titles)} papers: " + "; ".join(titles) + "."
+        if titles else PODCAST_DESCRIPTION
+    )
     mp3_bytes = mp3_path.stat().st_size if mp3_path.exists() else 0
     return Episode(
         date=date,
@@ -85,7 +99,26 @@ def episode_from_run(date: str, mp3_path: Path, papers_path: Path) -> Episode:
         summary=summary,
         mp3_url=RELEASE_MP3.format(date=date),
         mp3_bytes=mp3_bytes,
+        papers=papers,
     )
+
+
+def _show_notes_html(ep: Episode) -> str:
+    """HTML show notes: an ordered list of papers, each linked to arXiv."""
+    if not ep.papers:
+        return f"<p>{html_escape(ep.summary)}</p>"
+    lines = ["<p>The most-scited new papers on SciRate today:</p>", "<ol>"]
+    for p in ep.papers:
+        scites = ""
+        if p.get("scites") is not None:
+            scites = f" — {p['scites']} scites"
+        lines.append(
+            f'<li><a href="{html_escape(p["abs_url"])}">{html_escape(p["title"])}</a> '
+            f'(<a href="{html_escape(p["abs_url"])}">arXiv:{html_escape(p["uid"])}</a>'
+            f' · <a href="{html_escape(p["scirate_url"])}">SciRate</a>){scites}</li>'
+        )
+    lines.append("</ol>")
+    return "".join(lines)
 
 
 def build_feed(episodes: list[Episode]) -> str:
@@ -104,10 +137,12 @@ def build_feed(episodes: list[Episode]) -> str:
     items = []
     for e in episodes:
         guid = e.mp3_url
+        notes = _show_notes_html(e)
         items.append(
             "<item>"
             f"<title>{escape(e.title)}</title>"
-            f"<description>{escape(e.summary)}</description>"
+            f"<description><![CDATA[{notes}]]></description>"
+            f"<content:encoded><![CDATA[{notes}]]></content:encoded>"
             f'<itunes:summary>{escape(e.summary)}</itunes:summary>'
             f'<enclosure url="{escape(e.mp3_url)}" length="{e.mp3_bytes}" type="audio/mpeg"/>'
             f'<guid isPermaLink="false">{escape(guid)}</guid>'
@@ -119,6 +154,7 @@ def build_feed(episodes: list[Episode]) -> str:
     return (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         '<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" '
+        'xmlns:content="http://purl.org/rss/1.0/modules/content/" '
         'xmlns:atom="http://www.w3.org/2005/Atom">\n'
         "<channel>"
         f"<title>{escape(PODCAST_TITLE)}</title>"
@@ -177,17 +213,37 @@ def write_docs(episodes: list[Episode]) -> None:
     (DOCS / ".nojekyll").write_text("")
 
 
+def refresh_from_digests(episodes: list[Episode]) -> list[Episode]:
+    """Backfill each episode's paper list (and summary) from its committed
+    digests/<date>/papers.json, preserving mp3 url/size. For enriching older
+    episodes after a schema change."""
+    for ep in episodes:
+        pp = Path(f"digests/{ep.date}/papers.json")
+        if pp.exists():
+            fresh = episode_from_run(ep.date, Path(), pp)
+            ep.papers = fresh.papers
+            ep.summary = fresh.summary
+    return episodes
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Build the podcast RSS feed.")
     ap.add_argument("--add", metavar="DATE", help="upsert an episode for YYYY-MM-DD")
     ap.add_argument("--mp3", type=Path, help="path to the episode MP3 (for --add)")
     ap.add_argument("--papers", type=Path, help="path to papers.json (for --add)")
+    ap.add_argument(
+        "--refresh", action="store_true",
+        help="rebuild every episode's paper list from digests/<date>/papers.json",
+    )
     args = ap.parse_args(argv)
 
     episodes = load_manifest()
     if args.add:
         ep = episode_from_run(args.add, args.mp3 or Path(), args.papers or Path())
         episodes = upsert_episode(episodes, ep)
+        save_manifest(episodes)
+    if args.refresh:
+        episodes = refresh_from_digests(episodes)
         save_manifest(episodes)
     write_docs(episodes)
     print(f"Wrote feed with {len(episodes)} episode(s) to {DOCS}/")

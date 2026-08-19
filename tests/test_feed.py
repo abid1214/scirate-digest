@@ -60,3 +60,35 @@ def test_write_docs_roundtrip(tmp_path, monkeypatch):
     assert (tmp_path / "docs" / "index.html").exists()
     assert (tmp_path / "docs" / ".nojekyll").exists()
     minidom.parseString((tmp_path / "docs" / "feed.xml").read_text())
+
+
+def test_show_notes_include_arxiv_links():
+    ep = Episode(
+        date="2026-08-19", title="SciRate Digest — 2026-08-19", summary="s",
+        mp3_url="http://x/d.mp3", mp3_bytes=10,
+        papers=[
+            {"rank": 1, "uid": "2608.16995", "title": "Non-CSS Quantum Code Embedding",
+             "abs_url": "https://arxiv.org/abs/2608.16995",
+             "scirate_url": "https://scirate.com/arxiv/2608.16995", "scites": 12},
+        ],
+    )
+    xml = build_feed([ep])
+    import xml.dom.minidom as minidom
+    minidom.parseString(xml)  # CDATA + content namespace must stay well-formed
+    assert "https://arxiv.org/abs/2608.16995" in xml
+    assert "Non-CSS Quantum Code Embedding" in xml
+    assert "arXiv:2608.16995" in xml
+    assert "content:encoded" in xml
+    assert "12 scites" in xml
+
+
+def test_manifest_backward_compat_without_papers(tmp_path, monkeypatch):
+    # Old manifest entries (no 'papers' key) still load and render.
+    monkeypatch.setattr(feed, "MANIFEST", tmp_path / "episodes.json")
+    (tmp_path / "episodes.json").write_text(
+        '[{"date":"2026-08-18","title":"t","summary":"hi","mp3_url":"http://x/y.mp3","mp3_bytes":5}]'
+    )
+    eps = feed.load_manifest()
+    assert eps[0].papers == []
+    xml = build_feed(eps)
+    assert "hi" in xml  # falls back to the plain summary
