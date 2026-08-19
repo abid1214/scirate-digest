@@ -35,12 +35,16 @@ jobs:
         run: |
           pip install -e ".[browser]"
           playwright install --with-deps chromium
+          sudo apt-get install -y xvfb
 
       - name: Build digest
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Cloudflare passes a headed browser (under xvfb) much more
+          # reliably than a headless one on datacenter IPs.
+          SCIRATE_DIGEST_HEADED: "1"
         run: |
-          scirate-digest \
+          xvfb-run -a scirate-digest \
             --top "${{ github.event.inputs.top || '10' }}" \
             --range "${{ github.event.inputs.range || '1' }}"
 

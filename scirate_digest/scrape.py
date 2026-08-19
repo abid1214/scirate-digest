@@ -14,6 +14,7 @@ challenge to clear.
 from __future__ import annotations
 
 import logging
+import os
 import re
 
 import requests
@@ -66,9 +67,14 @@ def _fetch_html_browser(url: str, timeout_s: int = 120) -> str:
             "&& playwright install chromium"
         ) from exc
 
+    # Cloudflare fingerprints headless Chromium aggressively; a headed browser
+    # under a virtual display (xvfb) clears managed challenges far more
+    # reliably. Set SCIRATE_DIGEST_HEADED=1 and run under `xvfb-run` to use it.
+    headed = os.environ.get("SCIRATE_DIGEST_HEADED") == "1"
     with sync_playwright() as p:
         browser = p.chromium.launch(
-            args=["--no-sandbox", "--disable-blink-features=AutomationControlled"]
+            headless=not headed,
+            args=["--no-sandbox", "--disable-blink-features=AutomationControlled"],
         )
         try:
             ctx = browser.new_context(

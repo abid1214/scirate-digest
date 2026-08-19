@@ -6,6 +6,7 @@ import argparse
 import datetime as dt
 import json
 import logging
+import os
 import sys
 from pathlib import Path
 
@@ -53,6 +54,15 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def run(args: argparse.Namespace) -> Path:
+    if not args.skip_summaries and not (
+        os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_AUTH_TOKEN")
+    ):
+        raise RuntimeError(
+            "ANTHROPIC_API_KEY is not set. Add it as a repository secret "
+            "(Settings → Secrets and variables → Actions) or export it locally, "
+            "or run with --skip-summaries."
+        )
+
     date_str = args.date or dt.date.today().isoformat()
     out_dir = args.output_dir / date_str
     out_dir.mkdir(parents=True, exist_ok=True)
