@@ -1,251 +1,255 @@
-Maya: Welcome back to The SciRate Daily Digest. It's Tuesday, August nineteenth, twenty twenty-six, I'm Maya.
+Maya: Welcome back to The SciRate Daily Digest. It's August nineteenth, twenty twenty-six, I'm Maya.
 
-Sam: And I'm Sam. Today's list is heavy on error correction infrastructure — the plumbing that turns a code on paper into something a machine can actually run.
+Sam: And I'm Sam. Today's list is unusually theory-heavy, and I mean that as a compliment.
 
-Maya: We've also got Hamiltonian simulation, entropy estimation, T-count synthesis, classical simulation of bosons, a fifty-year-old matrix classification finally cracked, some foundational quantum theory, and a brand new proof of the PCP theorem.
+Maya: Give me the shape of it.
 
-Sam: A genuinely eclectic day. Let's start at the top.
+Sam: Two big currents. One is fault tolerance getting more structural — homological tools stretched past the CSS comfort zone, compilation of qLDPC codes onto real neutral-atom hardware, and cheaper non-Clifford gate counts. The other is algorithms and foundations: time-dependent Hamiltonian simulation, entropy estimation, classical simulation of bosons, and then some genuinely lovely pure math — Hadamard matrices of order six, and a new proof of the PCP theorem.
 
-Maya: Rank one, "Non-CSS Quantum Code Embedding," by Andrew Yuan and Nouédyn Baspin. Sam, set the scene — why is "non-CSS" the headline word here?
+Maya: That's a spread. Let's start at the top.
 
-Sam: So most of the modern toolkit for compiling fault-tolerant operations — lattice surgery for qLDPC codes, weight reduction, the layer-code trick for embedding a code into three-dimensional space — all of it is built on chain complexes. You have a complex that goes from X-checks, to qubits, to Z-checks, and you glue new pieces on with what's called a cone or mapping cone. That machinery assumes your code is CSS, meaning X and Z checks live in separate worlds.
+Sam: Rank one is "Non-CSS Quantum Code Embedding," by Andrew Yuan and Nouédyn Baspin.
 
-Maya: And plenty of the codes people actually care about aren't CSS.
+Maya: Okay, so first, why does CSS versus non-CSS matter so much?
 
-Sam: Right. Bias-tailored codes like XZZX, lots of high-rate qLDPC constructions, and crucially, if you want a full Clifford gate set you need to measure Y-type logical operators, which is inherently non-CSS. Up to now people patched this with ad hoc local Clifford tricks.
+Sam: Because almost all the modern machinery for building and deforming quantum codes is homological. You write a CSS code as a chain complex over the field with two elements, and then constructions like lattice surgery, layer codes, and weight reduction are just cone constructions on chain maps. It's beautiful. But it only works when your X checks and Z checks live in separate worlds, which is exactly what CSS means.
 
-Maya: So what do they replace the CSS complex with?
+Maya: And plenty of interesting codes aren't CSS.
 
-Sam: A symplectic complex. Instead of X to Q to Z, you have S mapping into P mapping into S-bar, where P is a symplectic vector space over the binary field and the second map is the symplectic adjoint of the first. Commutation of stabilizers stops being "the boundary maps compose to zero" in the CSS sense and becomes exactly the statement that adjoint-sigma times sigma equals zero.
+Sam: Right — XZZX codes, twisted constructions, things friendlier to magic states. They've been stuck outside the tent. What this paper does is replace the chain complex with what they call a symplectic complex. You have a space of stabilizer generators mapping into a Pauli space carrying a symplectic form, and then a symplectic adjoint mapping back out. The condition that your checks commute becomes exactly the statement that composing those two maps gives zero.
 
-Maya: And the measurement condition?
+Maya: So the code literally is a length-two complex again, just in a symplectic setting.
 
-Sam: Same shape. You want to measure some set of Paulis via an ancilla system connected by a map g. Measurability becomes adjoint-g times g equals zero. When that holds, they call the defect p equal to zero, and the whole construction is literally "measure a commuting set of Paulis." When p isn't zero, there's an explicit correction term in the readout formula that simply has no CSS analogue.
+Sam: Exactly, and the logical space is the kernel of the adjoint modulo the image of the first map — the same homology story. Then one embedding theorem, about two pages, and cones go through. Surgery, layer-code embedding into three dimensions, weight reduction — all of it now accepts non-CSS input.
 
-Maya: What does the gadget look like physically?
+Maya: What's the concrete payoff someone building a machine would notice?
 
-Sam: One set of check qubits, prepared in X. You run a constant-depth circuit of CNOTs for the X-sector of the connectivity map and CZs for the Z-sector, then measure in X. Under conjugation those gates act on the symplectic vector as a block lower-triangular matrix — and that matrix is precisely a height-two cone with zero defect. It's a nice moment where the circuit and the homological algebra are literally the same object.
+Sam: Y-type logical measurements on the same footing as X and Z, without local Clifford gymnastics. They give circuit-level detail too: an ancilla register prepared in the X basis, coupled with CNOTs for the X part and controlled-Z gates for the Z part, and that whole Clifford is literally the height-two cone in symplectic coordinates.
 
-Maya: So the claim is that surgery, layer codes, and weight reduction all just carry over.
+Maya: Any caveats?
 
-Sam: That's the claim, and it's argued to be straightforward once you have the complex. Fault tolerance comes from building a spacetime fault complex over at least d rounds and applying Gottesman's generic minimum-weight argument.
+Sam: No numerics, and thresholds are asserted via the standard spacetime fault complex argument rather than simulated. Decoding on a mixed X-Z fault complex is plausibly harder in practice. But as a unification, it's clean.
 
-Maya: What's missing?
+Maya: Rank two: "Quantum simulation of slow analytic time-dependent Hamiltonians," by Chenhao Zhao, Yinan Li, and Dong An.
 
-Sam: Numerics, thresholds, and a distance-preservation theorem. The threshold is asserted generically rather than simulated. They assume perfect measurements, constant-depth gadgets, and an ancilla with no internal logicals. And overhead — qubit counts, whether the deformed codes stay LDPC — isn't quantified. So it's a framework paper, and it'll be judged on whether people can build with it.
+Sam: This one's about a very specific and very common regime. You have a Hamiltonian that's a fixed function of a rescaled time — think adiabatic evolution or annealing, where the whole schedule is stretched over a long total time T. Everything varies slowly.
 
-Maya: On to rank two, "Quantum simulation of slow analytic time-dependent Hamiltonians," by Chenhao Zhao, Yinan Li, and Dong An. What's the problem?
+Maya: And the question is how many queries you need.
 
-Sam: Time-dependent Hamiltonian simulation where the Hamiltonian varies slowly — think an adiabatic or annealing schedule, where H of t is really H of t over T for large T. The standard approach, truncated Dyson series, costs you roughly alpha times T times the log of one over epsilon queries. Multiplicative.
+Sam: The dream is additive: something like alpha times T plus log of one over epsilon, where alpha is the Hamiltonian norm. Truncated Dyson series gets you close but with gate overhead that isn't great. This paper gets nearly additive queries and only polylogarithmic-in-precision gate overhead, which is the first time both have happened together.
 
-Maya: And they get additive.
+Maya: How?
 
-Sam: Alpha T plus log of one over epsilon, up to logs, and the extra gate overhead stays polylogarithmic in one over epsilon. That's the headline: precision essentially stops multiplying your cost.
+Sam: Floquet embedding. If your Hamiltonian is periodic, Floquet theory converts time-dependent dynamics into a time-independent effective Hamiltonian on an enlarged space indexed by Fourier modes, and then you just run quantum singular value transformation, which is optimal. The catch is your Hamiltonian isn't periodic.
 
-Maya: How do you get there?
+Maya: So they make it periodic.
 
-Sam: Floquet theory. If your Hamiltonian were periodic, you could lift into the Sambe or Floquet space, where a time-dependent problem becomes a time-independent one on an infinite ladder of Fourier modes, then truncate the ladder, block-encode with a linear combination of unitaries, and run quantum singular value transformation.
+Sam: They construct an explicit extension. On the interval from one to two, they glue using Borel-type series built from the derivatives at the endpoints, multiplied by carefully chosen cutoff functions. That matches every derivative at the seam so the result is smooth and periodic. The subtlety is that you can't do this and stay real analytic — the identity theorem forbids it. So the extension is Gevrey class instead, which is smooth but not analytic.
 
-Maya: But a schedule on the interval zero to one isn't periodic.
+Maya: And that costs you something?
 
-Sam: Exactly, and that's the technical heart. They construct an explicit periodic extension using a Borel-lemma style construction that matches all derivatives at both endpoints. The result isn't analytic — it can't be — but it's Gevrey class, which is the next best thing, and crucially it has controlled Fourier decay. Then they prove a Lieb-Robinson-type bound for Gevrey periodic Hamiltonians, extending prior work that only handled exponentially decaying modes, and that tells you where to truncate the ladder.
+Sam: Fourier coefficients decay subexponentially instead of exponentially, so the truncation order grows, and they need a Lieb-Robinson-type bound on the truncated effective Hamiltonian to control it. But the final complexity is still essentially alpha T plus log one over epsilon queries, with gate overhead quadratic in that quantity times a log.
 
-Maya: Is there a regularity-versus-cost tradeoff?
+Maya: What's the price of admission?
 
-Sam: A clean one. For Gevrey class sigma between one and two, the query count scales as alpha T plus log one over epsilon, all raised to the power sigma. Smoother input, cheaper simulation. And combined with an optimal linear-combination-of-Hamiltonian-simulation scheme, they get a quadratic improvement in precision dependence for slow semi-dissipative differential equations.
+Sam: A nonstandard input model. You need block-encoding access to the derivative of the Hamiltonian, plus block encodings of order log of alpha T over epsilon endpoint derivatives. For control Hamiltonians — a fixed set of operators with time-dependent scalar coefficients — that's fine, you compute the coefficients classically. They also plug it into the LCHS framework and get a quadratic improvement in the log-precision factor for dissipative differential equations.
 
-Maya: Catch?
+Maya: Rank three: "Nearly Sample-Optimal Estimators for Quantum Rényi and Tsallis Entropies," by Kean Chen and Qisheng Wang.
 
-Sam: The input model. You need a HAM-T oracle for the derivative of H, plus block encodings of endpoint derivatives up to fairly high order. So it's not a strict improvement over standard-oracle results. Gate overhead is quadratic in alpha T, worse than Dyson's linear. And the regularity constants are treated as order one but could hide large prefactors. No numerics.
-
-Maya: Rank three, "Nearly Sample-Optimal Estimators for Quantum Rényi and Tsallis Entropies," from Kean Chen and Qisheng Wang. This one closes gaps.
-
-Sam: It does. The question is: given copies of an unknown d-dimensional state rho, how many do you need to estimate its Rényi or Tsallis entropy of order alpha to within epsilon? Lower bounds were recently established; the upper bounds lagged, particularly for alpha below one.
+Sam: This closes a long-open table. You get copies of an unknown d-dimensional quantum state and you want its Rényi entropy of order alpha to precision epsilon. For non-integer alpha the best known upper bounds were badly off from the lower bounds.
 
 Maya: How badly?
 
-Sam: The old bound was d to the two-over-alpha, over epsilon to the two-over-alpha. The new one is d to the one-plus-one-over-alpha over epsilon to the one-over-alpha, plus a second term. That's a big improvement in both d and epsilon. And for non-integer alpha above one, Rényi goes from d squared over epsilon squared to d squared over epsilon to the one-over-alpha.
+Sam: For alpha less than one, the old bound was d to the two-over-alpha divided by epsilon to the two-over-alpha. The new one is roughly d to the one-plus-one-over-alpha over epsilon to the one-over-alpha, plus a smaller term. That's a huge improvement, and it matches Wang's lower bounds up to polylogs.
 
-Maya: What's the trick for the small-alpha case?
+Maya: The epsilon dependence is what jumps out — one over alpha rather than two over alpha.
 
-Sam: A tangent-line estimator. The function trace of rho to the alpha is concave in rho for alpha below one, so the first-order Taylor expansion around a nearby state sigma is an upper bound. They do tomography to get an estimate rho-hat, regularize it by adding a multiple of the identity to make sure it's not too small anywhere, and then the error of the tangent-line approximation is controlled by the chi-squared divergence between rho and sigma.
+Sam: That's the genuinely new phenomenon, and it comes from the method. Everything before this leaned on weak Schur sampling, which measures the spectrum directly. These authors instead do tomography. Specifically, for alpha below one, they run chi-squared tomography, regularize the estimate by adding a multiple of the identity, compute one piece classically, and estimate the remaining trace term by measuring fresh copies in the estimated eigenbasis.
 
-Maya: And they can bound that.
+Maya: Why does that split help?
 
-Sam: That's the new inequality — a clean two-sided bound where the gap is at most d-over-n to the alpha-minus-one times the chi-squared divergence. And they show the regularized tomography output gives chi-squared divergence of order d squared over n. Then one piece of the tangent line is computed classically and the other is estimated by measuring fresh copies in sigma's eigenbasis.
+Sam: Because of a new one-step linearization inequality they prove. Trace of rho to the alpha is hard, but you can approximate it by a linear expansion around your estimate sigma, and the error of that linearization is bounded by the Bures chi-squared divergence between rho and sigma, scaled down. So good tomography in the right divergence directly buys you low bias.
 
-Maya: What about alpha above one, where concavity fails?
+Maya: And for alpha above one?
 
-Sam: Completely different tool: Richardson extrapolation. They convert copies of rho into copies of a Haar-random purification, apply Hayashi's covariant measurement to batches, and the bias of the resulting estimator expands in moments of a Beta distribution. Run several batch sizes, take a clever linear combination, and the leading bias terms cancel.
+Sam: Different trick. They convert copies of rho into copies of a random purification, apply Hayashi's covariant pure-state measurement, and then notice the bias has an expansion in moments of a Beta distribution. So they run several batches at geometrically growing sizes and take a linear combination that annihilates the leading bias terms — Richardson extrapolation, essentially.
 
-Maya: Any warnings?
+Maya: Which feels reusable.
 
-Sam: Constants blow up as alpha approaches one from below, and as alpha approaches an integer from above the number of batches grows and conditioning degrades. Only non-integer alpha above one is covered. And everything uses fully collective entangled measurements with no stated time complexity — this is sample complexity, not runtime.
+Sam: That's my read too. The extrapolation-over-batch-sizes idea should transfer to other nonlinear spectral functionals. Caveats: constants blow up as alpha approaches one, and these are highly entangled collective measurements, so it's a sample-complexity result, not a near-term protocol.
 
-Maya: Rank four, "Quantum Circuit for General Unitary: Improved T-count via Block Flattening and Dilation," by Pei Yuan, Shengyu Zhang, and Wei Zi.
+Maya: Rank four: "Quantum Circuit for General Unitary: Improved T-count via Block Flattening and Dilation," by Pei Yuan, Shengyu Zhang, and Wei Zi.
 
-Sam: Classic question: you're handed an arbitrary n-qubit unitary as a matrix, you want a Clifford plus T circuit. In fault tolerance you pay almost exclusively for T gates. The lower bound is about two to the n; the previous best upper bound was about two to the four-n-over-three. This paper gets two to the five-n-over-four, times some smaller factors.
+Sam: Very concrete question: you have an arbitrary n-qubit unitary, no structure at all, and you want to implement it in Clifford plus T. How many T gates?
 
-Maya: That narrows the gap to two to the n over four. How?
+Maya: And T count is the thing that actually costs money in a fault-tolerant machine.
 
-Sam: A paradigm shift, honestly. Instead of the classical recursive cosine-sine decomposition into products of smaller rotations, they treat the whole unitary as one block-encoded object. Step one is "flattening": they sandwich U between random sign diagonals and Hadamards. Randomization spreads the mass out so that every one of the many b-by-b blocks has small operator norm — with high probability, simultaneously.
+Sam: Exactly, magic states dominate. The lower bound is about d, where d is two to the n. Tan's construction gave d to the four-thirds times a polylog factor. This paper gets d to the five-fourths times L to the five-eighths times log d, where L is n plus log one over epsilon. So the gap to the lower bound shrinks from a d-to-the-one-third factor to d-to-the-one-fourth.
 
-Maya: Why does flattening help?
+Maya: What's the conceptual move?
 
-Sam: Because then each block, normalized, is a contraction. You dilate each contraction to a unitary using the Halmos dilation, which only acts on twice-b dimensions, and pack them all into a single uniformly-controlled unitary — one SELECT. That gives you a block encoding of the whole matrix with a subnormalization factor of roughly the square root of d over b.
+Sam: Stop factoring the unitary into a product of simpler pieces. Instead, build one block encoding of the entire matrix and then strip off the normalization with QSVT. That's importing Hamiltonian-simulation machinery into raw circuit compilation, which is a nice inversion.
 
-Maya: And then you undo the subnormalization.
+Maya: But block encodings usually have terrible subnormalization for a dense matrix.
 
-Sam: With QSVT. The nice thing is that after flattening, all the singular values you care about sit at one single point, one over rho. So you don't need a general amplification polynomial — you need one that maps a single point exactly to one, which is much lower degree. They also do the perturbation analysis to show it's robust to the block encoding not being exact.
+Sam: Right, and that's the other contribution: block flattening. They show that for any unitary U, you can find two diagonal sign matrices and sandwich with Hadamard transforms so that every single block of the resulting matrix, simultaneously, has small norm — order square root of b over d times log d, where b is the block size. It's proved with Hoeffding concentration on entries followed by Tropp's matrix Rademacher bound and a union bound over all block pairs.
 
-Maya: What's the cost?
+Maya: And then?
 
-Sam: Ancillas. Order two to the n times square root of L clean qubits, versus something much smaller for the previous approach. So it's a space-for-T-count trade, not a strict win. Also the sign diagonals have to be found by randomized classical preprocessing with numerical certification, and that cost is explicitly excluded from the accounting. No numerics either.
+Sam: Each normalized block gets dilated to a unitary via the Julia-Halmos construction and packed into one big uniformly controlled unitary. Crucially, the operator you've encoded is a unitary divided by a scalar, so every singular value is the same number. That means QSVT only needs to respond correctly at a single point, which is cheap.
 
-Maya: Rank five, "Lie-Algebraic Classical Simulation of Bosonic Systems Beyond Gaussian Dynamics," from Bärligea, Heightman, Kottmann and Acín.
+Maya: What's the catch?
 
-Sam: This extends what people call g-sim — Lie-algebraic classical simulation. The usual story for qubits: if your circuit generators span a dynamical Lie algebra of polynomial dimension, you can propagate observables in that algebra classically.
+Sam: Ancillas. Order two-to-the-n times square root of L clean qubits, which is far more than Tan. So it's a space-versus-T-count tradeoff, not a strict win. And the sign matrices come from randomized classical preprocessing that isn't counted.
 
-Maya: And bosons break that?
+Maya: Rank five: "Lie-Algebraic Classical Simulation of Bosonic Systems Beyond Gaussian Dynamics," from Adelina Bärligea, Timothy Heightman, Jakob Kottmann, and Antonio Acín.
 
-Sam: They break it in an interesting way. The key move here is to stop looking at the algebra and look at the observable. Define the reachable operator module: the smallest space containing your observable that's closed under commuting with the circuit generators. If that has polynomial dimension, and you can access the input overlaps, you can exactly compute expectation values, multi-time correlators, out-of-time-order correlators, and reverse-mode gradients in polynomial time.
+Sam: This extends the so-called g-sim framework to bosons. For spins, the story is: if your Hamiltonian generators close into a small Lie algebra, you can propagate in the Heisenberg picture inside that algebra and simulate classically in polynomial time.
 
-Maya: So simulability is a property of the pair — dynamics and observable.
+Maya: And that fails for bosons?
 
-Sam: That's the conceptual punchline, and they prove it's genuinely broader: the polynomial-dimension Lie algebra condition is sufficient but not necessary. It's recovered only when the observable happens to sit inside the algebra.
+Sam: It does, and they prove a clean negative result about why. For spins and fermions, a finite-dimensional generator algebra implies the orbit of any observable is finite. For bosons that's false — take a Kerr nonlinearity acting on an annihilation operator on the full Fock space, and the orbit never closes.
 
-Maya: What makes the module finite for bosons?
+Maya: So what replaces it?
 
-Sam: Three mechanisms. One, Gaussian dynamics preserves polynomial degree in the quadratures, which recovers standard mean and covariance propagation — but notably it works for non-Gaussian inputs too, as long as you can get the input moments. Two, photon-number sector confinement: if the dynamics conserves photon number and you cap the total number, the sector dimension is polynomial in the mode count, so you can have arbitrarily strong Kerr or cross-Kerr interactions. Three, a nilpotent polynomial-phase family with cubic and higher generators.
+Sam: They shift the object of study from the algebra to what they call the reachable operator module: the smallest real operator space containing your specific observable and closed under commutators with the generators. If that module has polynomial dimension, you're done — expectation values, multi-time correlators, out-of-time-order correlators, and even reverse-mode gradients are exactly computable.
 
-Maya: And the negative result?
+Maya: So simulability is a property of the dynamics and the observable together, not the Hamiltonian alone.
 
-Sam: A finite-dimensional generator algebra does not guarantee a finite observable orbit. Kerr acting on an annihilation operator over the full Fock space blows up. That's genuinely bosonic — no qubit analogue.
+Sam: That's the headline sentence, and I think it's right. They identify three mechanisms that make the module small. Gaussian dynamics preserves polynomial degree in the quadratures, so a degree-m observable stays in a space of dimension binomial in two-n-plus-m. Number-conserving nonlinearities confine you to a fixed photon-number sector, giving dimension of order n to the two-N-max. And there's a nilpotent family with cubic-phase generators.
 
-Maya: Numerics?
+Maya: What do they actually simulate?
 
-Sam: Yes, and they're substantial: operator spreading and OTOCs on chains up to four hundred modes, a repulsively bound doublon band with flux-reversed edge motion, and differentiable control validated against finite differences on nine-by-nine lattices. Caveat: you get mean values and fixed-order correlators, not samples or full distributions — which is exactly why this doesn't contradict boson sampling hardness.
+Sam: Operator spreading and OTOCs on chains up to four hundred modes, repulsively bound photon pairs showing a topological doublon band with flux-reversed edge motion, and differentiable control on nine-by-nine lattices. No Fock cutoff, no moment closure.
 
-Maya: Rank six, "Hardware-Aware Compilation and Execution of Bivariate Bicycle Codes on Neutral-Atom Systems." This is Park-n-Ride, from Ludmir and colleagues.
+Maya: Does this threaten boson sampling?
 
-Sam: Very concrete engineering. Bivariate bicycle codes are the high-rate qLDPC codes IBM has been pushing. This paper asks: what if you run them on a zoned neutral-atom machine where you physically move atoms with acousto-optic deflectors?
+Sam: No, and they're careful about that. They compute mean values and fixed-order correlators, not sampling distributions. The order of the observable is itself a resource.
 
-Maya: And AODs have constraints.
+Maya: Rank six is more of an engineering paper: "Hardware-Aware Compilation and Execution of Bivariate Bicycle Codes on Neutral-Atom Systems," by Ludmir, Ranjan, DiBrita, Han, and Patel.
 
-Sam: Big ones. Rows and columns can't cross each other, you have blockade radii, and you have distinct zones for storage, gates, and readout. So they design a columnar layout — stacks of code modules in columns, each module split into an idling subzone, a bridge-interaction subzone, and a shift-and-measurement subzone.
+Sam: They call it Park-n-Ride. The target is the gross code — one hundred forty-four physical qubits, twelve logicals, distance twelve — and the question is how you actually run its logical instruction set on a zoned neutral-atom machine.
 
-Maya: What's the clever part?
+Maya: What makes neutral atoms hard here?
 
-Sam: Two things. First, shift automorphisms. BB codes have a torus structure, so a logical shift decomposes into a roll in i and a roll in j, and each roll can be done either as a width-k strip move or a width-N-minus-k move. That lets a column head fix a shared direction so every module moves monotonically in parallel without crossing. Leftover offsets get cleaned up by a sorted-residual sweep with staggered drop-offs.
+Sam: You move atoms with acousto-optic deflectors, and AOD rows and columns can't cross each other. Add Rydberg blockade constraints and the cost of transferring atoms between trap types, and suddenly a scheduling problem that would be trivial on a static chip becomes the binding constraint.
 
-Maya: And second?
+Maya: What's their layout?
 
-Sam: Placement. Joint logical measurements between modules define an interaction graph; they run spectral seriation — Fiedler vector ordering — to place strongly interacting modules near each other in columns. That alone cuts estimated end-to-end runtime about eighteen percent and transport-induced atom-loss exposure about forty-one percent versus arbitrary placement, at up to a hundred and thirteen modules — about thirty-two and a half thousand physical qubits.
+Sam: Vertical compute columns of code modules, each split into idling, bridge-interaction, and shift-measurement subzones, with a small logical processing unit sitting above each module holding bridge and ancilla qubits. Motion stays inside a column, which sidesteps most crossing violations by construction.
 
-Maya: What did they learn qualitatively?
+Maya: And the clever bit?
 
-Sam: That shifts are essentially free, because they involve no two-qubit gates, and syndrome extraction and measurement cycles dominate. Also that good placement can substitute for column capacity — spectral placement at capacity six beats arbitrary placement at capacity ten.
+Sam: The shift automorphisms. Bivariate bicycle codes live on a torus, so a shift decomposes into a roll in each direction, and each roll can be realized four equivalent ways — move a narrow chunk one direction or the complementary chunk the other. They elect a head module per column, everyone adopts its directions, and then all the motion is monotone, which is automatically legal. Leftover offsets get cleaned up with a sorted-residual sweep.
+
+Maya: Plus scheduling the joint measurements.
+
+Sam: Right, pairs become intervals along a column, greedy interval coloring gives disjoint rounds, and lockstep micro-steps toward interval midpoints guarantee no crossings. Module-to-column assignment uses spectral seriation on the interaction graph. Net result: about eighteen percent runtime reduction and forty-one percent less transport-induced atom-loss exposure versus arbitrary placement.
+
+Maya: How much should we trust the numbers?
+
+Sam: Modestly. It's a Python timing and error estimator — no Stim simulation, no decoder, no threshold curves. Measurement time is set near zero by design, which is not real. But the qualitative finding that shift automorphisms are orders of magnitude cheaper than syndrome cycles is a useful design signal.
+
+Maya: Rank seven is a change of pace: "A Complete Classification of Complex Hadamard Matrices of Order Six," by Mateo Cárdenes Wuttig and Joseph Tindall.
+
+Sam: Complex Hadamard matrices are matrices with unimodular entries whose rows are mutually orthogonal, normalized. They're the backbone of mutually unbiased bases and balanced interferometers. Orders up to five are classified. Six has been open for decades.
+
+Maya: Why is six so stubborn?
+
+Sam: Because the solution set isn't a finite list — there are continuous families, notably Karlsson's three-parameter family, plus isolated points like Tao's matrix. Szöllősi had a dilation method: take a three-by-three corner, and the rest of the matrix is forced algebraically. But nobody could show that a good corner always exists.
+
+Maya: And that's what they prove.
+
+Sam: Yes. They introduce a cubic Gram invariant on three-by-three unimodular blocks — essentially a product of three off-diagonal entries of the block times its adjoint — and show its real part is the same computed row-wise or column-wise, and that it's invariant under all the monomial equivalence operations.
+
+Maya: What does the invariant buy you?
+
+Sam: A trichotomy. If the set of completions with a fixed Gram matrix is infinite, then one of three things holds: the block is proportional to a scaled identity, or the invariant's real part is negative, or the block contains a two-by-two Hadamard sub-block. Then comes the routing argument: for a six-by-six matrix, the two complementary corners satisfy a relation forcing their invariants to be negatives of each other. So the sign flips under block exchange, and therefore at least one corner has both of its side fiber sets finite.
+
+Maya: A witness always exists.
+
+Sam: Exactly. That turns an infinite search into finitely many polynomial solves — generically one quadratic and one cubic in each direction. It proves Szöllősi's conjecture, and it gives a rigorous computational handle on the dimension-six MUB problem.
 
 Maya: Caveats?
 
-Sam: There's no prior art, so every comparison is internal. It's an analytic timing estimator, not circuit-level noise simulation, and the logical error curve uses a toy oracle decoder. Measurement time is zeroed by construction. So read it as a scheduling architecture proposal, not a performance benchmark.
+Sam: It's conditional on two prior published results, it's a finite reconstruction scheme rather than a new closed-form parametrization, and substantial parts rest on exact computer algebra — hundreds of resultants and a Bernstein positivity certificate. Only part is formalized in Lean.
 
-Maya: Rank seven is the odd one out: "A Complete Classification of Complex Hadamard Matrices of Order Six," by Mateo Cárdenes Wuttig and Joseph Tindall.
+Maya: Rank eight: "Computationally Efficient Optimization of Per-Qubit Clifford Deformation for Non-uniform Biased Noise," by Won Joon Yun, Andrew Nemec, and Jonathan Baker. They call it Chameleon.
 
-Sam: This is a genuinely long-standing open problem. A complex Hadamard matrix has all entries of unit modulus and mutually orthogonal rows. Orders two through five have been fully classified for decades. Order six has resisted since the seventies.
+Sam: Nice practical idea. Real devices have biased noise — some qubits are dephasing-dominated, others not — and it varies qubit to qubit. You can apply a per-qubit Clifford that permutes which Pauli error is which, essentially for free, no extra qubits or rounds. The question is which permutation to pick on each qubit.
 
-Maya: Why is six special?
+Maya: And picking well is expensive?
 
-Sam: Six is the first composite order that isn't a prime power, and it's tangled up with the famous question of whether there exist six mutually unbiased bases in dimension six. Known order-six families include a four-parameter Karlsson family and Tao's isolated matrix, and nobody could prove the list was complete.
+Sam: Previously you'd run a decoder in the loop for every candidate assignment. For a bivariate bicycle code on seventy-two qubits that took something like a day and a quarter.
 
-Maya: What do they do?
+Maya: What replaces the decoder?
 
-Sam: They prove that every six-by-six complex Hadamard matrix is equivalent to a dephased one with what they call a finite-corner witness — a three-by-three corner whose two complementary fibers are both finite. If you have that, Szőllősi's dilation method reconstructs the full matrix from finitely many algebraic solves. So the classification becomes a terminating procedure.
+Sam: An analytic surrogate. They look at low-weight logical representatives — they call them ambiguity operators — and bound the probability of confusing an error with that error times the logical, using a Bhattacharyya bound. And that bound factorizes into one term per qubit in the operator's support, of the form two times the square root of r times one minus r.
 
-Maya: What's the engine?
+Maya: So each qubit contributes independently, given the frame.
 
-Sam: A cubic invariant built from the Gram matrix of a three-by-three corner — the product of three off-diagonal entries of X times X-dagger. The key identity is that this invariant flips sign between complementary blocks. So they prove a trichotomy: if a fiber is infinite, then either the Gram matrix is three times the identity, or the real part of that invariant is negative, or there's an embedded two-by-two Hadamard block. Combine that with the sign flip and you can always route to a corner where both fibers are finite. That's the global step Szőllősi was missing — it proves his conjecture.
+Sam: Right, so evaluating an operator drops from exponential in its weight to linear. You precompute the ambiguity set once per code — it's noise-independent — and then search frames with a cross-entropy method. Two stages: first just identity-versus-Hadamard, then the full six-element permutation group. Frame selection drops from a day to about three minutes, with worst-axis logical error improvements of thirteen, seven, and four percent on surface, color, and bicycle codes.
 
-Maya: How much of this is machine-assisted?
+Maya: Where does it break?
 
-Sam: A lot. Exact resultants, hundreds of them, and a Bernstein positivity certificate with dyadic de Casteljau subdivision to kill a residual case. There's only a partial Lean audit. And the result is conditional on two published prior inputs. It certifies finiteness and reconstructibility rather than exhibiting a brand-new closed-form list, so whether unknown families are ruled out is still a little subtle.
+Sam: On weakly biased devices the surrogate correlation collapses — Spearman rank correlation of point three four on one IBM map versus point eight nine to point nine eight on Google's Willow. Several entries show negative gain. And the reported error is only what they call Type-A, information-theoretic decoding ambiguity, which can exclude the large majority of actual failures for approximate decoders.
 
-Maya: Rank eight, "Computationally Efficient Optimization of Per-Qubit Clifford Deformation for Non-uniform Biased Noise." The tool is called Chameleon.
+Maya: Rank nine: "No extension of the Quantum Tensor Product admits a Superposition principle," by Vincenzo Fiorentino and Kuntal Sengupta.
 
-Sam: Real hardware has biased noise, and the bias varies qubit to qubit. You can exploit that for free by applying a single-qubit Clifford frame to each qubit — that just permutes which Pauli error looks like X, Y, or Z to the code. Distance, qubit count, rounds all unchanged. The problem is there are six-to-the-n frames.
+Sam: Foundations. In generalized probabilistic theories you can ask: what does superposition even mean without Hilbert spaces? These authors give a purely statistical, relational definition.
 
-Maya: And you can't Monte-Carlo decode inside that search.
+Maya: How does that go?
 
-Sam: Exactly, that was the bottleneck. Chameleon is decoder-free. It scores a frame with a Bhattacharyya upper bound on the failure probability of low-weight ambiguity operators — the logical coset representatives that a decoder could confuse. The bound factorizes over qubits, so the cost per operator drops from exponential in the weight to linear.
+Sam: Take a maximal set of perfectly distinguishable states, and the extremal measurement that best distinguishes them. An extremal state counts as a superposition of a subset of those states if it gives genuinely probabilistic — not deterministic — outcomes on the corresponding results. That's it. No amplitudes.
 
-Maya: And then you just minimize that surrogate.
+Maya: And maximality of the set matters?
 
-Sam: With cross-entropy search, in two stages: first a binary search over identity-versus-Hadamard, then a categorical search over all six frames, warm-started. For the seventy-two-qubit bivariate bicycle code, frame selection drops from about one and a quarter days to three point one minutes.
+Sam: They show it's necessary with a qutrit counterexample. Then they distil three candidate principles: complete, meaning every extremal state is a superposition of something; uniform, meaning it's a superposition relative to every maximal distinguishable set; and mutual, meaning superposition is reciprocal — if this state is a superposition of those, they're superpositions involving it.
 
-Maya: And error rates?
+Maya: In quantum theory those coincide?
 
-Sam: Up to about nineteen percent reduction in worst-axis logical error for the surface code over the best prior baseline. There's also a nice conceptual byproduct: minimizing the surrogate is equivalent to maximizing a weighted distance on the most vulnerable logical confusions. That explains why the earlier greedy per-qubit local rule fails — it underperforms the undeformed CSS code in twenty-seven percent of instances.
+Sam: They're equivalent in quantum theory, but not in general — they build two toy GPTs separating them.
 
-Maya: Be honest about the gains.
+Maya: And the main theorem?
 
-Sam: They're uneven. Surrogate correlation with true performance is zero point three four on a low-bias IBM device versus point eight nine to point nine eight on Willow. Some cases are slightly negative — minus three percent here and there. The huge numbers come from a synthetic high-bias field. And circuit-level evaluation gives only about five percent mean gain over plain CSS.
+Sam: If you take two quantum subsystems, any composition rule strictly between the ordinary quantum tensor product and the maximal tensor product fails the mutual principle. So the quantum tensor product is the largest non-signalling composition satisfying it, and no strict extension gets all three principles.
 
-Maya: Rank nine, "No extension of the Quantum Tensor Product admits a Superposition principle," by Vincenzo Fiorentino and Kuntal Sengupta. This is foundations.
+Maya: That's a reconstruction-flavored result.
 
-Sam: And it's a nice question: can you define superposition without Hilbert spaces? In generalized probabilistic theories you only have states, effects, and probabilities. So they give a purely relational, statistics-only definition.
-
-Maya: How does it go?
-
-Sam: Take a maximally perfectly-discriminable set of states — the GPT analogue of an orthonormal basis. Then take a measurement that maximally distinguishes them. An extremal state is a superposition of some subset if it assigns nonzero probability to exactly those outcomes and those probabilities sum to one. That's it. No amplitudes, no inner products.
-
-Maya: And they build principles on top.
-
-Sam: Three. Complete superposition: every extremal state is a superposition of something. Uniform: it works relative to any maximally discriminable set. Mutual: superposition is reciprocal — if A is a superposition involving B, then B is a superposition involving A. And they show these three don't form a hierarchy, by constructing two toy theories that satisfy different subsets.
-
-Maya: What's the main theorem?
-
-Sam: Take two quantum subsystems obeying the no-restriction hypothesis. Any non-signalling composite strictly bigger than the quantum tensor product fails mutual superposition. So the quantum tensor product is singled out operationally — no post-quantum composite can have reciprocal superposition.
-
-Maya: That puts it alongside information causality and local tomography as an axiom that rules out post-quantum boxes.
-
-Sam: Right, and there's a nice classification table: Boxworld has superposition only via the PR box and satisfies no stronger principle; Spekkens' toy theory satisfies all three; and the n-gon theories show an odd-even parity gap where even n-gons fail uniform superposition. Nobody explains the parity yet.
+Sam: Exactly — a candidate operational replacement for the tensor product axiom. They also show entanglement implies superposition but not conversely, and explicitly present the PR box as a superposition of four local deterministic boxes. The practical hook is for gravitationally-induced entanglement experiments, where "hold a mass in superposition" is currently formalism-dependent.
 
 Maya: Limits?
 
-Sam: The composition theorem assumes quantum subsystems to begin with, so it's not a reconstruction of quantum theory from scratch. Superposition is defined only for extremal states, measurements are assumed informationally complete, and multiplicativity of operational dimension is an extra assumption that already fails for pentagon composites.
+Sam: Subsystems have to already be quantum, so it's not a single-system reconstruction, and the no-restriction hypothesis is load-bearing.
 
-Maya: And finally, rank ten, "A Simple Algebraic Proof of the PCP Theorem," from Amireddy, Behera, Srinivasan, Sudan, and Willumsgaard.
+Maya: And finally, rank ten, which isn't quantum at all: "A Simple Algebraic Proof of the PCP Theorem," by Amireddy, Behera, Srinivasan, Sudan, and Willumsgaard.
 
-Sam: The PCP theorem says every NP statement has a proof you can verify by reading a constant number of bits, using logarithmically many random bits. It's one of the crown jewels of complexity theory, and it's notoriously painful to teach.
+Sam: The PCP theorem says every NP statement has a proof you can verify with logarithmically many random bits and a constant number of queries. The original algebraic proof leans on proof composition — recursively applying PCPs to the verifier itself — and that's the part that makes it a semester rather than a lecture.
 
-Maya: Because of composition?
+Maya: And they remove composition?
 
-Sam: Because of composition. The algebraic proofs build a verifier, then recursively compose it with itself to shrink the alphabet, and preparing a verifier for composition requires bundling, parallelization, assignment testers, robustification — a whole industry. This paper removes that layer entirely. No composition, no PCPs of proximity, no invoking NP-completeness inside the verifier. Just code concatenation, interpolation, and polynomial multiplication.
+Sam: They do. No composition, no PCPs of proximity, no assignment testers, no invoking NP-completeness inside the construction. Just code concatenation and standard polynomial manipulation. The verifier and honest prover each fit on about one page of pseudocode.
 
-Maya: What's the new ingredient?
+Maya: What was the actual obstruction?
 
-Sam: A set-multilinear encoding. In the standard proof there's a lines table — for every line in the space, you store the univariate polynomial restricted to that line. Each symbol is a polylogarithmic number of bits, which is too big to long-code without blowing the proof up to quasi-polynomial size.
+Sam: The lines table in the low-degree test. You reduce three-coloring to a handful of low-degree tests over a field, and you concatenate all your field-valued oracles with a long code over bits so that constant-degree relations can be read with a single query. That works fine — except the lines table stores tuples of field elements, polylogarithmically many bits each, and long-coding that blows up quasipolynomially.
 
-Maya: So they change how the line polynomial is stored.
+Maya: So the fix is a different encoding for lines.
 
-Sam: They write the exponents in base m-one and map each monomial Y-to-the-k into a product of distinct variables, one from each of c groups. A degree-d univariate becomes a set-multilinear polynomial of total degree only c in about c times d-to-the-one-over-c variables. Constant degree. And a constant-degree object can be tested and self-corrected with a constant number of queries after you concatenate with a low-degree Hadamard code.
+Sam: Yes, the set-multilinear encoding. Take a univariate polynomial of degree d, write each exponent in base m-one, and map that exponent to a product of one variable from each of a constant number of blocks. The result is a multivariate polynomial of constant degree c, and constant degree means it's testable and self-correctable with a constant number of field queries.
 
-Maya: Is anything lost?
+Maya: And soundness survives?
 
-Sam: Yes — passing the constant-degree test only certifies closeness to some degree-at-most-c polynomial, which pulls back to univariate degree order c times d rather than exactly d. Weaker, but still enough for soundness. They also replace sumcheck with a Combinatorial Nullstellensatz vanishing certificate, which turns the vanishing check into one extra low-degree test.
+Sam: With a wrinkle. You only learn that you're close to some degree-c multivariate polynomial, and its pullback has univariate degree order c times d rather than d. Weaker, but still fine for the line-point test analysis, which needs the field size bigger than a constant times d cubed. They also replace sum-check with a single vanishing-certificate polynomial via the Combinatorial Nullstellensatz.
 
-Maya: And "simple" means what, exactly?
+Maya: So this is a teaching artifact as much as a research result.
 
-Sam: They propose an operational measure: the verifier and the honest prover each fit in about a page of pseudocode. Which is a cheeky but not unreasonable metric. The caveats are that the constants aren't optimized, the query complexity is an unspecified and probably large constant, and the low-degree test still needs an auxiliary oracle.
+Sam: I think that's the honest framing. They use the line-point test as a black box, and they concede the proof-oracle mechanism might count as half a composition. But if it makes PCP a one-lecture-sequence proof, that's real value.
 
-Maya: That's the list. What's your through-line for today?
+Maya: Great place to stop. Today's top paper again was rank one, "Non-CSS Quantum Code Embedding," by Andrew Yuan and Nouédyn Baspin — symplectic complexes bringing the whole homological toolkit to non-CSS codes.
 
-Sam: Two, I think. One, the error-correction field is visibly moving from "here's a code" to "here's how the code compiles and moves on real hardware" — ranks one, six, and eight are all that. Two, a bunch of today's results come from importing a tool from a neighboring field: symplectic complexes into surgery, Floquet theory into simulation, Richardson extrapolation into entropy estimation, QSVT into circuit synthesis.
+Sam: And a strong field behind it, from Floquet-based Hamiltonian simulation to a finite classification of order-six Hadamard matrices.
 
-Maya: Good day for borrowed machinery. Our top paper today is rank one, "Non-CSS Quantum Code Embedding," by Andrew Yuan and Nouédyn Baspin — lifting the whole CSS cone toolkit to arbitrary stabilizer codes.
+Maya: Links to every paper are in the show notes. Thanks for listening to The SciRate Daily Digest.
 
-Sam: Links to all ten papers are in the show notes, with the arXiv numbers.
-
-Maya: Thanks for listening to The SciRate Daily Digest. We'll see you tomorrow.
-
-Sam: Take care, everyone.
+Sam: See you tomorrow.
