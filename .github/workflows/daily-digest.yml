@@ -66,30 +66,46 @@ jobs:
 
       - name: Commit digest and update podcast feed
         run: |
+          set -e
           DATE=$(date -u +%F)
+          BRANCH="${GITHUB_REF_NAME}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           mkdir -p "digests/$DATE"
           cp "output/$DATE/digest.md" "output/$DATE/podcast_script.txt" \
              "output/$DATE/papers.json" "digests/$DATE/"
-          # Update the episode manifest and regenerate the RSS feed (docs/).
-          python -m scirate_digest.feed --add "$DATE" \
-            --mp3 "output/$DATE/digest.mp3" --papers "output/$DATE/papers.json"
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add "digests/$DATE" digests/episodes.json docs
-          git diff --cached --quiet || git commit -m "Digest for $DATE"
-          git pull --rebase origin "${GITHUB_REF_NAME}"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          # Push with retries. On each attempt, rebase our staged files onto
+          # the latest branch tip and REGENERATE the derived feed from the
+          # current manifest — so a concurrent push never causes a merge
+          # conflict on generated files (docs/feed.xml, episodes.json).
+          for attempt in 1 2 3 4 5; do
+            git fetch origin "$BRANCH"
+            git reset --mixed "origin/$BRANCH"   # move to tip; keep working tree
+            git add "digests/$DATE"
+            python -m scirate_digest.feed --add "$DATE" \
+              --mp3 "output/$DATE/digest.mp3" --papers "output/$DATE/papers.json"
+            git add digests/episodes.json docs
+            git commit -m "Digest for $DATE" || true
+            if git push origin "HEAD:$BRANCH"; then
+              echo "pushed on attempt $attempt"; exit 0
+            fi
+            echo "push rejected (attempt $attempt); retrying"; sleep 3
+          done
+          echo "::error::could not push digest after retries"; exit 1
 
       - name: Publish podcast episode as a release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           DATE=$(date -u +%F)
+          # Recreate the release so its notes AND audio always reflect this
+          # run (re-running a date fully replaces the prior release).
+          gh release delete "digest-$DATE" --yes --cleanup-tag || true
           gh release create "digest-$DATE" \
             --title "SciRate Digest — $DATE" \
             --notes-file "output/$DATE/digest.md" \
-            "output/$DATE/digest.mp3#Podcast episode ($DATE)" \
-            || gh release upload "digest-$DATE" "output/$DATE/digest.mp3" --clobber
+            --target "${GITHUB_REF_NAME}" \
+            "output/$DATE/digest.mp3#Podcast episode ($DATE)"
 
       - name: Upload artifacts (backup)
         if: always()
