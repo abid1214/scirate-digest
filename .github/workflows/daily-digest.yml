@@ -23,6 +23,7 @@ concurrency:
 jobs:
   digest:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
 
@@ -38,13 +39,18 @@ jobs:
           key: camoufox-${{ runner.os }}
 
       - name: Install
+        timeout-minutes: 15
         run: |
           pip install -e ".[browser]"
           playwright install --with-deps chromium
-          python -m camoufox fetch
           sudo apt-get install -y xvfb
+          # The Camoufox browser download can stall; the scraper skips the
+          # Camoufox strategy at runtime if the browser is missing.
+          timeout 420 python -m camoufox fetch \
+            || echo "::warning::camoufox fetch failed or timed out; runtime will fall back"
 
       - name: Build digest
+        timeout-minutes: 40
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           # Cloudflare passes a headed browser (under xvfb) much more
