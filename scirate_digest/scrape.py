@@ -55,6 +55,7 @@ def fetch_html(range_days: int = 1, category: str | None = None) -> str:
         ("plain HTTP", lambda: _fetch_plain(url, range_days)),
         ("Camoufox", lambda: _fetch_camoufox(full_url)),
         ("Playwright Chromium", lambda: _fetch_playwright(full_url)),
+        ("Jina Reader", lambda: _fetch_jina(full_url)),
     ]
     if range_days <= 1 and category is None:
         # Snapshots only exist for the front page, which is the daily ranking.
@@ -63,9 +64,11 @@ def fetch_html(range_days: int = 1, category: str | None = None) -> str:
     for name, strategy in strategies:
         try:
             html = strategy()
-            if html:
+            if html and parse_top_papers(html, count=1):
                 log.info("Fetched SciRate via %s", name)
                 return html
+            if html:
+                log.warning("SciRate fetch via %s returned a page with no papers", name)
         except Exception as exc:
             log.warning("SciRate fetch via %s failed: %s", name, exc)
     raise RuntimeError("All strategies for fetching the SciRate page failed")
@@ -94,13 +97,21 @@ def _wait_out_challenge(page, timeout_s: int) -> str:
     raise RuntimeError(f"Cloudflare challenge did not clear in {timeout_s}s")
 
 
-def _fetch_camoufox(url: str, timeout_s: int = 90) -> str:
+def _fetch_camoufox(url: str, timeout_s: int = 150) -> str:
     from camoufox.sync_api import Camoufox
 
-    # "virtual" runs a headed browser inside Xvfb, which passes Cloudflare
-    # best; plain headless is the fallback for hosts without a display server.
-    headless = "virtual" if os.environ.get("SCIRATE_DIGEST_HEADED") == "1" else True
-    with Camoufox(headless=headless) as browser:
+    # geoip=True aligns the spoofed timezone/locale with the egress IP —
+    # a mismatch there is an instant Cloudflare flag. Prefer an existing
+    # display (e.g. xvfb-run) over Camoufox's own virtual display: tearing
+    # the latter down clobbers $DISPLAY for later strategies.
+    kwargs: dict = {"geoip": True, "humanize": True}
+    if os.environ.get("DISPLAY"):
+        kwargs["headless"] = False
+    elif os.environ.get("SCIRATE_DIGEST_HEADED") == "1":
+        kwargs["headless"] = "virtual"
+    else:
+        kwargs["headless"] = True
+    with Camoufox(**kwargs) as browser:
         page = browser.new_page()
         page.goto(url, wait_until="domcontentloaded", timeout=timeout_s * 1000)
         return _wait_out_challenge(page, timeout_s)
@@ -135,12 +146,38 @@ def _fetch_playwright(url: str, timeout_s: int = 60) -> str:
             browser.close()
 
 
+def _fetch_jina(full_url: str) -> str:
+    """Fetch through the Jina Reader proxy, which browses from its own
+    infrastructure and returns the page as markdown (the link-regex parser
+    handles that fine)."""
+    resp = requests.get(
+        "https://r.jina.ai/" + full_url,
+        headers={"User-Agent": USER_AGENT},
+        timeout=120,
+    )
+    resp.raise_for_status()
+    if _looks_like_challenge(resp.text):
+        raise RuntimeError("Cloudflare challenge (via reader proxy)")
+    return resp.text
+
+
 def _fetch_wayback(max_age_days: int = 5) -> str:
     """Fetch archive.org's most recent snapshot of the SciRate front page.
 
     The front page is the ranking for the last day, so a fresh snapshot is a
     faithful (if slightly stale) source when Cloudflare blocks live access.
+    A Save Page Now capture is requested first so the snapshot is from today
+    whenever archive.org's crawler can reach SciRate.
     """
+    try:
+        requests.get(
+            "https://web.archive.org/save/https://scirate.com/",
+            headers={"User-Agent": USER_AGENT},
+            timeout=180,
+        )
+    except requests.RequestException as exc:
+        log.info("Save Page Now request failed (%s); trying existing snapshots", exc)
+
     resp = requests.get(
         "https://archive.org/wayback/available",
         params={"url": "scirate.com"},
