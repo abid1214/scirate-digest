@@ -2,8 +2,8 @@
   {
     "date": "2026-08-19",
     "title": "SciRate Digest \u2014 2026-08-19",
-    "summary": "Today's 5 papers: Ultrafast and high resolution spatial light modulation for cold atoms; Nearly Sample-Optimal Estimators for Quantum R\u00e9nyi and Tsallis Entropies; Quantum Geometric Tensor Preconditioning for Stable Training of Recurrent Neural Quantum States; Long-time fermionic quantum transport with controlled full-state error; Dynamics of Majorana tetron qubits under quasiparticle poisoning.",
+    "summary": "Today's 10 papers: Non-CSS Quantum Code Embedding; Quantum simulation of slow analytic time-dependent Hamiltonians; Nearly Sample-Optimal Estimators for Quantum R\u00e9nyi and Tsallis Entropies; Quantum Circuit for General Unitary: Improved T-count via Block Flattening and Dilation; Lie-Algebraic Classical Simulation of Bosonic Systems Beyond Gaussian Dynamics; Hardware-Aware Compilation and Execution of Bivariate Bicycle Codes on Neutral-Atom Systems; A Complete Classification of Complex Hadamard Matrices of Order Six; Computationally Efficient Optimization of Per-Qubit Clifford Deformation for Non-uniform Biased Noise; No extension of the Quantum Tensor Product admits a Superposition principle; A Simple Algebraic Proof of the PCP Theorem.",
     "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-08-19/digest.mp3",
-    "mp3_bytes": 5953248
+    "mp3_bytes": 9199728
   }
 ]
