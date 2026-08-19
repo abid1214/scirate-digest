@@ -49,8 +49,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .
           # ffmpeg is needed to transcode Gemini TTS PCM to MP3 (preinstalled
-          # on ubuntu-latest; installed here if a runner lacks it).
-          command -v ffmpeg >/dev/null 2>&1 || sudo apt-get update && sudo apt-get install -y ffmpeg || true
+          # on ubuntu-latest; installed only if a runner actually lacks it).
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update && sudo apt-get install -y ffmpeg || true
+          fi
 
       - name: Build digest
         timeout-minutes: 40
