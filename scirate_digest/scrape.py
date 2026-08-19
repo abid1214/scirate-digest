@@ -56,7 +56,7 @@ def fetch_html(range_days: int = 1, category: str | None = None) -> str:
     return _fetch_html_browser(f"{url}?range={range_days}")
 
 
-def _fetch_html_browser(url: str, timeout_s: int = 90) -> str:
+def _fetch_html_browser(url: str, timeout_s: int = 120) -> str:
     try:
         from playwright.sync_api import sync_playwright
     except ImportError as exc:
@@ -67,9 +67,20 @@ def _fetch_html_browser(url: str, timeout_s: int = 90) -> str:
         ) from exc
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(args=["--no-sandbox"])
+        browser = p.chromium.launch(
+            args=["--no-sandbox", "--disable-blink-features=AutomationControlled"]
+        )
         try:
-            page = browser.new_context(user_agent=USER_AGENT).new_page()
+            ctx = browser.new_context(
+                user_agent=USER_AGENT,
+                viewport={"width": 1920, "height": 1080},
+                locale="en-US",
+            )
+            # Hide the webdriver flag that Cloudflare uses to detect headless browsers.
+            ctx.add_init_script(
+                "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
+            )
+            page = ctx.new_page()
             page.goto(url, wait_until="domcontentloaded", timeout=timeout_s * 1000)
             # Give the Cloudflare managed challenge time to clear.
             for _ in range(timeout_s // 3):
