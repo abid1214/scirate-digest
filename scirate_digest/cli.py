@@ -35,7 +35,16 @@ def build_parser() -> argparse.ArgumentParser:
         help="skip scraping and digest these arXiv IDs instead",
     )
     p.add_argument("--model", default=summarize.DEFAULT_MODEL, help="Claude model ID")
-    p.add_argument("--voice", default=None, help="edge-tts voice name")
+    p.add_argument(
+        "--voice-engine", choices=["auto", "edge", "gemini"], default="auto",
+        help="TTS backend: 'gemini' = two-host dialogue, 'edge' = single "
+             "narrator, 'auto' = gemini if GEMINI_API_KEY is set else edge",
+    )
+    p.add_argument("--voice", default=None, help="edge-tts voice name (edge engine)")
+    p.add_argument(
+        "--gemini-model", default=None,
+        help="Gemini TTS model ID (default gemini-2.5-flash-preview-tts)",
+    )
     p.add_argument(
         "--max-source-chars", type=int, default=60_000,
         help="per-paper cap on extracted LaTeX characters (default 60000)",
@@ -86,6 +95,8 @@ def run(args: argparse.Namespace) -> Path:
     log.info("Downloading and extracting arXiv source tarballs…")
     arxiv_source.fetch_sources(papers, max_chars=args.max_source_chars)
 
+    engine = _resolve_engine(args)
+
     if not args.skip_summaries:
         client = summarize.make_client()
         for i, paper in enumerate(papers, 1):
@@ -96,8 +107,11 @@ def run(args: argparse.Namespace) -> Path:
                 log.error("%s: summarization failed: %s", paper.uid, exc)
                 paper.summary = f"*Summary unavailable ({exc}).*\n\n{paper.abstract}"
 
-        log.info("Writing podcast script…")
-        script = summarize.write_podcast_script(client, papers, date_str, model=args.model)
+        log.info("Writing podcast script (%s)…", "two-host dialogue" if engine == "gemini" else "narration")
+        if engine == "gemini":
+            script = summarize.write_dialogue_script(client, papers, date_str, model=args.model)
+        else:
+            script = summarize.write_podcast_script(client, papers, date_str, model=args.model)
         (out_dir / "podcast_script.txt").write_text(script)
 
     (out_dir / "papers.json").write_text(
@@ -107,14 +121,28 @@ def run(args: argparse.Namespace) -> Path:
     log.info("Wrote %s", out_dir / "digest.md")
 
     if not args.skip_summaries and not args.skip_audio:
-        from . import tts  # imported lazily so --skip-audio needs no edge-tts
+        script_text = (out_dir / "podcast_script.txt").read_text()
+        log.info("Synthesizing podcast audio via %s…", engine)
+        if engine == "gemini":
+            from . import gemini_tts
 
-        log.info("Synthesizing podcast audio…")
-        voice = args.voice or tts.DEFAULT_VOICE
-        mp3 = tts.synthesize((out_dir / "podcast_script.txt").read_text(), out_dir / "digest.mp3", voice=voice)
+            mp3 = gemini_tts.synthesize_dialogue(
+                script_text, out_dir / "digest.mp3",
+                model=args.gemini_model or gemini_tts.DEFAULT_MODEL,
+            )
+        else:
+            from . import tts  # imported lazily so --skip-audio needs no edge-tts
+
+            mp3 = tts.synthesize(script_text, out_dir / "digest.mp3", voice=args.voice or tts.DEFAULT_VOICE)
         log.info("Wrote %s (%.1f MB)", mp3, mp3.stat().st_size / 1e6)
 
     return out_dir
+
+
+def _resolve_engine(args: argparse.Namespace) -> str:
+    if args.voice_engine != "auto":
+        return args.voice_engine
+    return "gemini" if os.environ.get("GEMINI_API_KEY") else "edge"
 
 
 def write_digest_markdown(papers: list[Paper], date_str: str, path: Path) -> None:

@@ -50,6 +50,35 @@ listeners that links are in the show notes.
 - Target roughly 15 minutes of speech overall."""
 
 
+DIALOGUE_SYSTEM = """\
+You are scripting a two-host podcast, "The SciRate Daily Digest", covering the \
+most-scited new arXiv papers on SciRate. The hosts are Maya (a sharp, curious \
+generalist who asks the questions a smart listener would) and Sam (a domain \
+expert who explains clearly and precisely). You are given today's papers with \
+executive summaries.
+
+Write the FULL episode as a natural spoken dialogue between Maya and Sam.
+
+Strict formatting:
+- Every line begins with either "Maya:" or "Sam:" followed by that host's \
+spoken words. Alternate naturally; never merge both hosts on one line.
+- Plain spoken text ONLY — no markdown, asterisks, headers, bullet points, \
+stage directions, or sound-effect cues.
+- Spell out symbols and math in words (say "order n squared", not "O(n^2)").
+
+Content:
+- Open with a short back-and-forth welcome that names the episode date and \
+previews the day's themes.
+- Cover each paper in ranked order: name its rank and title, then have Maya \
+and Sam genuinely discuss what it shows, how it works, and why it matters — \
+real questions and clear explanations, roughly 180 to 260 spoken words per \
+paper.
+- Use natural spoken transitions between papers.
+- Close by naming the top paper once more and signing off, reminding \
+listeners that links are in the show notes.
+Target roughly 15 minutes of speech overall."""
+
+
 def make_client() -> anthropic.Anthropic:
     # Credentials resolve from the environment (ANTHROPIC_API_KEY etc.).
     return anthropic.Anthropic(max_retries=4)
@@ -127,5 +156,35 @@ def write_podcast_script(
         model,
         max_tokens=16000,
         system=SCRIPT_SYSTEM,
+        messages=[{"role": "user", "content": user}],
+    )
+
+
+def _episode_blocks(papers: list[Paper]) -> str:
+    blocks = []
+    for rank, p in enumerate(papers, 1):
+        blocks.append(
+            f"## Rank {rank} ({p.scites if p.scites is not None else 'n/a'} scites)\n"
+            f"Title: {p.title}\n"
+            f"Authors: {', '.join(p.authors)}\n"
+            f"arXiv: {p.uid}\n\n"
+            f"Executive summary:\n{p.summary or p.abstract}"
+        )
+    return "\n\n---\n\n".join(blocks)
+
+
+def write_dialogue_script(
+    client: anthropic.Anthropic,
+    papers: list[Paper],
+    date_str: str,
+    model: str = DEFAULT_MODEL,
+) -> str:
+    """Write a two-host (Maya/Sam) spoken dialogue script for the episode."""
+    user = f"Episode date: {date_str}\n\n" + _episode_blocks(papers)
+    return _create(
+        client,
+        model,
+        max_tokens=16000,
+        system=DIALOGUE_SYSTEM,
         messages=[{"role": "user", "content": user}],
     )

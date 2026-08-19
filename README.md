@@ -54,9 +54,27 @@ server or self-hosted runner to maintain.
    runs daily at 13:30 UTC, and can also be triggered manually from the
    Actions tab (custom paper count, ranking window, or explicit arXiv IDs).
 
-Text-to-speech uses [`edge-tts`](https://github.com/rany2/edge-tts), which is
-free and needs no key. So the only required credentials are your Claude API
-key and one scraping-API key.
+### Voice: two-host Gemini TTS (optional) or free edge-tts
+
+By default (no extra key) episodes are a single narrator via
+[`edge-tts`](https://github.com/rany2/edge-tts) — free, no credential.
+
+For a polished **two-host conversation** (Maya & Sam discussing the papers),
+add a **`GEMINI_API_KEY`** secret from
+[Google AI Studio](https://aistudio.google.com/apikey). When present, Claude
+writes a two-voice dialogue script and Google's Gemini multi-speaker TTS
+performs it; the runner transcodes the audio to MP3 with ffmpeg. Claude still
+does all the paper-reading and analysis — Gemini only supplies the voices.
+
+Optional repository *variables* (Settings → Secrets and variables → Actions →
+Variables) tune it: `GEMINI_TTS_MODEL` (default
+`gemini-2.5-flash-preview-tts`) and `GEMINI_VOICES` (default
+`Maya=Kore,Sam=Puck` — any two [Gemini prebuilt voices](https://ai.google.dev/gemini-api/docs/speech-generation)).
+
+Locally, `--voice-engine gemini|edge|auto` overrides the choice.
+
+So the only required credentials are your Claude API key and one scraping-API
+key; the Gemini key is optional and only upgrades the voice.
 
 > **No scraping key?** The scrape falls back through Camoufox, Playwright, the
 > Jina Reader proxy, and a recent Wayback snapshot — but from a datacenter IP
