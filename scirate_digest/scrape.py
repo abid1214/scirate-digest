@@ -5,14 +5,22 @@ only need the *ranked list of arXiv IDs* from the page — titles, authors and
 abstracts are re-fetched from the arXiv API afterwards, which keeps this
 parser tolerant of SciRate markup changes.
 
-SciRate sits behind Cloudflare, which sometimes challenges plain HTTP
-clients. When that happens we fall back to driving a headless Chromium via
-Playwright (installed with the ``browser`` extra) and waiting for the
-challenge to clear.
+SciRate sits behind Cloudflare, which challenges plain HTTP clients and —
+on datacenter IPs like GitHub Actions runners — even ordinary headless
+browsers. Fetching therefore walks a chain of strategies until one yields a
+real page:
+
+1. plain HTTP (fast; works from residential networks),
+2. Camoufox, a fingerprint-spoofing Firefox build that passes Cloudflare
+   far more reliably than stock automation browsers,
+3. Playwright Chromium with mild stealth tweaks,
+4. the Wayback Machine's most recent snapshot of the SciRate front page
+   (archive.org's crawler is allowed through; only used when fresh).
 """
 
 from __future__ import annotations
 
+import datetime as dt
 import logging
 import os
 import re
@@ -40,32 +48,66 @@ def _looks_like_challenge(html: str) -> bool:
 
 
 def fetch_html(range_days: int = 1, category: str | None = None) -> str:
-    """Fetch the SciRate top-papers page, falling back to a headless browser."""
+    """Fetch the SciRate top-papers page, walking the strategy chain."""
     url = SCIRATE_URL + (f"arxiv/{category}" if category else "")
-    try:
-        resp = requests.get(
-            url,
-            params={"range": range_days},
-            headers={"User-Agent": USER_AGENT, "Accept": "text/html"},
-            timeout=60,
-        )
-        if resp.ok and not _looks_like_challenge(resp.text):
-            return resp.text
-        log.info("SciRate returned a Cloudflare challenge; retrying with a browser")
-    except requests.RequestException as exc:
-        log.info("Plain HTTP fetch of SciRate failed (%s); retrying with a browser", exc)
-    return _fetch_html_browser(f"{url}?range={range_days}")
+    full_url = f"{url}?range={range_days}"
+    strategies = [
+        ("plain HTTP", lambda: _fetch_plain(url, range_days)),
+        ("Camoufox", lambda: _fetch_camoufox(full_url)),
+        ("Playwright Chromium", lambda: _fetch_playwright(full_url)),
+    ]
+    if range_days <= 1 and category is None:
+        # Snapshots only exist for the front page, which is the daily ranking.
+        strategies.append(("Wayback Machine", _fetch_wayback))
+
+    for name, strategy in strategies:
+        try:
+            html = strategy()
+            if html:
+                log.info("Fetched SciRate via %s", name)
+                return html
+        except Exception as exc:
+            log.warning("SciRate fetch via %s failed: %s", name, exc)
+    raise RuntimeError("All strategies for fetching the SciRate page failed")
 
 
-def _fetch_html_browser(url: str, timeout_s: int = 120) -> str:
-    try:
-        from playwright.sync_api import sync_playwright
-    except ImportError as exc:
-        raise RuntimeError(
-            "SciRate is challenging plain HTTP requests and Playwright is not "
-            "installed. Install it with: pip install 'scirate-digest[browser]' "
-            "&& playwright install chromium"
-        ) from exc
+def _fetch_plain(url: str, range_days: int) -> str:
+    resp = requests.get(
+        url,
+        params={"range": range_days},
+        headers={"User-Agent": USER_AGENT, "Accept": "text/html"},
+        timeout=60,
+    )
+    resp.raise_for_status()
+    if _looks_like_challenge(resp.text):
+        raise RuntimeError("Cloudflare challenge")
+    return resp.text
+
+
+def _wait_out_challenge(page, timeout_s: int) -> str:
+    """Poll an open browser page until the Cloudflare challenge clears."""
+    for _ in range(max(timeout_s // 3, 1)):
+        html = page.content()
+        if not _looks_like_challenge(html):
+            return html
+        page.wait_for_timeout(3000)
+    raise RuntimeError(f"Cloudflare challenge did not clear in {timeout_s}s")
+
+
+def _fetch_camoufox(url: str, timeout_s: int = 90) -> str:
+    from camoufox.sync_api import Camoufox
+
+    # "virtual" runs a headed browser inside Xvfb, which passes Cloudflare
+    # best; plain headless is the fallback for hosts without a display server.
+    headless = "virtual" if os.environ.get("SCIRATE_DIGEST_HEADED") == "1" else True
+    with Camoufox(headless=headless) as browser:
+        page = browser.new_page()
+        page.goto(url, wait_until="domcontentloaded", timeout=timeout_s * 1000)
+        return _wait_out_challenge(page, timeout_s)
+
+
+def _fetch_playwright(url: str, timeout_s: int = 60) -> str:
+    from playwright.sync_api import sync_playwright
 
     # Cloudflare fingerprints headless Chromium aggressively; a headed browser
     # under a virtual display (xvfb) clears managed challenges far more
@@ -88,15 +130,39 @@ def _fetch_html_browser(url: str, timeout_s: int = 120) -> str:
             )
             page = ctx.new_page()
             page.goto(url, wait_until="domcontentloaded", timeout=timeout_s * 1000)
-            # Give the Cloudflare managed challenge time to clear.
-            for _ in range(timeout_s // 3):
-                html = page.content()
-                if not _looks_like_challenge(html):
-                    return html
-                page.wait_for_timeout(3000)
-            raise RuntimeError("Cloudflare challenge on SciRate did not clear in time")
+            return _wait_out_challenge(page, timeout_s)
         finally:
             browser.close()
+
+
+def _fetch_wayback(max_age_days: int = 5) -> str:
+    """Fetch archive.org's most recent snapshot of the SciRate front page.
+
+    The front page is the ranking for the last day, so a fresh snapshot is a
+    faithful (if slightly stale) source when Cloudflare blocks live access.
+    """
+    resp = requests.get(
+        "https://archive.org/wayback/available",
+        params={"url": "scirate.com"},
+        headers={"User-Agent": USER_AGENT},
+        timeout=60,
+    )
+    resp.raise_for_status()
+    snap = resp.json().get("archived_snapshots", {}).get("closest")
+    if not snap or not snap.get("available"):
+        raise RuntimeError("no Wayback snapshot available")
+    taken = dt.datetime.strptime(snap["timestamp"], "%Y%m%d%H%M%S")
+    age = dt.datetime.utcnow() - taken
+    if age > dt.timedelta(days=max_age_days):
+        raise RuntimeError(f"latest Wayback snapshot is {age.days} days old")
+    log.info("Using Wayback snapshot from %s", taken.isoformat())
+    snap_resp = requests.get(
+        snap["url"].replace("http://", "https://", 1),
+        headers={"User-Agent": USER_AGENT},
+        timeout=120,
+    )
+    snap_resp.raise_for_status()
+    return snap_resp.text
 
 
 def parse_top_papers(html: str, count: int = 10) -> list[Paper]:
