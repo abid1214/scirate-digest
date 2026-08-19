@@ -51,3 +51,28 @@ def test_load_voices_default_and_override(monkeypatch):
     assert load_voices() == {"Maya": "Kore", "Sam": "Puck"}
     monkeypatch.setenv("GEMINI_VOICES", "Maya=Aoede, Sam=Charon")
     assert load_voices() == {"Maya": "Aoede", "Sam": "Charon"}
+
+
+def test_build_request_body_multispeaker():
+    from scirate_digest.gemini_tts import build_request_body
+    body = build_request_body("Maya: hi\nSam: hello", {"Maya": "Kore", "Sam": "Puck"},
+                              "gemini-3.1-flash-tts-preview")
+    assert body["model"] == "gemini-3.1-flash-tts-preview"
+    assert "Maya and Sam" in body["input"]
+    assert "Maya: hi" in body["input"]
+    assert body["response_format"] == {"type": "audio"}
+    assert body["generation_config"]["speech_config"] == [
+        {"speaker": "Maya", "voice": "Kore"},
+        {"speaker": "Sam", "voice": "Puck"},
+    ]
+
+
+def test_find_audio_extracts_pcm():
+    import base64
+    from scirate_digest.gemini_tts import _find_audio
+    payload = base64.b64encode(b"\x00\x01" * 500).decode()
+    resp = {"interaction": {"output_audio": {"data": payload,
+            "mimeType": "audio/L16;rate=24000"}}}
+    raw, rate = _find_audio(resp)
+    assert rate == 24000
+    assert len(raw) == 1000

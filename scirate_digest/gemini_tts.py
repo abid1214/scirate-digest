@@ -24,8 +24,11 @@ import requests
 
 log = logging.getLogger(__name__)
 
-API_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
-DEFAULT_MODEL = os.environ.get("GEMINI_TTS_MODEL", "gemini-2.5-flash-preview-tts")
+# Google's TTS lives on the Interactions API (the generateContent path 404s
+# for TTS models). Model/revision are overridable via env for future updates.
+API_URL = "https://generativelanguage.googleapis.com/v1beta/interactions"
+DEFAULT_MODEL = os.environ.get("GEMINI_TTS_MODEL", "gemini-3.1-flash-tts-preview")
+API_REVISION = os.environ.get("GEMINI_API_REVISION", "2026-05-20")
 
 # Host name (as it appears in the script) -> Gemini prebuilt voice name.
 # Override with GEMINI_VOICES="Maya=Kore,Sam=Puck".
@@ -85,37 +88,69 @@ def render_chunk(chunk: list[tuple[str, str]]) -> str:
     return "\n".join(f"{s}: {t}" for s, t in chunk)
 
 
-def _synthesize_chunk(text: str, voices: dict[str, str], api_key: str, model: str) -> tuple[bytes, int]:
-    body = {
-        "contents": [{"parts": [{"text": text}]}],
-        "generationConfig": {
-            "responseModalities": ["AUDIO"],
-            "speechConfig": {
-                "multiSpeakerVoiceConfig": {
-                    "speakerVoiceConfigs": [
-                        {"speaker": s, "voiceConfig": {"prebuiltVoiceConfig": {"voiceName": v}}}
-                        for s, v in voices.items()
-                    ]
-                }
-            },
+def build_request_body(text: str, voices: dict[str, str], model: str) -> dict:
+    """Interactions-API multi-speaker TTS request body. The input wraps the
+    transcript as a conversation and names the speakers, matching speech_config."""
+    who = " and ".join(voices.keys())
+    return {
+        "model": model,
+        "input": f"TTS the following conversation between {who}:\n{text}",
+        "response_format": {"type": "audio"},
+        "generation_config": {
+            "speech_config": [{"speaker": s, "voice": v} for s, v in voices.items()]
         },
     }
+
+
+def _find_audio(node) -> tuple[bytes, int] | None:
+    """Walk the response JSON for the first base64 audio payload (a dict with a
+    'data' string and an audio-ish mime), tolerant of schema variations."""
+    if isinstance(node, dict):
+        data = node.get("data")
+        mime = node.get("mimeType") or node.get("mime_type") or node.get("mime") or ""
+        if isinstance(data, str) and len(data) > 500 and (
+            "audio" in mime.lower() or "output_audio" in str(node.keys()).lower() or not mime
+        ):
+            try:
+                raw = base64.b64decode(data)
+            except Exception:
+                raw = None
+            if raw and len(raw) > 200:
+                rate = DEFAULT_RATE
+                m = re.search(r"rate=(\d+)", mime) or re.search(r"(\d{4,6})", str(
+                    node.get("sampleRateHertz") or node.get("sample_rate") or ""))
+                if m:
+                    rate = int(m.group(1))
+                return raw, rate
+        for v in node.values():
+            found = _find_audio(v)
+            if found:
+                return found
+    elif isinstance(node, list):
+        for v in node:
+            found = _find_audio(v)
+            if found:
+                return found
+    return None
+
+
+def _synthesize_chunk(text: str, voices: dict[str, str], api_key: str, model: str) -> tuple[bytes, int]:
     resp = requests.post(
-        API_URL.format(model=model), params={"key": api_key}, json=body, timeout=240
+        API_URL,
+        headers={
+            "x-goog-api-key": api_key,
+            "Content-Type": "application/json",
+            "Api-Revision": API_REVISION,
+        },
+        json=build_request_body(text, voices, model),
+        timeout=240,
     )
     if resp.status_code >= 400:
         raise RuntimeError(f"Gemini TTS HTTP {resp.status_code}: {resp.text[:300]}")
     data = resp.json()
-    parts = data.get("candidates", [{}])[0].get("content", {}).get("parts", [])
-    for p in parts:
-        inline = p.get("inlineData") or p.get("inline_data")
-        if inline and inline.get("data"):
-            rate = DEFAULT_RATE
-            mime = inline.get("mimeType") or inline.get("mime_type") or ""
-            m = re.search(r"rate=(\d+)", mime)
-            if m:
-                rate = int(m.group(1))
-            return base64.b64decode(inline["data"]), rate
+    found = _find_audio(data)
+    if found:
+        return found
     raise RuntimeError(f"Gemini TTS returned no audio: {str(data)[:300]}")
 
 

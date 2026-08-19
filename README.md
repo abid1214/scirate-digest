@@ -68,7 +68,8 @@ does all the paper-reading and analysis — Gemini only supplies the voices.
 
 Optional repository *variables* (Settings → Secrets and variables → Actions →
 Variables) tune it: `GEMINI_TTS_MODEL` (default
-`gemini-2.5-flash-preview-tts`) and `GEMINI_VOICES` (default
+`gemini-3.1-flash-tts-preview`, via Google's Interactions API) and
+`GEMINI_VOICES` (default
 `Maya=Kore,Sam=Puck` — any two [Gemini prebuilt voices](https://ai.google.dev/gemini-api/docs/speech-generation)).
 
 Locally, `--voice-engine gemini|edge|auto` overrides the choice.
