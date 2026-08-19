@@ -82,15 +82,18 @@ jobs:
               --range "${{ github.event.inputs.range || '1' }}" $EXTRA
           fi
 
-      - name: Commit digest to repository
+      - name: Commit digest and update podcast feed
         run: |
           DATE=$(date -u +%F)
           mkdir -p "digests/$DATE"
           cp "output/$DATE/digest.md" "output/$DATE/podcast_script.txt" \
              "output/$DATE/papers.json" "digests/$DATE/"
+          # Update the episode manifest and regenerate the RSS feed (docs/).
+          python -m scirate_digest.feed --add "$DATE" \
+            --mp3 "output/$DATE/digest.mp3" --papers "output/$DATE/papers.json"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add "digests/$DATE"
+          git add "digests/$DATE" digests/episodes.json docs
           git diff --cached --quiet || git commit -m "Digest for $DATE"
           git pull --rebase origin "${GITHUB_REF_NAME}"
           git push origin "HEAD:${GITHUB_REF_NAME}"

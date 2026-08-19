@@ -86,6 +86,26 @@ Notes:
   (`sudo apt-get install -y xvfb`) or ignore it and rely on the headless
   fallback.
 
+## Listen on your phone (podcast feed)
+
+Each run updates a podcast **RSS feed** under `docs/`, served free by GitHub
+Pages. Subscribe once and every new episode auto-downloads to your podcast app.
+
+**Enable it once:** repo **Settings → Pages → Build and deployment → Deploy
+from a branch**, choose branch **`main`** and folder **`/docs`**, Save. After
+the first deploy your feed lives at:
+
+```
+https://abid1214.github.io/scirate-digest/feed.xml
+```
+
+Add that URL in Apple Podcasts, Overcast, Pocket Casts, or Spotify ("Add a
+show by URL"). The landing page at
+`https://abid1214.github.io/scirate-digest/` lists every episode.
+
+Optional: drop a square **`docs/cover.jpg`** (1400×1400+; required only if you
+ever submit to the Apple Podcasts directory) and it's picked up automatically.
+
 ## Running locally
 
 ```bash
