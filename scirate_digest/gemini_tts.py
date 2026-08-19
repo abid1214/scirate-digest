@@ -27,8 +27,10 @@ log = logging.getLogger(__name__)
 # Google's TTS lives on the Interactions API (the generateContent path 404s
 # for TTS models). Model/revision are overridable via env for future updates.
 API_URL = "https://generativelanguage.googleapis.com/v1beta/interactions"
-DEFAULT_MODEL = os.environ.get("GEMINI_TTS_MODEL", "gemini-3.1-flash-tts-preview")
-API_REVISION = os.environ.get("GEMINI_API_REVISION", "2026-05-20")
+# Use `or` (not a default arg): CI passes these as empty strings when the
+# optional repo variables are unset, and get(key, default) returns "" then.
+DEFAULT_MODEL = os.environ.get("GEMINI_TTS_MODEL") or "gemini-3.1-flash-tts-preview"
+API_REVISION = os.environ.get("GEMINI_API_REVISION") or "2026-05-20"
 
 # Host name (as it appears in the script) -> Gemini prebuilt voice name.
 # Override with GEMINI_VOICES="Maya=Kore,Sam=Puck".
