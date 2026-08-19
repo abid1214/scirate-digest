@@ -25,6 +25,7 @@ import logging
 import os
 import re
 import sys
+from urllib.parse import parse_qsl
 
 import requests
 from bs4 import BeautifulSoup
@@ -52,8 +53,13 @@ def fetch_html(range_days: int = 1, category: str | None = None) -> str:
     """Fetch the SciRate top-papers page, walking the strategy chain."""
     url = SCIRATE_URL + (f"arxiv/{category}" if category else "")
     full_url = f"{url}?range={range_days}"
-    strategies = [
-        ("plain HTTP", lambda: _fetch_plain(url, range_days)),
+    strategies = [("plain HTTP", lambda: _fetch_plain(url, range_days))]
+    # A scraping-API service fetches from its own residential proxies and
+    # clears Cloudflare — the primary strategy on a datacenter (CI) IP, where
+    # the local browsers below cannot pass. Only used if a key is configured.
+    if _scraper_api_config()[1]:
+        strategies.append(("scraping API", lambda: _fetch_scraper_api(full_url)))
+    strategies += [
         ("Camoufox", lambda: _fetch_camoufox(full_url)),
         ("Playwright Chromium", lambda: _fetch_playwright(full_url)),
         ("Jina Reader", lambda: _fetch_jina(full_url)),
@@ -85,6 +91,47 @@ def _fetch_plain(url: str, range_days: int) -> str:
     resp.raise_for_status()
     if _looks_like_challenge(resp.text):
         raise RuntimeError("Cloudflare challenge")
+    return resp.text
+
+
+def _scraper_api_config() -> tuple[str | None, str | None]:
+    """Return (provider, api_key) from the environment, or (None, None)."""
+    if os.environ.get("SCRAPERAPI_KEY"):
+        return "scraperapi", os.environ["SCRAPERAPI_KEY"]
+    if os.environ.get("SCRAPINGBEE_KEY"):
+        return "scrapingbee", os.environ["SCRAPINGBEE_KEY"]
+    return None, None
+
+
+def _scraper_api_request(full_url: str) -> tuple[str, dict]:
+    """Build the (endpoint, params) for the configured scraping-API provider.
+
+    Both providers take the target URL plus a JS-rendering flag (needed to
+    clear Cloudflare). Extra provider params can be supplied as a query-string
+    in SCRAPERAPI_EXTRA / SCRAPINGBEE_EXTRA, e.g. "ultra_premium=true".
+    """
+    provider, key = _scraper_api_config()
+    if not key:
+        raise RuntimeError("no scraper API key configured")
+    if provider == "scraperapi":
+        endpoint = "https://api.scraperapi.com/"
+        params = {"api_key": key, "url": full_url, "render": "true"}
+        extra = os.environ.get("SCRAPERAPI_EXTRA", "")
+    else:
+        endpoint = "https://app.scrapingbee.com/api/v1/"
+        params = {"api_key": key, "url": full_url, "render_js": "true",
+                  "stealth_proxy": "true"}
+        extra = os.environ.get("SCRAPINGBEE_EXTRA", "")
+    params.update(dict(parse_qsl(extra)))
+    return endpoint, params
+
+
+def _fetch_scraper_api(full_url: str, timeout_s: int = 150) -> str:
+    endpoint, params = _scraper_api_request(full_url)
+    resp = requests.get(endpoint, params=params, timeout=timeout_s)
+    resp.raise_for_status()
+    if _looks_like_challenge(resp.text):
+        raise RuntimeError("Cloudflare challenge (via scraping API)")
     return resp.text
 
 

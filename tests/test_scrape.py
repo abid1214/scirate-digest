@@ -33,3 +33,35 @@ def test_link_fallback_when_no_data_uid():
 
 def test_empty_page_gives_no_papers():
     assert parse_top_papers("<html><body>nothing</body></html>") == []
+
+
+def test_scraper_api_request_scraperapi(monkeypatch):
+    from scirate_digest.scrape import _scraper_api_request, _scraper_api_config
+    monkeypatch.delenv("SCRAPINGBEE_KEY", raising=False)
+    monkeypatch.setenv("SCRAPERAPI_KEY", "secret123")
+    monkeypatch.setenv("SCRAPERAPI_EXTRA", "ultra_premium=true&country_code=us")
+    assert _scraper_api_config() == ("scraperapi", "secret123")
+    endpoint, params = _scraper_api_request("https://scirate.com/?range=1")
+    assert endpoint == "https://api.scraperapi.com/"
+    assert params["api_key"] == "secret123"
+    assert params["url"] == "https://scirate.com/?range=1"
+    assert params["render"] == "true"
+    assert params["ultra_premium"] == "true"
+    assert params["country_code"] == "us"
+
+
+def test_scraper_api_request_scrapingbee(monkeypatch):
+    from scirate_digest.scrape import _scraper_api_request
+    monkeypatch.delenv("SCRAPERAPI_KEY", raising=False)
+    monkeypatch.setenv("SCRAPINGBEE_KEY", "bee456")
+    endpoint, params = _scraper_api_request("https://scirate.com/?range=1")
+    assert endpoint == "https://app.scrapingbee.com/api/v1/"
+    assert params["render_js"] == "true"
+    assert params["stealth_proxy"] == "true"
+
+
+def test_no_scraper_api_config(monkeypatch):
+    from scirate_digest.scrape import _scraper_api_config
+    monkeypatch.delenv("SCRAPERAPI_KEY", raising=False)
+    monkeypatch.delenv("SCRAPINGBEE_KEY", raising=False)
+    assert _scraper_api_config() == (None, None)
