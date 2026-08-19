@@ -122,18 +122,26 @@ def run(args: argparse.Namespace) -> Path:
 
     if not args.skip_summaries and not args.skip_audio:
         script_text = (out_dir / "podcast_script.txt").read_text()
+        mp3_path = out_dir / "digest.mp3"
         log.info("Synthesizing podcast audio via %s…", engine)
+        mp3 = None
         if engine == "gemini":
             from . import gemini_tts
 
-            mp3 = gemini_tts.synthesize_dialogue(
-                script_text, out_dir / "digest.mp3",
-                model=args.gemini_model or gemini_tts.DEFAULT_MODEL,
-            )
-        else:
+            try:
+                mp3 = gemini_tts.synthesize_dialogue(
+                    script_text, mp3_path,
+                    model=args.gemini_model or gemini_tts.DEFAULT_MODEL,
+                )
+            except Exception as exc:
+                # Never lose the episode to a Gemini hiccup — read the dialogue
+                # as a single edge-tts narrator instead.
+                log.error("Gemini TTS failed (%s); falling back to edge-tts", exc)
+                script_text = _dialogue_to_narration(script_text)
+        if mp3 is None:
             from . import tts  # imported lazily so --skip-audio needs no edge-tts
 
-            mp3 = tts.synthesize(script_text, out_dir / "digest.mp3", voice=args.voice or tts.DEFAULT_VOICE)
+            mp3 = tts.synthesize(script_text, mp3_path, voice=args.voice or tts.DEFAULT_VOICE)
         log.info("Wrote %s (%.1f MB)", mp3, mp3.stat().st_size / 1e6)
 
     return out_dir
@@ -143,6 +151,16 @@ def _resolve_engine(args: argparse.Namespace) -> str:
     if args.voice_engine != "auto":
         return args.voice_engine
     return "gemini" if os.environ.get("GEMINI_API_KEY") else "edge"
+
+
+def _dialogue_to_narration(script: str) -> str:
+    """Strip 'Maya:'/'Sam:' speaker labels so a single narrator can read it."""
+    import re
+
+    out = []
+    for line in script.splitlines():
+        out.append(re.sub(r"^\s*[A-Za-z][\w .'-]*?:\s*", "", line))
+    return "\n".join(out)
 
 
 def write_digest_markdown(papers: list[Paper], date_str: str, path: Path) -> None:
