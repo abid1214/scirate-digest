@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scirate-digest"
+version = "0.1.0"
+description = "Daily audio-podcast digest of the top papers on SciRate"
+requires-python = ">=3.10"
+dependencies = [
+    "requests>=2.31",
+    "beautifulsoup4>=4.12",
+    "anthropic>=0.79",
+    "edge-tts>=7.0",
+]
+
+[project.optional-dependencies]
+browser = ["playwright>=1.45"]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+scirate-digest = "scirate_digest.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["scirate_digest*"]

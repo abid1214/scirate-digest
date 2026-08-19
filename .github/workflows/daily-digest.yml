@@ -1,0 +1,77 @@
+name: Daily SciRate Digest
+
+on:
+  schedule:
+    # 13:30 UTC daily — after SciRate's morning listing settles.
+    - cron: "30 13 * * *"
+  workflow_dispatch:
+    inputs:
+      top:
+        description: "Number of papers"
+        default: "10"
+      range:
+        description: "SciRate ranking window (days)"
+        default: "1"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-digest
+  cancel-in-progress: false
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: |
+          pip install -e ".[browser]"
+          playwright install --with-deps chromium
+
+      - name: Build digest
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          scirate-digest \
+            --top "${{ github.event.inputs.top || '10' }}" \
+            --range "${{ github.event.inputs.range || '1' }}"
+
+      - name: Commit digest to repository
+        run: |
+          DATE=$(date -u +%F)
+          mkdir -p "digests/$DATE"
+          cp "output/$DATE/digest.md" "output/$DATE/podcast_script.txt" \
+             "output/$DATE/papers.json" "digests/$DATE/"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "digests/$DATE"
+          git diff --cached --quiet || git commit -m "Digest for $DATE"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+      - name: Publish podcast episode as a release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          DATE=$(date -u +%F)
+          gh release create "digest-$DATE" \
+            --title "SciRate Digest — $DATE" \
+            --notes-file "output/$DATE/digest.md" \
+            "output/$DATE/digest.mp3#Podcast episode ($DATE)" \
+            || gh release upload "digest-$DATE" "output/$DATE/digest.mp3" --clobber
+
+      - name: Upload artifacts (backup)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: digest
+          path: output/
+          if-no-files-found: ignore

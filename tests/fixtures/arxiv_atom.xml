@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title type="html">ArXiv Query</title>
+  <entry>
+    <id>http://arxiv.org/abs/2508.11111v2</id>
+    <title>Quantum Advantage in
+  Widget Sorting</title>
+    <summary>We sort widgets with quantum
+  speedup and prove a lower bound.</summary>
+    <author><name>Alice Ansatz</name></author>
+    <author><name>Bob Bloch</name></author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/quant-ph/0301040v1</id>
+    <title>A Classic Old-Style Paper</title>
+    <summary>Old but gold.</summary>
+    <author><name>Carol Clifford</name></author>
+  </entry>
+</feed>
