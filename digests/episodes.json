@@ -4,6 +4,88 @@
     "title": "SciRate Digest \u2014 2026-08-19",
     "summary": "Today's 10 papers: Non-CSS Quantum Code Embedding; Quantum simulation of slow analytic time-dependent Hamiltonians; Nearly Sample-Optimal Estimators for Quantum R\u00e9nyi and Tsallis Entropies; Quantum Circuit for General Unitary: Improved T-count via Block Flattening and Dilation; Lie-Algebraic Classical Simulation of Bosonic Systems Beyond Gaussian Dynamics; Hardware-Aware Compilation and Execution of Bivariate Bicycle Codes on Neutral-Atom Systems; A Complete Classification of Complex Hadamard Matrices of Order Six; Computationally Efficient Optimization of Per-Qubit Clifford Deformation for Non-uniform Biased Noise; No extension of the Quantum Tensor Product admits a Superposition principle; A Simple Algebraic Proof of the PCP Theorem.",
     "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-08-19/digest.mp3",
-    "mp3_bytes": 10354608
+    "mp3_bytes": 10354608,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2608.16995",
+        "title": "Non-CSS Quantum Code Embedding",
+        "abs_url": "https://arxiv.org/abs/2608.16995",
+        "scirate_url": "https://scirate.com/arxiv/2608.16995",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2608.17653",
+        "title": "Quantum simulation of slow analytic time-dependent Hamiltonians",
+        "abs_url": "https://arxiv.org/abs/2608.17653",
+        "scirate_url": "https://scirate.com/arxiv/2608.17653",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2608.18070",
+        "title": "Nearly Sample-Optimal Estimators for Quantum R\u00e9nyi and Tsallis Entropies",
+        "abs_url": "https://arxiv.org/abs/2608.18070",
+        "scirate_url": "https://scirate.com/arxiv/2608.18070",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2608.17846",
+        "title": "Quantum Circuit for General Unitary: Improved T-count via Block Flattening and Dilation",
+        "abs_url": "https://arxiv.org/abs/2608.17846",
+        "scirate_url": "https://scirate.com/arxiv/2608.17846",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2608.17094",
+        "title": "Lie-Algebraic Classical Simulation of Bosonic Systems Beyond Gaussian Dynamics",
+        "abs_url": "https://arxiv.org/abs/2608.17094",
+        "scirate_url": "https://scirate.com/arxiv/2608.17094",
+        "scites": null
+      },
+      {
+        "rank": 6,
+        "uid": "2608.17023",
+        "title": "Hardware-Aware Compilation and Execution of Bivariate Bicycle Codes on Neutral-Atom Systems",
+        "abs_url": "https://arxiv.org/abs/2608.17023",
+        "scirate_url": "https://scirate.com/arxiv/2608.17023",
+        "scites": null
+      },
+      {
+        "rank": 7,
+        "uid": "2608.18053",
+        "title": "A Complete Classification of Complex Hadamard Matrices of Order Six",
+        "abs_url": "https://arxiv.org/abs/2608.18053",
+        "scirate_url": "https://scirate.com/arxiv/2608.18053",
+        "scites": null
+      },
+      {
+        "rank": 8,
+        "uid": "2608.17870",
+        "title": "Computationally Efficient Optimization of Per-Qubit Clifford Deformation for Non-uniform Biased Noise",
+        "abs_url": "https://arxiv.org/abs/2608.17870",
+        "scirate_url": "https://scirate.com/arxiv/2608.17870",
+        "scites": null
+      },
+      {
+        "rank": 9,
+        "uid": "2608.17572",
+        "title": "No extension of the Quantum Tensor Product admits a Superposition principle",
+        "abs_url": "https://arxiv.org/abs/2608.17572",
+        "scirate_url": "https://scirate.com/arxiv/2608.17572",
+        "scites": null
+      },
+      {
+        "rank": 10,
+        "uid": "2608.17429",
+        "title": "A Simple Algebraic Proof of the PCP Theorem",
+        "abs_url": "https://arxiv.org/abs/2608.17429",
+        "scirate_url": "https://scirate.com/arxiv/2608.17429",
+        "scites": null
+      }
+    ]
   }
 ]
