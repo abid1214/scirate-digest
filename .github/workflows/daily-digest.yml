@@ -23,6 +23,12 @@ concurrency:
   group: daily-digest
   cancel-in-progress: false
 
+defaults:
+  run:
+    # Use bash on every runner, including a self-hosted Windows one (Git for
+    # Windows ships Git Bash, which GitHub Actions' `bash` shell finds).
+    shell: bash
+
 jobs:
   digest:
     # Runs on your self-hosted runner. Its residential/office IP is what

@@ -62,6 +62,17 @@ macOS works too). It needs Python 3.12+, `git`, and the
    manual run from the **Actions** tab to confirm; the daily schedule then
    fires on its own.
 
+**On Windows:** install [Git for Windows](https://git-scm.com/download/win)
+(provides Git Bash, which the workflow's steps use), Python 3.12+, and the
+GitHub CLI. Register the runner from **PowerShell** with the commands GitHub
+shows you, then `.\svc.ps1 install` / `.\svc.ps1 start` (older runners use
+`.\svc install` / `.\svc start`) to run it as a Windows service. The browser
+runs headless on Windows, which passes Cloudflare fine from a home IP. Avoid
+putting the runner's working folder inside **OneDrive** — the constant churn in
+`.git` and the runner's `_work` directory fights the sync client; a plain path
+like `C:\actions-runner` is better. Cloning the repo into your OneDrive dev
+folder for local use is fine.
+
 Notes:
 - The machine must be **awake at 13:30 UTC** for the scheduled run. Adjust the
   `cron` in the workflow to a convenient local time if needed (it's in UTC).

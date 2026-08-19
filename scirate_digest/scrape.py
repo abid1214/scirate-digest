@@ -24,6 +24,7 @@ import datetime as dt
 import logging
 import os
 import re
+import sys
 
 import requests
 from bs4 import BeautifulSoup
@@ -101,16 +102,21 @@ def _fetch_camoufox(url: str, timeout_s: int = 150) -> str:
     from camoufox.sync_api import Camoufox
 
     # geoip=True aligns the spoofed timezone/locale with the egress IP —
-    # a mismatch there is an instant Cloudflare flag. Prefer an existing
-    # display (e.g. xvfb-run) over Camoufox's own virtual display: tearing
-    # the latter down clobbers $DISPLAY for later strategies.
+    # a mismatch there is an instant Cloudflare flag. Headed clears
+    # challenges best; pick how to be headed by platform:
+    #   * a real desktop session (Windows/macOS, or Linux with $DISPLAY) -> headed
+    #   * headless Linux with SCIRATE_DIGEST_HEADED=1 -> Camoufox's xvfb ("virtual")
+    #   * otherwise -> headless (fine from a residential IP)
     kwargs: dict = {"geoip": True, "humanize": True}
-    if os.environ.get("DISPLAY"):
-        kwargs["headless"] = False
-    elif os.environ.get("SCIRATE_DIGEST_HEADED") == "1":
-        kwargs["headless"] = "virtual"
-    else:
+    want_headed = (
+        os.environ.get("SCIRATE_DIGEST_HEADED") == "1" or bool(os.environ.get("DISPLAY"))
+    )
+    if not want_headed:
         kwargs["headless"] = True
+    elif sys.platform.startswith("linux") and not os.environ.get("DISPLAY"):
+        kwargs["headless"] = "virtual"  # spin up xvfb (Linux only)
+    else:
+        kwargs["headless"] = False  # real desktop, incl. Windows/macOS
     with Camoufox(**kwargs) as browser:
         page = browser.new_page()
         page.goto(url, wait_until="domcontentloaded", timeout=timeout_s * 1000)
