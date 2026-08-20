@@ -76,3 +76,23 @@ def test_find_audio_extracts_pcm():
     raw, rate = _find_audio(resp)
     assert rate == 24000
     assert len(raw) == 1000
+
+
+def test_style_direction_in_request(monkeypatch):
+    from scirate_digest.gemini_tts import build_request_body
+    monkeypatch.delenv("GEMINI_TTS_STYLE", raising=False)
+    body = build_request_body("Maya: hi", {"Maya": "Kore", "Sam": "Puck"}, "m")
+    assert "podcast conversation" in body["input"]
+    assert body["input"].rstrip().endswith("Maya: hi")
+    monkeypatch.setenv("GEMINI_TTS_STYLE", "Deadpan.")
+    body = build_request_body("Maya: hi", {"Maya": "Kore", "Sam": "Puck"}, "m")
+    assert body["input"].startswith("Deadpan.")
+
+
+def test_edge_dialogue_voices_env(monkeypatch):
+    from scirate_digest.tts import load_dialogue_voices
+    monkeypatch.delenv("EDGE_DIALOGUE_VOICES", raising=False)
+    v = load_dialogue_voices()
+    assert set(v) == {"Maya", "Sam"} and v["Maya"] != v["Sam"]
+    monkeypatch.setenv("EDGE_DIALOGUE_VOICES", "Maya=en-GB-SoniaNeural, Sam=en-AU-WilliamNeural")
+    assert load_dialogue_voices() == {"Maya": "en-GB-SoniaNeural", "Sam": "en-AU-WilliamNeural"}

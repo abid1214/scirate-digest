@@ -93,13 +93,26 @@ def render_chunk(chunk: list[tuple[str, str]]) -> str:
     return "\n".join(f"{s}: {t}" for s, t in chunk)
 
 
+# Gemini TTS takes natural-language performance direction in the input.
+# Override with GEMINI_TTS_STYLE.
+DEFAULT_STYLE = (
+    "Perform this as a lively, natural podcast conversation between two "
+    "friends — never a read-aloud. Maya sounds warm, curious and quick, "
+    "reacting genuinely to what she hears; Sam is relaxed, wry and "
+    "thoughtful, like a scientist explaining something he loves. Vary pace "
+    "and intonation naturally, let energy rise on exciting points, and "
+    "leave tiny beats at speaker handoffs."
+)
+
+
 def build_request_body(text: str, voices: dict[str, str], model: str) -> dict:
     """Interactions-API multi-speaker TTS request body. The input wraps the
     transcript as a conversation and names the speakers, matching speech_config."""
     who = " and ".join(voices.keys())
+    style = os.environ.get("GEMINI_TTS_STYLE") or DEFAULT_STYLE
     return {
         "model": model,
-        "input": f"TTS the following conversation between {who}:\n{text}",
+        "input": f"{style}\nTTS the following conversation between {who}:\n{text}",
         "response_format": {"type": "audio"},
         "generation_config": {
             "speech_config": [{"speaker": s, "voice": v} for s, v in voices.items()]

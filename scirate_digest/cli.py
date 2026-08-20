@@ -147,10 +147,17 @@ def run(args: argparse.Namespace) -> Path:
                     model=args.gemini_model or gemini_tts.DEFAULT_MODEL,
                 )
             except Exception as exc:
-                # Never lose the episode to a Gemini hiccup — read the dialogue
-                # as a single edge-tts narrator instead.
-                log.error("Gemini TTS failed (%s); falling back to edge-tts", exc)
-                script_text = _dialogue_to_narration(script_text)
+                # Never lose the episode to a Gemini hiccup. First fallback
+                # keeps two hosts by voicing each turn with its own edge
+                # voice; last resort is a single narrator.
+                log.error("Gemini TTS failed (%s); trying two-voice edge fallback", exc)
+                from . import tts
+
+                try:
+                    mp3 = tts.synthesize_dialogue(script_text, mp3_path)
+                except Exception as exc2:
+                    log.error("Two-voice fallback failed (%s); single narrator", exc2)
+                    script_text = _dialogue_to_narration(script_text)
         if mp3 is None:
             from . import tts  # imported lazily so --skip-audio needs no edge-tts
 
