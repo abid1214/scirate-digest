@@ -2,9 +2,9 @@
   {
     "date": "2026-08-20",
     "title": "SciRate Digest \u2014 2026-08-20",
-    "summary": "Today's 10 papers: Quantum Speedups Require Structure or Depth; Integer Linear Programming Decoder for Abelian and Non-Abelian Topological Codes; (Almost) quadruply optimal unitary designs in 1D; Quantum Mixedness Testing with Pauli Measurements; Subsystem Symmetries and Fracton Models in Quantum Error Correction; Real Classical Shadows with Noise; Realizing Logical Diagonal Gates via Transversal Physical $Z$-Rotations in CSS Codes; RushHour: A Dynamically Reconfigurable Lattice-Surgery Architecture; Good Stabilizer Codes from Shallow Clifford Circuits with Random Matchings; Entanglement battery and entanglement catalyst in local state discrimination problems.",
+    "summary": "Today's 5 papers: Quantum Speedups Require Structure or Depth; (Almost) quadruply optimal unitary designs in 1D; Integer Linear Programming Decoder for Abelian and Non-Abelian Topological Codes; Quantum Mixedness Testing with Pauli Measurements; Subsystem Symmetries and Fracton Models in Quantum Error Correction.",
     "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-08-20/digest.mp3",
-    "mp3_bytes": 20342445,
+    "mp3_bytes": 6431040,
     "papers": [
       {
         "rank": 1,
@@ -16,18 +16,18 @@
       },
       {
         "rank": 2,
-        "uid": "2608.18512",
-        "title": "Integer Linear Programming Decoder for Abelian and Non-Abelian Topological Codes",
-        "abs_url": "https://arxiv.org/abs/2608.18512",
-        "scirate_url": "https://scirate.com/arxiv/2608.18512",
-        "scites": null
-      },
-      {
-        "rank": 3,
         "uid": "2608.18650",
         "title": "(Almost) quadruply optimal unitary designs in 1D",
         "abs_url": "https://arxiv.org/abs/2608.18650",
         "scirate_url": "https://scirate.com/arxiv/2608.18650",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2608.18512",
+        "title": "Integer Linear Programming Decoder for Abelian and Non-Abelian Topological Codes",
+        "abs_url": "https://arxiv.org/abs/2608.18512",
+        "scirate_url": "https://scirate.com/arxiv/2608.18512",
         "scites": null
       },
       {
@@ -44,46 +44,6 @@
         "title": "Subsystem Symmetries and Fracton Models in Quantum Error Correction",
         "abs_url": "https://arxiv.org/abs/2608.18961",
         "scirate_url": "https://scirate.com/arxiv/2608.18961",
-        "scites": null
-      },
-      {
-        "rank": 6,
-        "uid": "2608.18935",
-        "title": "Real Classical Shadows with Noise",
-        "abs_url": "https://arxiv.org/abs/2608.18935",
-        "scirate_url": "https://scirate.com/arxiv/2608.18935",
-        "scites": null
-      },
-      {
-        "rank": 7,
-        "uid": "2608.19094",
-        "title": "Realizing Logical Diagonal Gates via Transversal Physical $Z$-Rotations in CSS Codes",
-        "abs_url": "https://arxiv.org/abs/2608.19094",
-        "scirate_url": "https://scirate.com/arxiv/2608.19094",
-        "scites": null
-      },
-      {
-        "rank": 8,
-        "uid": "2608.18985",
-        "title": "RushHour: A Dynamically Reconfigurable Lattice-Surgery Architecture",
-        "abs_url": "https://arxiv.org/abs/2608.18985",
-        "scirate_url": "https://scirate.com/arxiv/2608.18985",
-        "scites": null
-      },
-      {
-        "rank": 9,
-        "uid": "2608.18536",
-        "title": "Good Stabilizer Codes from Shallow Clifford Circuits with Random Matchings",
-        "abs_url": "https://arxiv.org/abs/2608.18536",
-        "scirate_url": "https://scirate.com/arxiv/2608.18536",
-        "scites": null
-      },
-      {
-        "rank": 10,
-        "uid": "2608.19139",
-        "title": "Entanglement battery and entanglement catalyst in local state discrimination problems",
-        "abs_url": "https://arxiv.org/abs/2608.19139",
-        "scirate_url": "https://scirate.com/arxiv/2608.19139",
         "scites": null
       }
     ]
