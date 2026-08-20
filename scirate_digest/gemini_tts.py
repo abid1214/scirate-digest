@@ -17,6 +17,7 @@ import os
 import re
 import subprocess
 import tempfile
+import time
 import wave
 from pathlib import Path
 
@@ -36,8 +37,10 @@ API_REVISION = os.environ.get("GEMINI_API_REVISION") or "2026-05-20"
 # Override with GEMINI_VOICES="Maya=Kore,Sam=Puck".
 DEFAULT_VOICES = {"Maya": "Kore", "Sam": "Puck"}
 
-# Max characters of transcript per TTS request (split only at turn boundaries).
-MAX_CHARS = 2400
+# Max characters of transcript per TTS request (split only at turn
+# boundaries). Larger chunks mean fewer requests, which matters on the
+# free tier's small daily TTS quota.
+MAX_CHARS = 4500
 DEFAULT_RATE = 24000
 
 _TURN_RE = re.compile(r"^\s*([A-Za-z][\w .'-]*?):\s*(.*)$")
@@ -137,16 +140,27 @@ def _find_audio(node) -> tuple[bytes, int] | None:
 
 
 def _synthesize_chunk(text: str, voices: dict[str, str], api_key: str, model: str) -> tuple[bytes, int]:
-    resp = requests.post(
-        API_URL,
-        headers={
-            "x-goog-api-key": api_key,
-            "Content-Type": "application/json",
-            "Api-Revision": API_REVISION,
-        },
-        json=build_request_body(text, voices, model),
-        timeout=240,
-    )
+    for attempt in range(4):
+        resp = requests.post(
+            API_URL,
+            headers={
+                "x-goog-api-key": api_key,
+                "Content-Type": "application/json",
+                "Api-Revision": API_REVISION,
+            },
+            json=build_request_body(text, voices, model),
+            timeout=240,
+        )
+        # Per-minute rate limits clear on their own — wait them out. (A daily
+        # quota exhaustion also returns 429; after the retries it falls
+        # through to the caller's edge-tts fallback.)
+        if resp.status_code == 429 and attempt < 3:
+            retry_after = resp.headers.get("Retry-After")
+            wait = min(float(retry_after) if retry_after else 30.0 * (attempt + 1), 120)
+            log.info("Gemini TTS rate-limited (429); retrying in %.0fs", wait)
+            time.sleep(wait)
+            continue
+        break
     if resp.status_code >= 400:
         raise RuntimeError(f"Gemini TTS HTTP {resp.status_code}: {resp.text[:300]}")
     data = resp.json()
