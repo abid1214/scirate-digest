@@ -21,7 +21,7 @@ def build_parser() -> argparse.ArgumentParser:
         prog="scirate-digest",
         description="Daily audio-podcast digest of the top papers on SciRate.",
     )
-    p.add_argument("--top", type=int, default=10, help="number of papers (default 10)")
+    p.add_argument("--top", type=int, default=5, help="number of papers (default 5)")
     p.add_argument(
         "--range", type=int, default=1, dest="range_days",
         help="SciRate ranking window in days (default 1)",
@@ -107,9 +107,22 @@ def run(args: argparse.Namespace) -> Path:
                 log.error("%s: summarization failed: %s", paper.uid, exc)
                 paper.summary = f"*Summary unavailable ({exc}).*\n\n{paper.abstract}"
 
+        questions: list[dict] = []
+        try:
+            from . import questions as questions_mod
+
+            questions = questions_mod.fetch_open_questions()
+            if questions:
+                log.info("Answering %d listener question(s) in the mailbag", len(questions))
+        except Exception as exc:
+            log.warning("Could not fetch listener questions (%s); skipping mailbag", exc)
+        (out_dir / "questions.json").write_text(json.dumps(questions, indent=2))
+
         log.info("Writing podcast script (%s)…", "two-host dialogue" if engine == "gemini" else "narration")
         if engine == "gemini":
-            script = summarize.write_dialogue_script(client, papers, date_str, model=args.model)
+            script = summarize.write_dialogue_script(
+                client, papers, date_str, model=args.model, questions=questions
+            )
         else:
             script = summarize.write_podcast_script(client, papers, date_str, model=args.model)
         (out_dir / "podcast_script.txt").write_text(script)

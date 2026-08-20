@@ -1,9 +1,17 @@
 # SciRate Daily Digest 🎙️
 
-Every day, this repo looks at [SciRate](https://scirate.com/) for the top 10
+Every day, this repo looks at [SciRate](https://scirate.com/) for the top 5
 most-scited new arXiv papers, downloads each paper's **full LaTeX source**
 from arXiv, has Claude read it and write an executive summary and analysis,
-and then turns the whole thing into an **audio podcast episode**.
+and then turns the whole thing into an **audio podcast episode** — a
+two-host conversation (Maya & Sam) that leads with intuition and
+implications rather than notation.
+
+**Ask the hosts:** open a GitHub issue whose title starts with `Q:`
+([one-tap link](https://github.com/abid1214/scirate-digest/issues/new?title=Q%3A%20))
+and the next episode opens with a mailbag segment answering it; the issue is
+closed automatically with a link to that episode. Every episode's show notes
+also carry the ask link.
 
 ## How it works
 
@@ -111,8 +119,8 @@ pip install -e ".[browser]"
 playwright install chromium   # only needed if SciRate raises a Cloudflare challenge
 export ANTHROPIC_API_KEY=sk-ant-...
 
-scirate-digest                          # full run: top 10, last 1 day
-scirate-digest --top 5 --range 7        # top 5 of the last week
+scirate-digest                          # full run: top 5, last 1 day
+scirate-digest --top 10 --range 7       # top 10 of the last week
 scirate-digest --category quant-ph      # a single arXiv category feed
 scirate-digest --ids 2408.12345 ...     # skip scraping, digest specific papers
 scirate-digest --skip-audio             # everything except TTS

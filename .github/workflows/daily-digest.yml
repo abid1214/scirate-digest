@@ -8,7 +8,7 @@ on:
     inputs:
       top:
         description: "Number of papers"
-        default: "10"
+        default: "5"
       range:
         description: "SciRate ranking window (days)"
         default: "1"
@@ -18,6 +18,7 @@ on:
 
 permissions:
   contents: write
+  issues: write  # close answered listener questions
 
 concurrency:
   group: daily-digest
@@ -25,8 +26,6 @@ concurrency:
 
 defaults:
   run:
-    # Use bash on every runner, including a self-hosted Windows one (Git for
-    # Windows ships Git Bash, which GitHub Actions' `bash` shell finds).
     shell: bash
 
 jobs:
@@ -64,12 +63,14 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_TTS_MODEL: ${{ vars.GEMINI_TTS_MODEL }}
           GEMINI_VOICES: ${{ vars.GEMINI_VOICES }}
+          # For fetching listener questions (issues titled "Q: ...")
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           IDS="${{ github.event.inputs.ids || '' }}"
           EXTRA=""
           if [ -n "$IDS" ]; then EXTRA="--ids $IDS"; fi
           scirate-digest \
-            --top "${{ github.event.inputs.top || '10' }}" \
+            --top "${{ github.event.inputs.top || '5' }}" \
             --range "${{ github.event.inputs.range || '1' }}" \
             $EXTRA
 
@@ -115,6 +116,15 @@ jobs:
             --notes-file "output/$DATE/digest.md" \
             --target "${GITHUB_REF_NAME}" \
             "output/$DATE/digest.mp3#Podcast episode ($DATE)"
+
+      - name: Close answered listener questions
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          DATE=$(date -u +%F)
+          python -m scirate_digest.questions \
+            --close-file "output/$DATE/questions.json" --date "$DATE" \
+            || echo "::warning::could not close answered questions"
 
       - name: Upload artifacts (backup)
         if: always()

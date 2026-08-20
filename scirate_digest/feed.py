@@ -103,10 +103,17 @@ def episode_from_run(date: str, mp3_path: Path, papers_path: Path) -> Episode:
     )
 
 
+ASK_URL = f"https://github.com/{REPO}/issues/new?title=Q%3A%20"
+
+
 def _show_notes_html(ep: Episode) -> str:
     """HTML show notes: an ordered list of papers, each linked to arXiv."""
+    ask = (
+        f'<p>💬 <a href="{ASK_URL}">Ask Maya &amp; Sam a question</a> — '
+        "it may be answered in the next episode's mailbag.</p>"
+    )
     if not ep.papers:
-        return f"<p>{html_escape(ep.summary)}</p>"
+        return f"<p>{html_escape(ep.summary)}</p>{ask}"
     lines = ["<p>The most-scited new papers on SciRate today:</p>", "<ol>"]
     for p in ep.papers:
         scites = ""
@@ -118,6 +125,7 @@ def _show_notes_html(ep: Episode) -> str:
             f' · <a href="{html_escape(p["scirate_url"])}">SciRate</a>){scites}</li>'
         )
     lines.append("</ol>")
+    lines.append(ask)
     return "".join(lines)
 
 
