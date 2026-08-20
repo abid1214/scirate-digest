@@ -135,7 +135,10 @@ def build_feed(episodes: list[Episode]) -> str:
     image_tags = ""
     if (DOCS / "cover.jpg").exists() or (DOCS / "cover.png").exists():
         cover = "cover.jpg" if (DOCS / "cover.jpg").exists() else "cover.png"
-        img = f"{SITE_URL}/{cover}"
+        # Version the URL by file size: podcast apps cache show artwork by
+        # URL (some cached "no artwork" before the cover existed), and a
+        # changed URL forces a re-fetch. Pages serves the same file.
+        img = f"{SITE_URL}/{cover}?v={(DOCS / cover).stat().st_size}"
         image_tags = (
             f'<itunes:image href="{escape(img)}"/>'
             f"<image><url>{escape(img)}</url><title>{escape(PODCAST_TITLE)}</title>"

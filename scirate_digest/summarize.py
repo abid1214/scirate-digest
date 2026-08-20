@@ -89,8 +89,12 @@ to another of today's papers when there is a genuine link.
 - Caveats arrive conversationally ("worth saying — this is all on the \
 optical bench, no atoms yet"), never as a recited list.
 - Let the hosts be people: Maya probes and occasionally pushes back; Sam \
-admits what surprised him; they hand off naturally and neither monologues \
-for more than about four sentences.
+admits what surprised him; they hand off naturally.
+- PACING (hard limits): no single speaking turn may run longer than about a \
+minute of speech — roughly one hundred and twenty words; most turns should \
+be far shorter (two to four sentences). In the mailbag, each host's total \
+contribution to a given question stays under a minute, so a question is \
+fully answered in under two minutes of back-and-forth.
 
 STRICT FORMAT:
 - Every line begins with "Maya:" or "Sam:" followed by that host's spoken \
