@@ -136,7 +136,13 @@ def build_feed(episodes: list[Episode]) -> str:
 
     items = []
     for e in episodes:
-        guid = e.mp3_url
+        # Cache-busting version tag: podcast apps key audio by enclosure URL
+        # and the GUID. When a day's episode is re-rendered (e.g. the audio
+        # changes) the byte count changes, so the URL/GUID change and apps
+        # re-download instead of serving a stale cached file. GitHub ignores
+        # the extra query param and serves the same asset.
+        versioned_url = f"{e.mp3_url}?v={e.mp3_bytes}"
+        guid = versioned_url
         notes = _show_notes_html(e)
         items.append(
             "<item>"
@@ -144,7 +150,7 @@ def build_feed(episodes: list[Episode]) -> str:
             f"<description><![CDATA[{notes}]]></description>"
             f"<content:encoded><![CDATA[{notes}]]></content:encoded>"
             f'<itunes:summary>{escape(e.summary)}</itunes:summary>'
-            f'<enclosure url="{escape(e.mp3_url)}" length="{e.mp3_bytes}" type="audio/mpeg"/>'
+            f'<enclosure url="{escape(versioned_url)}" length="{e.mp3_bytes}" type="audio/mpeg"/>'
             f'<guid isPermaLink="false">{escape(guid)}</guid>'
             f"<pubDate>{format_datetime(e.pub_datetime())}</pubDate>"
             f'<link>{escape("https://github.com/" + REPO + "/releases/tag/digest-" + e.date)}</link>'

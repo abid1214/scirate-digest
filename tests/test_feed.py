@@ -92,3 +92,13 @@ def test_manifest_backward_compat_without_papers(tmp_path, monkeypatch):
     assert eps[0].papers == []
     xml = build_feed(eps)
     assert "hi" in xml  # falls back to the plain summary
+
+
+def test_enclosure_url_is_cache_busted():
+    ep = Episode(date="2026-08-19", title="t", summary="s",
+                 mp3_url="https://github.com/o/r/releases/download/digest-2026-08-19/digest.mp3",
+                 mp3_bytes=23230893)
+    xml = build_feed([ep])
+    assert "digest.mp3?v=23230893" in xml           # enclosure + guid carry the version
+    import xml.dom.minidom as minidom
+    minidom.parseString(xml)
