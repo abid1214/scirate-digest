@@ -44,6 +44,43 @@ MAX_CHARS = 4500
 DEFAULT_RATE = 24000
 
 _TURN_RE = re.compile(r"^\s*([A-Za-z][\w .'-]*?):\s*(.*)$")
+_BREAK_RE = re.compile(r"^\s*\[BREAK\]\s*$", re.IGNORECASE)
+
+# Musical bumper played at [BREAK] markers. Path is repo-relative in CI.
+STINGER_PATH = os.environ.get("STINGER_PATH") or "assets/stinger.mp3"
+BREAK_SILENCE_S = 0.6  # breathing room on each side of the stinger
+
+
+def split_segments(transcript: str) -> list[str]:
+    """Split the script at [BREAK] lines into segments (empty ones dropped)."""
+    segments: list[list[str]] = [[]]
+    for line in transcript.splitlines():
+        if _BREAK_RE.match(line):
+            segments.append([])
+        else:
+            segments[-1].append(line)
+    return ["\n".join(s).strip() for s in segments if "\n".join(s).strip()]
+
+
+def _stinger_pcm(rate: int) -> bytes:
+    """The break audio as raw PCM at the target rate: silence + stinger +
+    silence. Falls back to plain silence if the asset or ffmpeg is missing."""
+    silence = b"\x00\x00" * int(BREAK_SILENCE_S * rate)
+    music = b""
+    if os.path.exists(STINGER_PATH):
+        try:
+            r = subprocess.run(
+                ["ffmpeg", "-i", STINGER_PATH, "-f", "s16le", "-acodec",
+                 "pcm_s16le", "-ac", "1", "-ar", str(rate), "-"],
+                capture_output=True,
+            )
+            if r.returncode == 0:
+                music = r.stdout
+        except OSError:
+            pass
+    if not music:
+        music = b"\x00\x00" * int(1.0 * rate)  # silent break if no stinger
+    return silence + music + silence
 
 
 def load_voices() -> dict[str, str]:
@@ -194,19 +231,29 @@ def synthesize_dialogue(
     if not api_key:
         raise RuntimeError("GEMINI_API_KEY not set")
     voices = voices or load_voices()
-    turns = parse_turns(transcript, set(voices))
-    if not turns:
+    segments = split_segments(transcript)
+    seg_turns = [parse_turns(seg, set(voices)) for seg in segments]
+    seg_turns = [t for t in seg_turns if t]
+    if not seg_turns:
         raise RuntimeError(
             "No dialogue turns parsed — the script must use 'Maya:'/'Sam:' lines"
         )
 
+    # Chunk within each segment so [BREAK] boundaries align with synthesis
+    # boundaries and the stinger can be spliced between them.
+    seg_chunks = [chunk_turns(t) for t in seg_turns]
+    total = sum(len(c) for c in seg_chunks)
     pcm = bytearray()
     rate = DEFAULT_RATE
-    chunks = chunk_turns(turns)
-    for i, chunk in enumerate(chunks, 1):
-        log.info("Gemini TTS chunk %d/%d", i, len(chunks))
-        data, rate = _synthesize_chunk(render_chunk(chunk), voices, api_key, model)
-        pcm.extend(data)
+    done = 0
+    for si, chunks in enumerate(seg_chunks):
+        if si:
+            pcm.extend(_stinger_pcm(rate))
+        for chunk in chunks:
+            done += 1
+            log.info("Gemini TTS chunk %d/%d", done, total)
+            data, rate = _synthesize_chunk(render_chunk(chunk), voices, api_key, model)
+            pcm.extend(data)
 
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)

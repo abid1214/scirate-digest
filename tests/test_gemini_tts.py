@@ -96,3 +96,25 @@ def test_edge_dialogue_voices_env(monkeypatch):
     assert set(v) == {"Maya", "Sam"} and v["Maya"] != v["Sam"]
     monkeypatch.setenv("EDGE_DIALOGUE_VOICES", "Maya=en-GB-SoniaNeural, Sam=en-AU-WilliamNeural")
     assert load_dialogue_voices() == {"Maya": "en-GB-SoniaNeural", "Sam": "en-AU-WilliamNeural"}
+
+
+def test_split_segments_on_break_lines():
+    from scirate_digest.gemini_tts import split_segments
+    script = "Maya: intro\nSam: hi\n[BREAK]\nMaya: paper one\n [break] \nSam: paper two"
+    segs = split_segments(script)
+    assert len(segs) == 3
+    assert segs[0] == "Maya: intro\nSam: hi"
+    assert segs[1] == "Maya: paper one"
+    assert segs[2] == "Sam: paper two"
+
+
+def test_split_segments_no_breaks():
+    from scirate_digest.gemini_tts import split_segments
+    assert split_segments("Maya: hello\nSam: hi") == ["Maya: hello\nSam: hi"]
+
+
+def test_narration_strips_breaks():
+    from scirate_digest.cli import _dialogue_to_narration
+    out = _dialogue_to_narration("Maya: a\n[BREAK]\nSam: b")
+    assert "[BREAK]" not in out
+    assert out == "a\n\nb"

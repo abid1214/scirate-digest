@@ -174,11 +174,15 @@ def _resolve_engine(args: argparse.Namespace) -> str:
 
 
 def _dialogue_to_narration(script: str) -> str:
-    """Strip 'Maya:'/'Sam:' speaker labels so a single narrator can read it."""
+    """Strip 'Maya:'/'Sam:' speaker labels (and [BREAK] audio cues) so a
+    single narrator can read it; breaks become paragraph pauses."""
     import re
 
     out = []
     for line in script.splitlines():
+        if re.match(r"^\s*\[BREAK\]\s*$", line, re.IGNORECASE):
+            out.append("")
+            continue
         out.append(re.sub(r"^\s*[A-Za-z][\w .'-]*?:\s*", "", line))
     return "\n".join(out)
 

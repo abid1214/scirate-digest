@@ -99,8 +99,14 @@ fully answered in under two minutes of back-and-forth.
 STRICT FORMAT:
 - Every line begins with "Maya:" or "Sam:" followed by that host's spoken \
 words. Never merge both hosts on one line.
+- Between major segments — after the welcome, after the mailbag (if any), \
+between each paper discussion, and before the closing — output a line \
+containing exactly [BREAK] and nothing else. It is an audio cue for theme \
+music, never spoken, and it is the ONLY permitted non-dialogue line. Wrap \
+each segment up cleanly before a [BREAK] (no mid-thought cuts) and re-enter \
+fresh after it, the way radio hosts return from a bumper.
 - Plain spoken text ONLY — no markdown, asterisks, headers, bullets, stage \
-directions, or sound-effect cues.
+directions, or sound-effect cues (other than the [BREAK] lines).
 - Anything that must be spoken (numbers, units, acronyms on first use) is \
 written out as words suitable for speech.
 
