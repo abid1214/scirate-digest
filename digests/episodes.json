@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-08-21",
+    "title": "SciRate Digest \u2014 2026-08-21",
+    "summary": "Today's 5 papers: An Irreducible Quantum Advantage in Aligning World Models with Reality; Parallel Quantum Advantage with Limited Adaptivity Requires Structure; Efficient Classical Simulation of Weakly Interacting Fermion Dynamics; Proper Learning of Shallow All-to-All Quantum Circuits; Learning Potts Models and $Z_3$ Toric Codes: Higher and Ordinary Nishimori Criticality.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-08-21/digest.mp3",
+    "mp3_bytes": 18426285,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2608.19779",
+        "title": "An Irreducible Quantum Advantage in Aligning World Models with Reality",
+        "abs_url": "https://arxiv.org/abs/2608.19779",
+        "scirate_url": "https://scirate.com/arxiv/2608.19779",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2608.20297",
+        "title": "Parallel Quantum Advantage with Limited Adaptivity Requires Structure",
+        "abs_url": "https://arxiv.org/abs/2608.20297",
+        "scirate_url": "https://scirate.com/arxiv/2608.20297",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2608.19448",
+        "title": "Efficient Classical Simulation of Weakly Interacting Fermion Dynamics",
+        "abs_url": "https://arxiv.org/abs/2608.19448",
+        "scirate_url": "https://scirate.com/arxiv/2608.19448",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2608.20162",
+        "title": "Proper Learning of Shallow All-to-All Quantum Circuits",
+        "abs_url": "https://arxiv.org/abs/2608.20162",
+        "scirate_url": "https://scirate.com/arxiv/2608.20162",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2608.20268",
+        "title": "Learning Potts Models and $Z_3$ Toric Codes: Higher and Ordinary Nishimori Criticality",
+        "abs_url": "https://arxiv.org/abs/2608.20268",
+        "scirate_url": "https://scirate.com/arxiv/2608.20268",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-08-20",
     "title": "SciRate Digest \u2014 2026-08-20",
     "summary": "Today's 5 papers: Quantum Speedups Require Structure or Depth; (Almost) quadruply optimal unitary designs in 1D; Integer Linear Programming Decoder for Abelian and Non-Abelian Topological Codes; Quantum Mixedness Testing with Pauli Measurements; Subsystem Symmetries and Fracton Models in Quantum Error Correction.",
