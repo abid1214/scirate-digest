@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-08-22",
+    "title": "SciRate Digest \u2014 2026-08-22",
+    "summary": "Today's 5 papers: An Irreducible Quantum Advantage in Aligning World Models with Reality; Parallel Quantum Advantage with Limited Adaptivity Requires Structure; Efficient Classical Simulation of Weakly Interacting Fermion Dynamics; Proper Learning of Shallow All-to-All Quantum Circuits; Architecture and Compilation Co-Design for High-Rate Quantum Product Codes on Neutral Atom Arrays.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-08-22/digest.mp3",
+    "mp3_bytes": 19577517,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2608.19779",
+        "title": "An Irreducible Quantum Advantage in Aligning World Models with Reality",
+        "abs_url": "https://arxiv.org/abs/2608.19779",
+        "scirate_url": "https://scirate.com/arxiv/2608.19779",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2608.20297",
+        "title": "Parallel Quantum Advantage with Limited Adaptivity Requires Structure",
+        "abs_url": "https://arxiv.org/abs/2608.20297",
+        "scirate_url": "https://scirate.com/arxiv/2608.20297",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2608.19448",
+        "title": "Efficient Classical Simulation of Weakly Interacting Fermion Dynamics",
+        "abs_url": "https://arxiv.org/abs/2608.19448",
+        "scirate_url": "https://scirate.com/arxiv/2608.19448",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2608.20162",
+        "title": "Proper Learning of Shallow All-to-All Quantum Circuits",
+        "abs_url": "https://arxiv.org/abs/2608.20162",
+        "scirate_url": "https://scirate.com/arxiv/2608.20162",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2608.20164",
+        "title": "Architecture and Compilation Co-Design for High-Rate Quantum Product Codes on Neutral Atom Arrays",
+        "abs_url": "https://arxiv.org/abs/2608.20164",
+        "scirate_url": "https://scirate.com/arxiv/2608.20164",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-08-21",
     "title": "SciRate Digest \u2014 2026-08-21",
     "summary": "Today's 5 papers: An Irreducible Quantum Advantage in Aligning World Models with Reality; Parallel Quantum Advantage with Limited Adaptivity Requires Structure; Efficient Classical Simulation of Weakly Interacting Fermion Dynamics; Proper Learning of Shallow All-to-All Quantum Circuits; Learning Potts Models and $Z_3$ Toric Codes: Higher and Ordinary Nishimori Criticality.",
