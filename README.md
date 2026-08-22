@@ -148,6 +148,10 @@ default 60,000).
 - **Refusal fallbacks.** On Opus 5 / Fable 5, server-side refusal fallbacks
   are enabled so a safety decline on one paper falls back to another model
   rather than dropping the paper.
+- **No repeats.** Papers stay hot on SciRate for days, so each episode
+  filters out anything covered by a past episode (tracked via the committed
+  `digests/<date>/papers.json` history) and fills the top 5 with fresh
+  papers from a larger scraped pool. Override with `--allow-repeats`.
 - **Politeness.** arXiv requests are spaced 3 s apart and retried with
   backoff on 429/5xx.
 - **Cost.** A daily run sends ~10 papers × up to ~60k characters of LaTeX

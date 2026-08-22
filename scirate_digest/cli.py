@@ -54,6 +54,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="base output directory (default ./output)",
     )
     p.add_argument("--date", default=None, help="episode date, YYYY-MM-DD (default today)")
+    p.add_argument(
+        "--allow-repeats", action="store_true",
+        help="do not filter out papers already discussed in past episodes",
+    )
     p.add_argument("--skip-audio", action="store_true", help="stop after the script; no TTS")
     p.add_argument(
         "--skip-summaries", action="store_true",
@@ -80,10 +84,35 @@ def run(args: argparse.Namespace) -> Path:
         papers = [Paper(uid=uid) for uid in args.ids[: args.top]]
         log.info("Using %d manually supplied arXiv IDs", len(papers))
     else:
-        log.info("Scraping SciRate for the top %d papers…", args.top)
+        # Scrape a larger ranked pool so that papers already covered in past
+        # episodes can be skipped while still filling the top-N with fresh
+        # ones (hot papers stay in SciRate's ranking for several days).
+        pool_size = max(args.top * 6, 30)
+        log.info("Scraping SciRate for the top %d papers…", pool_size)
         papers = scrape.fetch_top_papers(
-            count=args.top, range_days=args.range_days, category=args.category
+            count=pool_size, range_days=args.range_days, category=args.category
         )
+        if not args.allow_repeats:
+            seen = load_discussed_uids(exclude_date=date_str)
+            fresh = [p for p in papers if p.uid not in seen]
+            skipped = [p.uid for p in papers if p.uid in seen]
+            if skipped:
+                log.info(
+                    "Skipping %d already-discussed paper(s): %s",
+                    len(skipped), ", ".join(skipped[:10]),
+                )
+            papers = fresh
+        papers = papers[: args.top]
+        if not papers:
+            raise RuntimeError(
+                "No papers left after filtering out previously discussed ones "
+                "— rerun with --allow-repeats or a wider --range"
+            )
+        if len(papers) < args.top:
+            log.warning(
+                "Only %d fresh paper(s) available today (wanted %d)",
+                len(papers), args.top,
+            )
     log.info("Papers: %s", ", ".join(p.uid for p in papers))
 
     log.info("Fetching metadata from the arXiv API…")
@@ -165,6 +194,29 @@ def run(args: argparse.Namespace) -> Path:
         log.info("Wrote %s (%.1f MB)", mp3, mp3.stat().st_size / 1e6)
 
     return out_dir
+
+
+def load_discussed_uids(
+    digests_dir: Path = Path("digests"), exclude_date: str | None = None
+) -> set[str]:
+    """arXiv IDs covered by past episodes, from the committed digest history.
+
+    ``exclude_date`` keeps a same-day re-render from treating its own earlier
+    output as history (which would swap in five different papers)."""
+    seen: set[str] = set()
+    if not digests_dir.is_dir():
+        return seen
+    for pj in sorted(digests_dir.glob("*/papers.json")):
+        if exclude_date and pj.parent.name == exclude_date:
+            continue
+        try:
+            for p in json.loads(pj.read_text()):
+                uid = p.get("uid")
+                if uid:
+                    seen.add(uid)
+        except (json.JSONDecodeError, OSError) as exc:
+            log.warning("Could not read %s (%s); ignoring it", pj, exc)
+    return seen
 
 
 def _resolve_engine(args: argparse.Namespace) -> str:
