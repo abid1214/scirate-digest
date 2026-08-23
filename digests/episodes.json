@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-08-23",
+    "title": "SciRate Digest \u2014 2026-08-23",
+    "summary": "Today's 5 papers: Fast Algorithms for Stoquastic Spin Systems; Disassembling qLDPC codes for depth-optimal parity-check circuits; Counterexamples to the fractional coloring conjecture for triply efficient shadow tomography; PPT Entanglement with Correlated Catalysis: Monotones and Irreversibility; Rethinking Quantum Circuits.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-08-23/digest.mp3",
+    "mp3_bytes": 19081773,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2608.19489",
+        "title": "Fast Algorithms for Stoquastic Spin Systems",
+        "abs_url": "https://arxiv.org/abs/2608.19489",
+        "scirate_url": "https://scirate.com/arxiv/2608.19489",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2608.19917",
+        "title": "Disassembling qLDPC codes for depth-optimal parity-check circuits",
+        "abs_url": "https://arxiv.org/abs/2608.19917",
+        "scirate_url": "https://scirate.com/arxiv/2608.19917",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2608.20113",
+        "title": "Counterexamples to the fractional coloring conjecture for triply efficient shadow tomography",
+        "abs_url": "https://arxiv.org/abs/2608.20113",
+        "scirate_url": "https://scirate.com/arxiv/2608.20113",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2608.20063",
+        "title": "PPT Entanglement with Correlated Catalysis: Monotones and Irreversibility",
+        "abs_url": "https://arxiv.org/abs/2608.20063",
+        "scirate_url": "https://scirate.com/arxiv/2608.20063",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2608.19370",
+        "title": "Rethinking Quantum Circuits",
+        "abs_url": "https://arxiv.org/abs/2608.19370",
+        "scirate_url": "https://scirate.com/arxiv/2608.19370",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-08-22",
     "title": "SciRate Digest \u2014 2026-08-22",
     "summary": "Today's 5 papers: An Irreducible Quantum Advantage in Aligning World Models with Reality; Parallel Quantum Advantage with Limited Adaptivity Requires Structure; Efficient Classical Simulation of Weakly Interacting Fermion Dynamics; Proper Learning of Shallow All-to-All Quantum Circuits; Architecture and Compilation Co-Design for High-Rate Quantum Product Codes on Neutral Atom Arrays.",
