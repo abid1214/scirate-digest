@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-08-24",
+    "title": "SciRate Digest \u2014 2026-08-24",
+    "summary": "Today's 5 papers: A Classification of Translation-Invariant Quantum Codes in Any Dimension; Continuous-angle logical rotations in the Steane code; Tomographic Limits of the Petz Recovery Map; Random quantum circuits, chaos and quantum thermalization; Hypothesis testing between quantum ensembles.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-08-24/digest.mp3",
+    "mp3_bytes": 18666285,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2608.20981",
+        "title": "A Classification of Translation-Invariant Quantum Codes in Any Dimension",
+        "abs_url": "https://arxiv.org/abs/2608.20981",
+        "scirate_url": "https://scirate.com/arxiv/2608.20981",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2608.20676",
+        "title": "Continuous-angle logical rotations in the Steane code",
+        "abs_url": "https://arxiv.org/abs/2608.20676",
+        "scirate_url": "https://scirate.com/arxiv/2608.20676",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2608.21309",
+        "title": "Tomographic Limits of the Petz Recovery Map",
+        "abs_url": "https://arxiv.org/abs/2608.21309",
+        "scirate_url": "https://scirate.com/arxiv/2608.21309",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2608.21303",
+        "title": "Random quantum circuits, chaos and quantum thermalization",
+        "abs_url": "https://arxiv.org/abs/2608.21303",
+        "scirate_url": "https://scirate.com/arxiv/2608.21303",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2608.21321",
+        "title": "Hypothesis testing between quantum ensembles",
+        "abs_url": "https://arxiv.org/abs/2608.21321",
+        "scirate_url": "https://scirate.com/arxiv/2608.21321",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-08-23",
     "title": "SciRate Digest \u2014 2026-08-23",
     "summary": "Today's 5 papers: Fast Algorithms for Stoquastic Spin Systems; Disassembling qLDPC codes for depth-optimal parity-check circuits; Counterexamples to the fractional coloring conjecture for triply efficient shadow tomography; PPT Entanglement with Correlated Catalysis: Monotones and Irreversibility; Rethinking Quantum Circuits.",
