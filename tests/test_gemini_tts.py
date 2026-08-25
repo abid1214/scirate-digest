@@ -48,7 +48,7 @@ def test_render_chunk_format():
 
 def test_load_voices_default_and_override(monkeypatch):
     monkeypatch.delenv("GEMINI_VOICES", raising=False)
-    assert load_voices() == {"Maya": "Kore", "Sam": "Puck"}
+    assert load_voices() == {"Maya": "Kore", "Sam": "Charon"}
     monkeypatch.setenv("GEMINI_VOICES", "Maya=Aoede, Sam=Charon")
     assert load_voices() == {"Maya": "Aoede", "Sam": "Charon"}
 

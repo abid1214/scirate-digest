@@ -35,12 +35,13 @@ API_REVISION = os.environ.get("GEMINI_API_REVISION") or "2026-05-20"
 
 # Host name (as it appears in the script) -> Gemini prebuilt voice name.
 # Override with GEMINI_VOICES="Maya=Kore,Sam=Puck".
-DEFAULT_VOICES = {"Maya": "Kore", "Sam": "Puck"}
+DEFAULT_VOICES = {"Maya": "Kore", "Sam": "Charon"}
 
 # Max characters of transcript per TTS request (split only at turn
-# boundaries). Larger chunks mean fewer requests, which matters on the
-# free tier's small daily TTS quota.
-MAX_CHARS = 4500
+# boundaries). Google documents that multi-speaker consistency drifts on
+# outputs "longer than a few minutes" and recommends smaller chunks, so
+# this targets roughly 1.5-2 minutes of audio per request.
+MAX_CHARS = 2200
 DEFAULT_RATE = 24000
 
 _TURN_RE = re.compile(r"^\s*([A-Za-z][\w .'-]*?):\s*(.*)$")
@@ -138,7 +139,10 @@ DEFAULT_STYLE = (
     "reacting genuinely to what she hears; Sam is relaxed, wry and "
     "thoughtful, like a scientist explaining something he loves. Vary pace "
     "and intonation naturally, let energy rise on exciting points, and "
-    "leave tiny beats at speaker handoffs."
+    "leave tiny beats at speaker handoffs. Keep each host's voice "
+    "absolutely consistent from the first line to the last — the same two "
+    "distinct voices throughout, never swapping, blending, or changing "
+    "character."
 )
 
 

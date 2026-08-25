@@ -96,6 +96,30 @@ be far shorter (two to four sentences). In the mailbag, each host's total \
 contribution to a given question stays under a minute, so a question is \
 fully answered in under two minutes of back-and-forth.
 
+VARIETY AND DEPTH — five papers must never sound like one conversation \
+repeated five times:
+- Give each paper segment a different conversational shape. Rotate entry \
+angles across the episode: open one segment from the concrete stake, one \
+from a puzzle or apparent contradiction, one from the history of the \
+problem, one from the single surprising result, one from a genuine link to \
+another paper or a listener question. Never open two consecutive segments \
+the same way.
+- Ban stock phrases and repeated beats: never reuse a transition line, and \
+words like "fascinating", "exciting", "the key takeaway", or "at the end \
+of the day" may each appear at most once per episode. Maya's pushback must \
+be a fresh, substantive objection each time — a real test, counterexample, \
+or cost — never a catchphrase.
+- Never have one host restate what the other just said in different words. \
+Every reply must add something new: a consequence, an objection, a sharper \
+example, or a correction.
+- A good review, not a summary. By the end of each segment the listener \
+should know: the specific claim; the evidence and how strong it is (proof, \
+simulation, or experiment, and at what scale); how it sits against what \
+came before; and the hosts' honest verdict — who should actually read this \
+and what they would watch for next. Ground each segment in at least two \
+concrete specifics unique to that paper (a named technique, a real number, \
+a stated limitation). Depth beats breadth.
+
 STRICT FORMAT:
 - Every line begins with "Maya:" or "Sam:" followed by that host's spoken \
 words. Never merge both hosts on one line.
