@@ -2,24 +2,24 @@
   {
     "date": "2026-08-25",
     "title": "SciRate Digest \u2014 2026-08-25",
-    "summary": "Today's 5 papers: Satisfying Quantum Codes: Physics-Informed and Hardware-Aware Code Design with SAT Solvers; Universal equilibrium magic in quantum many-body systems; Taming Spacetime Overhead and Design Complexity in Distributed Fault-Tolerant Superconducting Quantum Computation; Quantum-enhanced sensing in a driven-dissipative system via chiral waveguide; Quantum Monte Carlo in the Age of Many-Body Quantum Information.",
+    "summary": "Today's 5 papers: Universal equilibrium magic in quantum many-body systems; Satisfying Quantum Codes: Physics-Informed and Hardware-Aware Code Design with SAT Solvers; Taming Spacetime Overhead and Design Complexity in Distributed Fault-Tolerant Superconducting Quantum Computation; Efficient Computation of QKD Key Rates without Semidefinite Programming; Sample-Query Interconversion of Block Encoding of Unknown Quantum States.",
     "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-08-25/digest.mp3",
-    "mp3_bytes": 16126893,
+    "mp3_bytes": 17522733,
     "papers": [
       {
         "rank": 1,
-        "uid": "2608.23460",
-        "title": "Satisfying Quantum Codes: Physics-Informed and Hardware-Aware Code Design with SAT Solvers",
-        "abs_url": "https://arxiv.org/abs/2608.23460",
-        "scirate_url": "https://scirate.com/arxiv/2608.23460",
-        "scites": null
-      },
-      {
-        "rank": 2,
         "uid": "2608.22939",
         "title": "Universal equilibrium magic in quantum many-body systems",
         "abs_url": "https://arxiv.org/abs/2608.22939",
         "scirate_url": "https://scirate.com/arxiv/2608.22939",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2608.23460",
+        "title": "Satisfying Quantum Codes: Physics-Informed and Hardware-Aware Code Design with SAT Solvers",
+        "abs_url": "https://arxiv.org/abs/2608.23460",
+        "scirate_url": "https://scirate.com/arxiv/2608.23460",
         "scites": null
       },
       {
@@ -32,18 +32,18 @@
       },
       {
         "rank": 4,
-        "uid": "2608.23433",
-        "title": "Quantum-enhanced sensing in a driven-dissipative system via chiral waveguide",
-        "abs_url": "https://arxiv.org/abs/2608.23433",
-        "scirate_url": "https://scirate.com/arxiv/2608.23433",
+        "uid": "2608.23285",
+        "title": "Efficient Computation of QKD Key Rates without Semidefinite Programming",
+        "abs_url": "https://arxiv.org/abs/2608.23285",
+        "scirate_url": "https://scirate.com/arxiv/2608.23285",
         "scites": null
       },
       {
         "rank": 5,
-        "uid": "2608.23231",
-        "title": "Quantum Monte Carlo in the Age of Many-Body Quantum Information",
-        "abs_url": "https://arxiv.org/abs/2608.23231",
-        "scirate_url": "https://scirate.com/arxiv/2608.23231",
+        "uid": "2608.22470",
+        "title": "Sample-Query Interconversion of Block Encoding of Unknown Quantum States",
+        "abs_url": "https://arxiv.org/abs/2608.22470",
+        "scirate_url": "https://scirate.com/arxiv/2608.22470",
         "scites": null
       }
     ]
