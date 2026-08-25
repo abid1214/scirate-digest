@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-08-25",
+    "title": "SciRate Digest \u2014 2026-08-25",
+    "summary": "Today's 5 papers: Satisfying Quantum Codes: Physics-Informed and Hardware-Aware Code Design with SAT Solvers; Universal equilibrium magic in quantum many-body systems; Taming Spacetime Overhead and Design Complexity in Distributed Fault-Tolerant Superconducting Quantum Computation; Quantum-enhanced sensing in a driven-dissipative system via chiral waveguide; Quantum Monte Carlo in the Age of Many-Body Quantum Information.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-08-25/digest.mp3",
+    "mp3_bytes": 16126893,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2608.23460",
+        "title": "Satisfying Quantum Codes: Physics-Informed and Hardware-Aware Code Design with SAT Solvers",
+        "abs_url": "https://arxiv.org/abs/2608.23460",
+        "scirate_url": "https://scirate.com/arxiv/2608.23460",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2608.22939",
+        "title": "Universal equilibrium magic in quantum many-body systems",
+        "abs_url": "https://arxiv.org/abs/2608.22939",
+        "scirate_url": "https://scirate.com/arxiv/2608.22939",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2608.23159",
+        "title": "Taming Spacetime Overhead and Design Complexity in Distributed Fault-Tolerant Superconducting Quantum Computation",
+        "abs_url": "https://arxiv.org/abs/2608.23159",
+        "scirate_url": "https://scirate.com/arxiv/2608.23159",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2608.23433",
+        "title": "Quantum-enhanced sensing in a driven-dissipative system via chiral waveguide",
+        "abs_url": "https://arxiv.org/abs/2608.23433",
+        "scirate_url": "https://scirate.com/arxiv/2608.23433",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2608.23231",
+        "title": "Quantum Monte Carlo in the Age of Many-Body Quantum Information",
+        "abs_url": "https://arxiv.org/abs/2608.23231",
+        "scirate_url": "https://scirate.com/arxiv/2608.23231",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-08-24",
     "title": "SciRate Digest \u2014 2026-08-24",
     "summary": "Today's 5 papers: A Classification of Translation-Invariant Quantum Codes in Any Dimension; Continuous-angle logical rotations in the Steane code; Tomographic Limits of the Petz Recovery Map; Random quantum circuits, chaos and quantum thermalization; Hypothesis testing between quantum ensembles.",
