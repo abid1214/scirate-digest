@@ -160,25 +160,32 @@ DEFAULT_STYLE = (
     "exaggerated. Use each speaker's assigned voice exactly as configured, "
     "unchanged from start to finish."
 )
+DEFAULT_STYLE_SINGLE = (
+    "Read this podcast speech in a calm, natural, understated way: even "
+    "pacing, plain conversational emphasis, never dramatic or exaggerated."
+)
 
 
 def build_request_body(text: str, voices: dict[str, str], model: str) -> dict:
-    """Interactions-API multi-speaker TTS request body. The input wraps the
-    transcript as a conversation and names the speakers, matching speech_config."""
-    who = " and ".join(voices.keys())
-    style = os.environ.get("GEMINI_TTS_STYLE") or DEFAULT_STYLE
-    lead = (
-        f"TTS the following conversation between {who}:"
-        if len(voices) > 1
-        else f"TTS the following podcast lines spoken by {who}:"
-    )
+    """Interactions-API TTS request body. Multi-speaker requests name each
+    speaker in speech_config and in the input; single-speaker requests take
+    only a voice (no "speaker" field — the API 400s on it) and plain text
+    with no speaker label."""
+    style = os.environ.get("GEMINI_TTS_STYLE")
+    if len(voices) > 1:
+        who = " and ".join(voices.keys())
+        style = style or DEFAULT_STYLE
+        input_text = f"{style}\nTTS the following conversation between {who}:\n{text}"
+        speech_config = [{"speaker": s, "voice": v} for s, v in voices.items()]
+    else:
+        style = style or DEFAULT_STYLE_SINGLE
+        input_text = f"{style}\n{text}"
+        speech_config = [{"voice": v} for v in voices.values()]
     return {
         "model": model,
-        "input": f"{style}\n{lead}\n{text}",
+        "input": input_text,
         "response_format": {"type": "audio"},
-        "generation_config": {
-            "speech_config": [{"speaker": s, "voice": v} for s, v in voices.items()]
-        },
+        "generation_config": {"speech_config": speech_config},
     }
 
 
@@ -297,7 +304,7 @@ def synthesize_dialogue(
                 done += 1
                 log.info("Gemini TTS turn %d/%d (%s)", done, total, speaker)
                 data, rate = _synthesize_chunk(
-                    f"{speaker}: {text}", {speaker: voices[speaker]}, api_key, model
+                    text, {speaker: voices[speaker]}, api_key, model
                 )
                 if gi:
                     pcm.extend(gap)

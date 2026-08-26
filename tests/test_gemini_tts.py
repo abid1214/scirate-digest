@@ -114,12 +114,13 @@ def test_merge_consecutive_turns_respects_cap():
 
 
 def test_build_request_body_single_speaker():
+    # Per the Interactions API docs, single-speaker requests carry only a
+    # voice (no "speaker" field) and plain unlabeled text.
     from scirate_digest.gemini_tts import build_request_body
-    body = build_request_body("Maya: hi there", {"Maya": "Kore"}, "m")
-    assert "spoken by Maya" in body["input"]
+    body = build_request_body("hi there", {"Maya": "Kore"}, "m")
     assert "conversation between" not in body["input"]
-    assert body["generation_config"]["speech_config"] == [
-        {"speaker": "Maya", "voice": "Kore"}]
+    assert body["input"].rstrip().endswith("hi there")
+    assert body["generation_config"]["speech_config"] == [{"voice": "Kore"}]
 
 
 def test_split_segments_on_break_lines():
