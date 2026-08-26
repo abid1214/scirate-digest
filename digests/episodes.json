@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-08-26",
+    "title": "SciRate Digest \u2014 2026-08-26",
+    "summary": "Today's 5 papers: Dynamical Consequences of Nontrivial Topology of Molecular Conical Intersections; Certified Randomness without Structure Against Shallow-Query Adversaries; Masked Differential-linear Distinguishers and Quantum Approaches; Graphix: A software framework for Measurement-Based Quantum Computation; Geometry-controlled correlated electric-field noise in enclosed ion traps from billiard return spectra.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-08-26/digest.mp3",
+    "mp3_bytes": 18816429,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2608.24864",
+        "title": "Dynamical Consequences of Nontrivial Topology of Molecular Conical Intersections",
+        "abs_url": "https://arxiv.org/abs/2608.24864",
+        "scirate_url": "https://scirate.com/arxiv/2608.24864",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2608.24832",
+        "title": "Certified Randomness without Structure Against Shallow-Query Adversaries",
+        "abs_url": "https://arxiv.org/abs/2608.24832",
+        "scirate_url": "https://scirate.com/arxiv/2608.24832",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2608.24799",
+        "title": "Masked Differential-linear Distinguishers and Quantum Approaches",
+        "abs_url": "https://arxiv.org/abs/2608.24799",
+        "scirate_url": "https://scirate.com/arxiv/2608.24799",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2608.24781",
+        "title": "Graphix: A software framework for Measurement-Based Quantum Computation",
+        "abs_url": "https://arxiv.org/abs/2608.24781",
+        "scirate_url": "https://scirate.com/arxiv/2608.24781",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2608.24770",
+        "title": "Geometry-controlled correlated electric-field noise in enclosed ion traps from billiard return spectra",
+        "abs_url": "https://arxiv.org/abs/2608.24770",
+        "scirate_url": "https://scirate.com/arxiv/2608.24770",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-08-25",
     "title": "SciRate Digest \u2014 2026-08-25",
     "summary": "Today's 5 papers: Universal equilibrium magic in quantum many-body systems; Satisfying Quantum Codes: Physics-Informed and Hardware-Aware Code Design with SAT Solvers; Taming Spacetime Overhead and Design Complexity in Distributed Fault-Tolerant Superconducting Quantum Computation; Efficient Computation of QKD Key Rates without Semidefinite Programming; Sample-Query Interconversion of Block Encoding of Unknown Quantum States.",
