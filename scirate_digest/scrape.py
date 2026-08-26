@@ -103,12 +103,13 @@ def _scraper_api_config() -> tuple[str | None, str | None]:
     return None, None
 
 
-def _scraper_api_request(full_url: str) -> tuple[str, dict]:
+def _scraper_api_request(full_url: str, tier: str = "premium") -> tuple[str, dict]:
     """Build the (endpoint, params) for the configured scraping-API provider.
 
-    Both providers take the target URL plus a JS-rendering flag (needed to
-    clear Cloudflare). Extra provider params can be supplied as a query-string
-    in SCRAPERAPI_EXTRA / SCRAPINGBEE_EXTRA, e.g. "ultra_premium=true".
+    ``tier`` is "cheap" (JS render only — a few credits) or "premium"
+    (stealth/residential proxies — an order of magnitude more credits, needed
+    when Cloudflare challenges the cheap tier). Extra provider params can be
+    supplied as a query-string in SCRAPERAPI_EXTRA / SCRAPINGBEE_EXTRA.
     """
     provider, key = _scraper_api_config()
     if not key:
@@ -116,23 +117,36 @@ def _scraper_api_request(full_url: str) -> tuple[str, dict]:
     if provider == "scraperapi":
         endpoint = "https://api.scraperapi.com/"
         params = {"api_key": key, "url": full_url, "render": "true"}
+        if tier == "premium":
+            params["ultra_premium"] = "true"
         extra = os.environ.get("SCRAPERAPI_EXTRA", "")
     else:
         endpoint = "https://app.scrapingbee.com/api/v1/"
-        params = {"api_key": key, "url": full_url, "render_js": "true",
-                  "stealth_proxy": "true"}
+        params = {"api_key": key, "url": full_url, "render_js": "true"}
+        if tier == "premium":
+            params["stealth_proxy"] = "true"
         extra = os.environ.get("SCRAPINGBEE_EXTRA", "")
     params.update(dict(parse_qsl(extra)))
     return endpoint, params
 
 
 def _fetch_scraper_api(full_url: str, timeout_s: int = 150) -> str:
-    endpoint, params = _scraper_api_request(full_url)
-    resp = requests.get(endpoint, params=params, timeout=timeout_s)
-    resp.raise_for_status()
-    if _looks_like_challenge(resp.text):
-        raise RuntimeError("Cloudflare challenge (via scraping API)")
-    return resp.text
+    # Cheap tier first: it costs ~15x fewer credits and sometimes clears
+    # Cloudflare on its own. Escalate to stealth/residential only on a
+    # challenge or block.
+    last_exc: Exception | None = None
+    for tier in ("cheap", "premium"):
+        endpoint, params = _scraper_api_request(full_url, tier=tier)
+        try:
+            resp = requests.get(endpoint, params=params, timeout=timeout_s)
+            resp.raise_for_status()
+            if _looks_like_challenge(resp.text):
+                raise RuntimeError(f"Cloudflare challenge (via scraping API, {tier} tier)")
+            return resp.text
+        except Exception as exc:
+            log.info("scraping API %s tier failed: %s", tier, exc)
+            last_exc = exc
+    raise last_exc if last_exc else RuntimeError("scraping API failed")
 
 
 def _wait_out_challenge(page, timeout_s: int) -> str:

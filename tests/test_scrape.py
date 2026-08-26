@@ -41,7 +41,7 @@ def test_scraper_api_request_scraperapi(monkeypatch):
     monkeypatch.setenv("SCRAPERAPI_KEY", "secret123")
     monkeypatch.setenv("SCRAPERAPI_EXTRA", "ultra_premium=true&country_code=us")
     assert _scraper_api_config() == ("scraperapi", "secret123")
-    endpoint, params = _scraper_api_request("https://scirate.com/?range=1")
+    endpoint, params = _scraper_api_request("https://scirate.com/?range=1", tier="premium")
     assert endpoint == "https://api.scraperapi.com/"
     assert params["api_key"] == "secret123"
     assert params["url"] == "https://scirate.com/?range=1"
@@ -54,8 +54,10 @@ def test_scraper_api_request_scrapingbee(monkeypatch):
     from scirate_digest.scrape import _scraper_api_request
     monkeypatch.delenv("SCRAPERAPI_KEY", raising=False)
     monkeypatch.setenv("SCRAPINGBEE_KEY", "bee456")
-    endpoint, params = _scraper_api_request("https://scirate.com/?range=1")
+    endpoint, params = _scraper_api_request("https://scirate.com/?range=1", tier="premium")
     assert endpoint == "https://app.scrapingbee.com/api/v1/"
+    cheap_ep, cheap = _scraper_api_request("https://scirate.com/?range=1", tier="cheap")
+    assert "stealth_proxy" not in cheap and cheap["render_js"] == "true"
     assert params["render_js"] == "true"
     assert params["stealth_proxy"] == "true"
 
