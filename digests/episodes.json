@@ -2,9 +2,9 @@
   {
     "date": "2026-08-26",
     "title": "SciRate Digest \u2014 2026-08-26",
-    "summary": "Today's 5 papers: Optimal Lower Bound for Ground-State Energy Estimation with a Guiding State; Improved Quantum Codes with Transversal T Gates; Optimal Quantum Algorithm for Ground-State Energy Estimation with a Guiding State; Nearly Optimal Amplitude Estimation at any Depth; Essentially optimal gate teleportation.",
+    "summary": "Today's 5 papers: Optimal Lower Bound for Ground-State Energy Estimation with a Guiding State; Optimal Quantum Algorithm for Ground-State Energy Estimation with a Guiding State; Improved Quantum Codes with Transversal T Gates; Nearly Optimal Amplitude Estimation at any Depth; Essentially optimal gate teleportation.",
     "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-08-26/digest.mp3",
-    "mp3_bytes": 18642477,
+    "mp3_bytes": 20378157,
     "papers": [
       {
         "rank": 1,
@@ -16,18 +16,18 @@
       },
       {
         "rank": 2,
-        "uid": "2608.24000",
-        "title": "Improved Quantum Codes with Transversal T Gates",
-        "abs_url": "https://arxiv.org/abs/2608.24000",
-        "scirate_url": "https://scirate.com/arxiv/2608.24000",
-        "scites": null
-      },
-      {
-        "rank": 3,
         "uid": "2608.24494",
         "title": "Optimal Quantum Algorithm for Ground-State Energy Estimation with a Guiding State",
         "abs_url": "https://arxiv.org/abs/2608.24494",
         "scirate_url": "https://scirate.com/arxiv/2608.24494",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2608.24000",
+        "title": "Improved Quantum Codes with Transversal T Gates",
+        "abs_url": "https://arxiv.org/abs/2608.24000",
+        "scirate_url": "https://scirate.com/arxiv/2608.24000",
         "scites": null
       },
       {
