@@ -98,6 +98,30 @@ def test_edge_dialogue_voices_env(monkeypatch):
     assert load_dialogue_voices() == {"Maya": "en-GB-SoniaNeural", "Sam": "en-AU-WilliamNeural"}
 
 
+def test_merge_consecutive_turns():
+    from scirate_digest.gemini_tts import merge_consecutive_turns
+    turns = [("Maya", "one."), ("Maya", "two."), ("Sam", "three."),
+             ("Maya", "four.")]
+    assert merge_consecutive_turns(turns) == [
+        ("Maya", "one. two."), ("Sam", "three."), ("Maya", "four.")]
+
+
+def test_merge_consecutive_turns_respects_cap():
+    from scirate_digest.gemini_tts import merge_consecutive_turns
+    turns = [("Sam", "x" * 90), ("Sam", "y" * 90)]
+    merged = merge_consecutive_turns(turns, max_chars=100)
+    assert merged == turns  # too long to join
+
+
+def test_build_request_body_single_speaker():
+    from scirate_digest.gemini_tts import build_request_body
+    body = build_request_body("Maya: hi there", {"Maya": "Kore"}, "m")
+    assert "spoken by Maya" in body["input"]
+    assert "conversation between" not in body["input"]
+    assert body["generation_config"]["speech_config"] == [
+        {"speaker": "Maya", "voice": "Kore"}]
+
+
 def test_split_segments_on_break_lines():
     from scirate_digest.gemini_tts import split_segments
     script = "Maya: intro\nSam: hi\n[BREAK]\nMaya: paper one\n [break] \nSam: paper two"
