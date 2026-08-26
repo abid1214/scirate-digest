@@ -30,7 +30,9 @@ log = logging.getLogger(__name__)
 API_URL = "https://generativelanguage.googleapis.com/v1beta/interactions"
 # Use `or` (not a default arg): CI passes these as empty strings when the
 # optional repo variables are unset, and get(key, default) returns "" then.
-DEFAULT_MODEL = os.environ.get("GEMINI_TTS_MODEL") or "gemini-3.1-flash-tts-preview"
+# Pro is Google's quality TTS tier; the 3.1 flash preview produced audible
+# distortion on multi-speaker episodes. Override with GEMINI_TTS_MODEL.
+DEFAULT_MODEL = os.environ.get("GEMINI_TTS_MODEL") or "gemini-2.5-pro-preview-tts"
 API_REVISION = os.environ.get("GEMINI_API_REVISION") or "2026-05-20"
 
 # Host name (as it appears in the script) -> Gemini prebuilt voice name.
@@ -133,16 +135,15 @@ def render_chunk(chunk: list[tuple[str, str]]) -> str:
 
 # Gemini TTS takes natural-language performance direction in the input.
 # Override with GEMINI_TTS_STYLE.
+# Deliberately minimal: heavy character/energy direction was found to
+# over-steer the model — exaggerated emphasis and even timbre morphing
+# (voices bending away from their configured prebuilt sound). The assigned
+# voices carry the characters; the direction only asks for calm delivery.
 DEFAULT_STYLE = (
-    "Perform this as a lively, natural podcast conversation between two "
-    "friends — never a read-aloud. Maya sounds warm, curious and quick, "
-    "reacting genuinely to what she hears; Sam is relaxed, wry and "
-    "thoughtful, like a scientist explaining something he loves. Vary pace "
-    "and intonation naturally, let energy rise on exciting points, and "
-    "leave tiny beats at speaker handoffs. Keep each host's voice "
-    "absolutely consistent from the first line to the last — the same two "
-    "distinct voices throughout, never swapping, blending, or changing "
-    "character."
+    "Read this podcast conversation in a calm, natural, understated way: "
+    "even pacing, plain conversational emphasis, never dramatic or "
+    "exaggerated. Use each speaker's assigned voice exactly as configured, "
+    "unchanged from start to finish."
 )
 
 
