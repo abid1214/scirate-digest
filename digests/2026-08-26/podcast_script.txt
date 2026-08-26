@@ -1,225 +1,211 @@
-Maya: Two papers hit the arXiv yesterday with consecutive numbers, same problem, pointing in opposite directions. One says "here's the algorithm." The other says "and you can't do better than that."
+Maya: Sam, I did a word count on today's titles. Four out of five contain the word "optimal."
 
-Sam: Same day, same subject line, basically a pincer movement. I checked twice to make sure I wasn't reading the same abstract.
+Sam: Someone at the arXiv declared it optimality day and forgot to send the memo.
 
-Maya: So today's theme picked itself. Walls. Where the ceiling is, and who just hit it.
+Maya: It's a mood. And honestly it's a good mood — a lot of what we cover is "here's a new idea." Today is "here's where the road ends."
 
-Sam: And in a couple of cases, who just climbed over one that hadn't moved in eight years.
+Sam: Which is rarer, and arguably more useful.
 
-Maya: Welcome to the SciRate Daily Digest for Wednesday, August twenty-sixth, twenty twenty-six. I'm Maya.
+Maya: This is The SciRate Daily Digest for Wednesday, August twenty-sixth, twenty twenty-six. On the docket: two papers that meet in the middle on the flagship quantum chemistry subroutine, a code that makes magic gates cheaper than they've been in eight years, amplitude estimation that works at whatever depth your hardware can survive, and a way to do a gate between two distant chips for less entanglement than anyone thought possible.
 
-Sam: And I'm Sam. On the docket: those two companion papers nailing down exactly what ground-state energy estimation costs, a quantum code with a transversal T gate that finally breaks a long stalemate, an amplitude estimation scheme that doesn't fall apart at the extremes, and a way to teleport a gate for less than one unit of entanglement.
-
-Maya: No mail today, so let's get straight to it.
+Sam: No mailbag today, so let's go straight in.
 
 [BREAK]
 
-Maya: Start with the wall. Rolando Somma and Ronald de Wolf, "Optimal Lower Bound for Ground-State Energy Estimation with a Guiding State." Sam, set the stake — why does anyone lose sleep over this particular cost?
+Maya: Start where the money is. Somebody hands you a fault-tolerant quantum computer tomorrow morning. What do you run first?
 
-Sam: Because it's the flagship application. You want the lowest energy of some molecule or material, and the standard recipe assumes you can cheaply prepare a trial state — a guess — that has some guaranteed overlap with the true ground state. Then you run Hamiltonian simulation and read off the energy. The bill depends on three knobs: how precise you want the energy, how good your guess is, and how confident you want to be in the answer.
+Sam: Ground state energy estimation. You have a molecule or a material, you want its lowest energy level, and that number drives reaction rates, material properties, basically all of chemistry.
 
-Maya: And we knew the price in terms of the first two.
+Maya: And the standard recipe needs a hint.
 
-Sam: We knew it if you froze the others. The cost goes up inversely with the precision and inversely with the overlap — that pairing was pinned down. But nobody had a lower bound that was tight in all three at once, including the confidence.
+Sam: Right — a guiding state. A trial wavefunction you can prepare cheaply that has some guaranteed overlap with the true ground state. Classical chemistry is quite good at producing those. Then the quantum algorithm sharpens it into an actual energy.
 
-Maya: Why does confidence matter enough to write a paper about? Just run it a few more times and take the median.
+Maya: And the cost depends on what, exactly?
 
-Sam: That's exactly the assumption they kill. When energy estimation is a subroutine buried inside a bigger algorithm, you need the failure probability crushed way down, and median amplification multiplies through everywhere. There are precedents for beating the naive repetition cost — Grover search has a famous trick where error reduction is cheaper than you'd expect. The question was whether something similar hides here.
+Sam: Three knobs. How good your guess is — the overlap. How precisely you want the energy. And how confident you want to be, meaning how small a failure probability you'll accept. The best known algorithms cost you one over the overlap, times one over the precision, times the logarithm of one over the failure probability.
 
-Maya: And the answer is no.
+Maya: So Somma and de Wolf's paper says: that's it, you can't do better.
 
-Sam: The answer is no. Repetition is optimal. The cost grows only logarithmically in your confidence demand, and that logarithm is unavoidable — it multiplies the overlap-and-precision cost, it doesn't hide inside it.
+Sam: That's it. And the reason this is news is that people had already proven optimality one knob at a time. Freeze two of them, and yes, the known algorithm is best possible. What nobody had was a bound where all three are shrinking simultaneously — which is exactly the situation you're in when this thing is a subroutine buried inside a bigger algorithm and you need its failure probability driven way down.
 
-Maya: How do they prove a negative like that?
+Maya: Why is "all three at once" hard? It sounds like bookkeeping.
 
-Sam: The polynomial method, but with a twist I liked. They build a family of diagonal Hamiltonians where running the time evolution for a short interval is essentially a weak, fractional version of a search query — a query that only nudges the phase instead of flipping it. Then distinguishing the flat case from the case with a hidden marked item is just unstructured search in disguise, and classic polynomial extremality results do the rest.
+Sam: It really isn't. The technical engine here is the polynomial method — you argue that any algorithm making a certain number of queries can only compute polynomials of a certain degree, and low-degree polynomials can't separate the hard cases. But the queries here aren't clean yes-no oracle calls, they're fractional — little slivers of time evolution. Somma and de Wolf prove a lemma that converts fractional queries into a polynomial whose degree has an extra additive term set by the failure probability. That additive piece is precisely what buys the tight dependence on all three parameters at once.
 
-Maya: Here's my objection. Those hard instances — diagonal Hamiltonians, a trial state that's just some fixed vector satisfying the overlap promise. Real chemists don't hand the machine an adversarially useless guess. Does this bound actually bind on anything anyone would run?
+Maya: Okay, but here's my problem with black-box lower bounds. You've proven nothing better exists if the only thing you can do is call the time evolution. Real Hamiltonians aren't black boxes — I know the molecule. I know which terms are big.
 
-Sam: That's the most honest and most interesting thing in the paper, and the authors flag it themselves. In both hard families the guiding state is uninformative — it's a fixed state that doesn't depend on the Hamiltonian at all. It clears the overlap bar and tells you nothing else.
+Sam: That's the honest limitation, and the authors say so. The hard instances they build are extremely sparse — one or two nonzero entries per row — so the bound captures nothing about structure. The sparse-access model, which is arguably the physically relevant one, is still open.
 
-Maya: Which suggests the model is wrong, not the algorithm.
+Maya: And the hard cases need a lot of qubits, right?
 
-Sam: It suggests that "trial state with overlap at least this much" may be the wrong abstraction for the guided Hamiltonian problem. Real trial states carry structure. Nobody knows how to formalize that yet, and I think this paper is going to be cited as the reason someone should.
+Sam: The dimension has to grow as the precision and overlap get tight, so this says nothing about small instances. But there's a side observation I keep chewing on. In their hardest family, the guiding state carries no useful information about the ground state whatsoever. It has the required overlap on paper and is otherwise useless.
 
-Maya: Other limits worth naming?
+Maya: Which suggests "has overlap at least this much" is the wrong way to say "I have a good guess."
 
-Sam: The hard instances need dimension that grows as your precision demand grows, so this says nothing about small fixed-size problems. And it's stated for simulation and block-encoding access — sparse-matrix access is left open. They also extend it to actually preparing the ground state, not just measuring its energy, which I thought was the sleeper result.
+Sam: Exactly. If the worst case is a guess that isn't really a guess, then our formalization of helpfulness is what's costing us, not the physics. I'd love to see someone propose a better promise.
 
-Maya: One more thing I have to ask about. The acknowledgments.
+Maya: Who should read this?
 
-Sam: They state that a large language model produced the hard families and a twenty-plus-page proof, which the authors then simplified and verified. I don't know what to do with that yet, other than note it and keep reading proofs carefully.
+Sam: Anyone doing query complexity, and anyone writing resource estimates who wants to stop hoping for an asymptotic miracle. One more thing worth flagging — the authors openly credit a large language model with generating both hard instance families and long, mostly-correct first-draft proofs, which they then simplified by hand.
 
-[BREAK]
-
-Sam: Now the other half of the pincer. Stacey Jeffery and Freek Witteveen, same problem, from above.
-
-Maya: Give me the history, because I gather this was a stubborn one.
-
-Sam: For years, every method for this had a small parasitic overhead — an extra logarithmic factor that got worse as your trial state got worse. Textbook phase estimation has it because you have to suppress the tails of the phase estimate below the level of your overlap, or the junk drowns the signal. The polynomial-transformation approaches have it too, for basically the same reason: you have to push the ripples in your approximating polynomial below the overlap.
-
-Maya: So both roads pay the same toll, for the same reason.
-
-Sam: And Mande and de Wolf had shown the toll wasn't required by any lower bound, and asked whether it was real. Jeffery and Witteveen say no, it's an artifact of how we build these things.
-
-Maya: What's the alternative construction?
-
-Sam: The transducer framework, from Belovs. My mental model: normally when you chain quantum subroutines, each one has to be made nearly perfect before you're allowed to plug it into the next, and you pay for that perfection every time. A transducer instead carries the imperfection through the composition as a kind of accounted-for leakage, and you settle up once at the end.
-
-Maya: So it's an accounting change, not a new physical trick.
-
-Sam: Fundamentally, yes, and that's why I think it'll travel. They rebuild the core decision problem — is the top eigenphase above this threshold or not — as a single canonical transducer, with an amplitude-amplification piece and a phase-estimation piece expressed as a quantum walk on a weighted line. Then binary search over the threshold.
-
-Maya: And the payoff number?
-
-Sam: Calls to the time evolution scale inversely with the overlap times the precision, with no extra logarithm, which meets the Somma–de Wolf bound exactly. And here's the part I liked: the framework gives you separate counts for the time evolution and for the state-preparation routine. Those are very different costs in practice.
-
-Maya: Because preparing the trial state might be the expensive part.
-
-Sam: Or the cheap part — either way you'd rather not have them lumped together in one number. Their state-preparation count still carries some log factors nobody knows how to remove or prove necessary.
-
-Maya: Let me push. Stripping one logarithm out of an asymptotic — is that a result, or is that housekeeping?
-
-Sam: Fair, and it depends entirely on the overlap. If your trial state has, say, one percent overlap with the ground state — which is not a pessimistic number for a serious molecule — that logarithm is a factor of several, sitting on top of the dominant simulation time in your resource estimate. Multiplying a hundred-year runtime by three is not housekeeping.
-
-Maya: But have they shown that in a resource estimate?
-
-Sam: No. Constants aren't optimized, there are no numerics, and there's a promise you have to satisfy — all the eigenphases have to sit in a known window, so you need a prior bound on your spectrum. There's also a modest extra qubit overhead versus standard phase estimation, and running the whole thing coherently inside a larger algorithm is left open.
-
-Maya: So who should read it?
-
-Sam: Anyone doing fault-tolerant resource estimation for chemistry, and anyone who owns a subroutine with an unexplained logarithm in it. The authors argue the same surgery works elsewhere, and I'd bet on them being right.
+Maya: We're going to come back to that.
 
 [BREAK]
 
-Maya: Third paper, and this one starts with a stalemate. Adam Wills, "Improved Quantum Codes with Transversal T Gates." Sam, what's been stuck?
+Maya: Now the fun part. That lower bound has a sibling. Same day, arXiv numbers one apart.
 
-Sam: The parameter frontier for these codes hasn't moved since about twenty seventeen — Hastings and Haah, and Haah alone. Nearly a decade of nothing.
+Sam: Jeffery and Witteveen, and their paper is the algorithm that meets it. So between the two, the query complexity of guided ground state energy estimation is now pinned from both sides. Book closed.
 
-Maya: Remind people why transversal T is the prize.
+Maya: What was the gap they had to close?
 
-Sam: A fault-tolerant computer needs at least one gate outside the easy, cheap set of operations. The dream way to get it is a code where you apply the same simple physical gate to every single qubit and that directly enacts the logical gate on every encoded qubit. No cleanup, no correction, no error propagation between qubits — the operation just can't spread a fault.
+Sam: Every existing method — phase estimation, polynomial filter methods, the whole quantum singular value transformation family — paid an extra logarithmic penalty in one over the overlap. And there was a good reason for it. If your trial state is only slightly aligned with the ground state, there's a lot of spurious signal from all the other eigenstates. Before you can amplify the piece you want, you have to suppress everything else below the level of that small overlap. Suppression means repetition, repetition means a logarithm.
 
-Maya: And this paper's headline?
+Maya: And they just... don't pay it?
 
-Sam: The first codes with a strict transversal T that have a constant encoding rate while the distance still grows. Which means, for the first time, magic state distillation with that gate where the overhead exponent goes to zero.
+Sam: They rebuild the algorithm in something called the transducer framework. The intuition: normally you compose subroutines that each have some small chance of being wrong, so you run each one several times to make its error negligible before feeding it to the next stage. A transducer is a version of a subroutine that composes exactly — no error to reduce, so no repetitions to pay for.
 
-Maya: Translate the overhead exponent.
+Maya: How can a quantum subroutine be exact when the whole point is you don't know the answer?
 
-Sam: Distillation takes many noisy copies of the resource state and makes fewer, better ones. The exponent tells you how the number of raw copies grows as you demand lower error. The best you could previously do with a transversal T was an exponent around zero point seven. This drives it to zero asymptotically — the cost grows slower than any fixed power of the error improvement.
+Sam: The trick is a catalyst. You attach an extra register, run the process, and the register comes back the way it started — like a catalyst in chemistry that enables a reaction without being consumed. The information you want ends up in a sign, and one bit of phase estimation reads it off. Their decision phase estimation transducer is literally a walk on infinitely long lines with geometrically decreasing weights, and whether that series converges is what encodes the answer.
 
-Maya: How does he get past a wall that's held for eight years?
+Maya: Infinite registers on hardware sounds bad.
 
-Sam: A distance formula. He works with a family of codes built from evaluating monomials on a hypercube, and then puncturing them — deleting coordinates — at a set that's closed downward. When both the code's monomial set and the punctured set have that structure, he gets a closed-form expression for the resulting distance. The naive bound says every coordinate you delete can cost you a unit of distance. The formula shows you lose far less than that.
+Sam: They prove you can truncate it with zero error, not small error, as long as each application only climbs a bounded number of rungs. That's a clean lemma and I suspect it gets reused.
 
-Maya: And the codes themselves?
+Maya: Let me push on the payoff, though. You've removed a logarithm. Does anyone building a machine notice?
 
-Sam: Weighted Reed–Muller codes instead of plain ones. The weighting lets him raise the dimension while preserving the divisibility property that makes the transversal T work at all. It's a very concrete, very classical-coding-theory piece of work.
+Sam: Fair. The logarithm of one over the overlap for realistic chemistry instances is maybe ten to twenty. So it's not nothing — but the paper's constants are unoptimized and there's no resource estimate in it, so the honest answer is: it could be a real factor of ten, or it could wash out in compilation. Somebody needs to actually count gates.
 
-Maya: Okay. Distance that grows like two to the power of the square root of the log — that's slower than any power of the block length. Is that really a code, or is it a technicality that happens to make the exponent look good?
+Maya: What's the part you find genuinely useful today, not asymptotically?
 
-Sam: Both, honestly. For the distillation exponent, what matters is a ratio of logarithms, and sub-polynomial growth is enough to send it to zero. For actually protecting data at any size you'd build, it's weak, and nobody has shown me a finite-size table. There's also a rate ceiling — the constant-rate family only works below one third.
+Sam: The calls to the guiding state preparation. Time evolution scales as one over overlap times one over precision, but the state preparation only scales like one over the overlap times a couple of logs of the precision. In real pipelines the trial state preparation is often the expensive circuit, so decoupling those two costs matters immediately.
 
-Maya: And these aren't LDPC codes.
+Maya: Caveats?
 
-Sam: They're not, so you can't run them on hardware directly. They live as an inner code inside a hierarchical architecture, on top of a surface code or similar. He's also explicit that this is stabilizer codes only, and he suspects non-stabilizer constructions could do better.
-
-Maya: Verdict?
-
-Sam: Read it if you work on magic state distillation or on the hunt for LDPC codes with non-Clifford transversal gates. The distance formula is the part I'd steal — it should be useful to the polar-code people who have nothing to do with quantum.
+Sam: They need all eigenphases in a known window — easy to arrange, but assumed. A few more ancillas than standard methods. And whether the subroutine stays coherent enough to drop inside a larger algorithm is left open, which is exactly the use case the lower bound paper cares about.
 
 [BREAK]
 
-Sam: Here's a puzzle for you. Suppose I hand you a method for estimating an amplitude that is provably optimal — except in exactly the regime you most want to use it.
+Maya: Different corner of the field. Adam Wills, transversal T gates. Sam, give me the history first, because I gather this one has been stuck for a while.
 
-Maya: That sounds like a bug someone wrote a theorem around.
+Sam: Eight years stuck. Here's the setup. A fault-tolerant computer needs one gate outside the easy, cheap set — the so-called Clifford gates. The nicest possible way to get it is a code where you apply the same simple physical gate to every single qubit, and that directly enacts the logical gate on every logical qubit. No decoding, no correction step.
 
-Sam: That's the setup for Jona Erle and Bálint Koczor, "Nearly Optimal Amplitude Estimation at any Depth." Amplitude estimation is the engine under quadratic speedups — Monte Carlo, finance, chemistry. The textbook version wants long coherent circuits, ancillas, controlled operations. Early fault-tolerant machines can't afford that.
+Maya: Which the no-go theorems say you can't have for free.
 
-Maya: So the recent trend is trade depth for repetitions.
+Sam: You can't have it together with everything else you want, but these codes do exist. Hastings and Haah found good ones in twenty seventeen, Haah improved them in twenty eighteen, and then — nothing. The rate–distance trade-offs just sat there.
 
-Sam: Right — shorter circuits, run more of them, interpolating between the fully classical scaling and the full quantum speedup. But the accuracy guarantees for those schemes quietly degrade when the amplitude is very close to zero or one.
+Maya: And what breaks the logjam?
 
-Maya: Which is where you'd be if you're certifying that a trial state actually overlaps a ground state.
+Sam: A distance formula. These codes come from evaluating polynomials at points of a hypercube, and you build the quantum code by puncturing — deleting some of those evaluation points. Puncturing usually wrecks your control over the distance. Wills shows that if you delete a specially structured set of points — one that's closed downward, so if you delete a point you delete everything below it — the resulting distance has an exact closed form. It's a clean combinatorial minimum.
 
-Sam: Exactly the link to our first two papers. The overlap you're promised in the guided problem is a small amplitude. And the tool for verifying it collapses back to classical sampling right there.
+Maya: And that formula is new even classically?
 
-Maya: What's their fix?
+Sam: It is, and it's relevant to polar codes, so coding theorists should look at it independently of any quantum motivation.
 
-Sam: Randomize the depth. Instead of picking a number of Grover iterations, you draw it from a distribution — a window — run the circuit, record a plus or minus one, and afterwards fit the angle by minimizing a simple one-dimensional least-squares loss on a grid. No ancillas, no controlled Grover operator.
+Maya: What does it buy on the quantum side?
 
-Maya: And the theorem?
+Sam: Constant rate codes with growing distance and exact transversal T. Those weren't known to exist before — not even allowing a Clifford cleanup afterwards. The consequence people will quote is the magic state distillation exponent, which measures how many input resources you burn per output as you push the error down. That number was stuck around zero point seven. These families drive it toward zero.
 
-Sam: They characterize a whole admissible class of window distributions, and for any of them the error hits the optimal rate uniformly across all amplitudes — including the boundaries. The speedup never collapses.
+Maya: Toward zero, not to zero.
 
-Maya: Why does the boundary stop hurting?
+Sam: Correct, and that matters. It never reaches zero. Asymptotically good transversal T codes remain open.
 
-Sam: This is the nice bit. Near the extremes the loss landscape flattens out — instead of curving quadratically around the right answer, it curves quartically, so the signal telling you where the minimum is gets much weaker. But the measurement outcomes near the boundary are also almost deterministic, so the statistical noise shrinks at the same rate. Signal and noise fall together and the ratio survives.
+Maya: Here's my objection. How fast does the distance actually grow?
 
-Maya: So the earlier fix — I think Huang and Koczor had a patch for the boundary case?
+Sam: Slower than any power of the code size. Roughly, it grows with the square root of the logarithm sitting up in an exponent.
 
-Sam: They did, in the Gaussian-window version, and this paper shows the patch is unnecessary, and worse, invoking it actually gives away the speedup. Their numerics have a plain uniform window beating the Gaussian one, tracking the fundamental statistical limit.
+Maya: So at any size I could build this decade, the distance is small.
 
-Maya: Now the thing that bothers me. I read that the constant in their theorem is north of three million, and it sets the density of the grid you're supposed to search. The experiments use a grid vastly coarser than that. In what sense does the theorem describe the experiment?
+Sam: Basically, yes, and there's no finite-length analysis in the paper — no threshold numbers, no simulation. Also these codes are not low-density parity check, so they're meant for the concatenated, logical-level layer, not as your bottom-level memory.
 
-Sam: It doesn't, and they say so. The theorem is asymptotic; the practical claim rests entirely on the numerics — about a million total Grover queries per run, over ten thousand runs. Those are convincing as far as they go, but the guarantee and the demonstration are two different objects held together by hope.
+Maya: Then why does it matter now?
 
-Maya: Anything else you'd flag?
-
-Sam: The analysis assumes perfect, noiseless Grover iterates, and there's no adaptive variant. Given that the whole selling point is early fault-tolerant hardware, noise robustness is the obvious next paper.
+Sam: Two reasons. First, no Clifford correction means a clean magic-state-in, magic-state-out distillation routine, which is fast and simple to compile. Second, it hands the LDPC community a target: here are parameters that are achievable in principle, go find a sparse code that gets near them. That's how this field has moved before.
 
 [BREAK]
 
-Maya: Last one, and it opens with a number I refused to believe. A distributed Fourier transform whose entanglement cost goes from quadratic in the number of qubits to a constant. About twelve units, forever.
+Maya: This next one has a result I did not expect. Erle and Koczor, amplitude estimation. Sam, the punchline?
 
-Sam: Lukas Schmitt and David Sutter, "Essentially optimal gate teleportation." And yes — twelve and change, no matter how big the transform.
+Sam: Pick your circuit depths at random, from a distribution, and then just fit the outcomes with least squares. And the plain uniform distribution — the laziest possible choice — beats the carefully engineered Gaussian one that the previous paper in this line proposed.
 
-Maya: Set the scene. Two parties, no direct interaction.
+Maya: Back up. What's amplitude estimation for?
 
-Sam: Alice and Bob are on separate chips or separate nodes. They want to apply a two-qubit gate across the boundary. They can't interact directly, so they burn pre-shared entanglement and send classical messages. The standard construction spends one full unit of entanglement — one ebit — per gate.
+Sam: It's the engine behind the quadratic speedup for Monte Carlo estimation — finance, chemistry, anything where you're averaging over samples. Textbook version needs deep coherent circuits, ancillas, controlled operations, a Fourier transform. Early machines can't afford that. So there's been a line of work on low-depth variants: spend less depth, take more shots, slide along a trade-off between classical sampling and the full quantum limit.
 
-Maya: Regardless of the gate.
+Maya: And those work.
 
-Sam: Regardless. And that's the mismatch that motivates the paper. A controlled-phase gate with a tiny angle barely entangles anything — it's nearly the identity. Charging it a full ebit is like paying full postage to mail an empty envelope. Eisert and colleagues raised this as an open question years ago; there were numerical hints it was possible, but no deterministic protocol.
+Sam: They work in the middle. Here's the wrinkle that motivates this paper: their optimality guarantees quietly fall apart when the amplitude you're estimating is very close to zero or very close to one. Right at the edges the method degrades back to classical sampling and you lose the speedup.
 
-Maya: And now there is.
+Maya: Which is annoying, because near zero is exactly where you'd want to certify "my prepared state has almost no overlap with the bad subspace."
 
-Sam: Four rounds, four classical bits, and a resource state that is neither maximally entangled nor two-dimensional — it's a pair of three-level systems in a carefully chosen unequal superposition. The entanglement consumed shrinks continuously to zero as the gate angle goes to zero.
+Sam: Which ties straight back to our first two papers — verifying a guiding state's overlap is precisely an extreme-amplitude problem. This paper fixes the edges. They prove that for any depth distribution satisfying a mass condition and some moment bounds — a whole admissible family, not one lucky choice — you get the near-optimal trade-off uniformly across every amplitude, boundaries included.
 
-Maya: How does the trick work, at the level of intuition?
+Maya: And the trade-off itself is?
 
-Sam: Alice's first move collapses that three-level resource into a two-dimensional branch, and the crucial thing is the outcome probability is exactly one half regardless of her input, so nothing about her state leaks. Bob then treats all three components symmetrically, so his measurement learns nothing and destroys no coherence. The nonlocal phase gets absorbed by choosing two complex numbers at the intersection of two circles — and whether those circles intersect is precisely the condition for the protocol to be feasible.
+Sam: The square of your maximum depth times the number of repetitions is what's fixed. Double your allowed depth, you need four times fewer shots. Turn the depth knob all the way down and you're doing classical sampling; turn it all the way up and you're at the Heisenberg limit. Continuously in between. And no ancillas, no controlled Grover operators.
 
-Maya: And there's a converse.
+Maya: Alright, my skeptical question. Proofs with envelopes and Bernstein inequalities usually hide ugly constants. How ugly?
 
-Sam: A matching-in-form lower bound from majorization, plus a sharper one for resource states of any fixed dimension — which shows something a bit ominous. For any bounded Schmidt rank, some angles still demand a full ebit. So genuinely optimal teleportation may need unboundedly large resource states.
+Sam: Very. The constant that sets their search grid is in the millions, which in the worst case means about a million grid points per unit of accuracy. So the theorem is asymptotic in spirit. The practical claim rests on their numerics — and the numerics shown are one amplitude, one budget of about a million total calls, where the uniform window tracks the statistical optimum nicely.
 
-Maya: Where does the protocol actually beat one ebit?
+Maya: One amplitude and one budget is thin evidence for "use this tomorrow."
 
-Sam: Roughly below zero point six radians — about thirty-five degrees. Past that you fall back to the old scheme. But small-angle controlled phases are exactly what a Fourier transform is built out of, and the small ones dominate as it grows. That's where the constant comes from.
+Sam: It is. What I'd want before believing it operationally is a sweep across amplitudes, including right at the edges where the theory does its work, and some noise. Their model assumes an exact noiseless echo measurement.
 
-Maya: Here's my worry. In a real modular machine, the bottleneck isn't ebits on a whiteboard — it's the rate and fidelity of entanglement distribution. Bell pairs are what the hardware makes. Is a bespoke unequal three-level resource state actually cheaper to obtain than one Bell pair?
+Maya: But the structural claim stands.
 
-Sam: You'd have to convert, and asymptotically the conversion cost is exactly the entropy they're counting, so the bookkeeping is honest. Per shot, in a lab, with finite-size effects — that's a real engineering question and the paper doesn't touch it.
-
-Maya: Remaining gaps?
-
-Sam: There's still daylight between the achievability and the converse. The exact cost of the gate is unknown. And general two-qubit unitaries are handled by splitting them into three pieces and teleporting each separately, which they admit is wasteful. Also — like the first paper today — they credit a language model with helping develop the protocol and the tighter bound.
-
-Maya: Three of five today.
-
-Sam: Three of five.
+Sam: The structural claim is the durable part: you don't need a bespoke depth distribution. Randomize your depths sensibly, fit with least squares, and the optimality comes along for free. That's a nice thing for hardware people who want one knob labelled "however much depth I've got today."
 
 [BREAK]
 
-Maya: Sam, one result that stuck.
+Maya: Last one, and it starts from something that has bugged people for twenty-six years. I have two chips, far apart. I want to run a controlled-phase gate between them — but with a tiny rotation angle, so it barely entangles anything.
 
-Sam: The signal-and-noise cancellation in the amplitude estimation paper. The loss flattens out at the boundary, which should ruin you, and the measurement noise vanishes at precisely the matching rate. That's not a fix, that's the problem being better behaved than anyone assumed.
+Sam: And the textbook protocol charges you a full unit of shared entanglement. One ebit. Same as for a maximally entangling gate.
 
-Maya: Mine is the caveat, not the theorem. Somma and de Wolf prove the guided ground-state problem is exactly as hard as we thought — and then point out that in their hard instances the guiding state is a fixed vector that knows nothing about the Hamiltonian. It clears the bar and tells you nothing. If the abstraction we've been optimizing against for a decade is the wrong one, that's the more interesting result than the bound.
+Maya: That's the mismatch.
 
-Sam: And somebody's going to have to invent the right one.
+Sam: Eisert and collaborators noticed it back in two thousand. A gate that does almost nothing shouldn't cost the same as a gate that does everything. Schmitt and Sutter close most of that gap.
 
-Maya: Links to all five papers are in the show notes, along with a link to send us questions — we do read them, and good ones make the mailbag.
+Maya: How?
 
-Sam: Thanks for listening. We'll see you tomorrow.
+Sam: The resource state isn't two qubits, it's effectively a pair of qutrits — a three-level shared state, tuned to the gate's angle. Alice does a controlled operation that collapses it onto a two-dimensional subspace with an outcome that's fifty-fifty no matter what her input was, so nothing leaks. Bob applies a permutation, injects the nonlocal phase with a diagonal, and measures in a Fourier basis so he can't learn which branch Alice is in. Four bits of classical communication, four rounds, deterministic, exact.
+
+Maya: And the cost?
+
+Sam: Strictly less than one ebit — the first deterministic gate teleportation that does that — and it goes to zero smoothly as the angle goes to zero. They also prove a converse using majorization, and at small angles the protocol matches it to leading order.
+
+Maya: So it's not tight everywhere.
+
+Sam: No. There's a gap between what they achieve and what they prove is necessary, and above a crossover angle you just fall back to the standard one-ebit protocol. And they show something slightly sad: any fixed finite-dimensional resource state still needs a full ebit for some angles.
+
+Maya: Give me the headline application.
+
+Sam: Split a quantum Fourier transform across two parties, half the qubits each. The naive construction costs one ebit per nonlocal gate, so the entanglement grows with the square of the number of qubits. With this, the total is bounded by about twelve ebits — for any size.
+
+Maya: Twelve, forever. That's a real number.
+
+Sam: Because the controlled-phase angles in a Fourier transform shrink geometrically, and now the cost shrinks with them. The sum converges.
+
+Maya: Here's my worry, though. You said four rounds of back-and-forth classical communication. If my chips are in different cryostats, or different buildings, that latency per gate might dominate whatever entanglement I saved.
+
+Sam: That's the right objection and the paper doesn't address it. There's also no noise analysis — this is exact, ideal LOCC. And the extension to general two-qubit gates teleports the three rotation components separately, which the authors admit is not optimal.
+
+Maya: And I notice the same footnote as this morning's first paper.
+
+Sam: Yes — an LLM credited with helping develop both the protocol and the tighter converse. The proofs are self-contained and checkable, and the authors flag it explicitly, which is the right behavior. But two of five papers today, and we should say plainly: readers should verify.
+
+[BREAK]
+
+Maya: One result each. What stuck?
+
+Sam: The pair. Two teams, independently, posting the matching upper and lower bound for the same subroutine on the same day — and the answer being that the flagship chemistry primitive is now completely characterized. That doesn't happen often.
+
+Maya: Mine is the twelve ebits. Something that used to grow with the square of your system size collapsing to a constant you could write on an index card — that's the kind of result that changes how somebody designs a modular machine.
+
+Sam: And I'd add: I want to see whether Wills' distance formula shows up in a classical coding paper within six months. I think it will.
+
+Maya: Links to all five papers are in the show notes, along with a link to send us questions — we do read them, and we build mailbag segments out of them.
+
+Sam: Bring us a good objection. Maya will use it against me.
+
+Maya: I absolutely will. See you tomorrow.
