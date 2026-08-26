@@ -17,8 +17,10 @@ import os
 import re
 import subprocess
 import tempfile
+import threading
 import time
 import wave
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import requests
@@ -225,19 +227,33 @@ def _find_audio(node) -> tuple[bytes, int] | None:
     return None
 
 
-# Keep under the ~10 requests/minute TTS limit when per-turn requests
-# return quickly; a 429 retry still handles the occasional overshoot.
+# Keep under the ~10 requests/minute TTS limit: request STARTS are spaced
+# globally (across worker threads); a 429 retry still handles overshoot.
 MIN_REQUEST_INTERVAL_S = float(os.environ.get("GEMINI_TTS_MIN_INTERVAL_S") or 6.0)
+# Concurrent per-turn requests. Generation dominates wall time (~40s/turn
+# observed), so a few workers keep throughput near the RPM cap instead of
+# one-at-a-time taking over an hour per episode.
+CONCURRENCY = int(os.environ.get("GEMINI_TTS_CONCURRENCY") or 3)
+# 429: rate limit / quota. 500/502/503/504: transient server errors — a
+# 503 "high demand" spike killed a whole episode once, so wait these out.
+_RETRY_STATUSES = {429, 500, 502, 503, 504}
+_pace_lock = threading.Lock()
 _last_request_ts = 0.0
 
 
-def _synthesize_chunk(text: str, voices: dict[str, str], api_key: str, model: str) -> tuple[bytes, int]:
+def _pace() -> None:
     global _last_request_ts
-    since = time.monotonic() - _last_request_ts
-    if since < MIN_REQUEST_INTERVAL_S:
-        time.sleep(MIN_REQUEST_INTERVAL_S - since)
-    _last_request_ts = time.monotonic()
-    for attempt in range(4):
+    with _pace_lock:
+        since = time.monotonic() - _last_request_ts
+        wait = MIN_REQUEST_INTERVAL_S - since
+        _last_request_ts = time.monotonic() + max(0.0, wait)
+    if wait > 0:
+        time.sleep(wait)
+
+
+def _synthesize_chunk(text: str, voices: dict[str, str], api_key: str, model: str) -> tuple[bytes, int]:
+    for attempt in range(6):
+        _pace()
         resp = requests.post(
             API_URL,
             headers={
@@ -248,13 +264,13 @@ def _synthesize_chunk(text: str, voices: dict[str, str], api_key: str, model: st
             json=build_request_body(text, voices, model),
             timeout=240,
         )
-        # Per-minute rate limits clear on their own — wait them out. (A daily
-        # quota exhaustion also returns 429; after the retries it falls
-        # through to the caller's edge-tts fallback.)
-        if resp.status_code == 429 and attempt < 3:
+        # Rate limits and "high demand" spikes clear on their own — wait
+        # them out. (A daily quota exhaustion also returns 429; after the
+        # retries it falls through to the caller's edge-tts fallback.)
+        if resp.status_code in _RETRY_STATUSES and attempt < 5:
             retry_after = resp.headers.get("Retry-After")
             wait = min(float(retry_after) if retry_after else 30.0 * (attempt + 1), 120)
-            log.info("Gemini TTS rate-limited (429); retrying in %.0fs", wait)
+            log.info("Gemini TTS HTTP %d; retrying in %.0fs", resp.status_code, wait)
             time.sleep(wait)
             continue
         break
@@ -310,17 +326,33 @@ def synthesize_dialogue(
                 pcm.extend(data)
     else:
         seg_groups = [merge_consecutive_turns(t) for t in seg_turns]
-        total = sum(len(g) for g in seg_groups)
+        tasks = [
+            (si, gi, speaker, text)
+            for si, groups in enumerate(seg_groups)
+            for gi, (speaker, text) in enumerate(groups)
+        ]
+        total = len(tasks)
         gap = b"\x00\x00" * int(TURN_GAP_S * rate)
+
+        # Turns are independent single-voice requests, so synthesize a few
+        # concurrently (request starts stay globally paced) and assemble
+        # the PCM strictly in script order afterwards.
+        def render(task):
+            nonlocal done
+            si, gi, speaker, text = task
+            data, r = _synthesize_chunk(text, {speaker: voices[speaker]}, api_key, model)
+            done += 1
+            log.info("Gemini TTS turn %d/%d done (%s)", done, total, speaker)
+            return (si, gi), (data, r)
+
+        with ThreadPoolExecutor(max_workers=max(1, CONCURRENCY)) as pool:
+            results = dict(pool.map(render, tasks))
+
         for si, groups in enumerate(seg_groups):
             if si:
                 pcm.extend(_stinger_pcm(rate))
-            for gi, (speaker, text) in enumerate(groups):
-                done += 1
-                log.info("Gemini TTS turn %d/%d (%s)", done, total, speaker)
-                data, rate = _synthesize_chunk(
-                    text, {speaker: voices[speaker]}, api_key, model
-                )
+            for gi in range(len(groups)):
+                data, rate = results[(si, gi)]
                 if gi:
                     pcm.extend(gap)
                 pcm.extend(data)
