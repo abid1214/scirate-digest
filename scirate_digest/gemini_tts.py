@@ -30,9 +30,13 @@ log = logging.getLogger(__name__)
 API_URL = "https://generativelanguage.googleapis.com/v1beta/interactions"
 # Use `or` (not a default arg): CI passes these as empty strings when the
 # optional repo variables are unset, and get(key, default) returns "" then.
-# Pro is Google's quality TTS tier; the 3.1 flash preview produced audible
-# distortion on multi-speaker episodes. Override with GEMINI_TTS_MODEL.
-DEFAULT_MODEL = os.environ.get("GEMINI_TTS_MODEL") or "gemini-2.5-pro-preview-tts"
+# Per-turn synthesis makes ~100 requests per episode, which exhausts the
+# pro TTS preview's small daily request quota mid-episode (observed: hard
+# 429 "check your plan and billing" at turn 41). The 2.5 flash TTS preview
+# has a much higher daily quota; the distortion previously heard on flash
+# was the separate 3.1 preview in multi-speaker mode. Override with
+# GEMINI_TTS_MODEL.
+DEFAULT_MODEL = os.environ.get("GEMINI_TTS_MODEL") or "gemini-2.5-flash-preview-tts"
 API_REVISION = os.environ.get("GEMINI_API_REVISION") or "2026-05-20"
 
 # Host name (as it appears in the script) -> Gemini prebuilt voice name.
@@ -221,7 +225,18 @@ def _find_audio(node) -> tuple[bytes, int] | None:
     return None
 
 
+# Keep under the ~10 requests/minute TTS limit when per-turn requests
+# return quickly; a 429 retry still handles the occasional overshoot.
+MIN_REQUEST_INTERVAL_S = float(os.environ.get("GEMINI_TTS_MIN_INTERVAL_S") or 6.0)
+_last_request_ts = 0.0
+
+
 def _synthesize_chunk(text: str, voices: dict[str, str], api_key: str, model: str) -> tuple[bytes, int]:
+    global _last_request_ts
+    since = time.monotonic() - _last_request_ts
+    if since < MIN_REQUEST_INTERVAL_S:
+        time.sleep(MIN_REQUEST_INTERVAL_S - since)
+    _last_request_ts = time.monotonic()
     for attempt in range(4):
         resp = requests.post(
             API_URL,
