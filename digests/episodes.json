@@ -2,48 +2,48 @@
   {
     "date": "2026-08-26",
     "title": "SciRate Digest \u2014 2026-08-26",
-    "summary": "Today's 5 papers: Dynamical Consequences of Nontrivial Topology of Molecular Conical Intersections; Certified Randomness without Structure Against Shallow-Query Adversaries; Masked Differential-linear Distinguishers and Quantum Approaches; Graphix: A software framework for Measurement-Based Quantum Computation; Geometry-controlled correlated electric-field noise in enclosed ion traps from billiard return spectra.",
+    "summary": "Today's 5 papers: Optimal Lower Bound for Ground-State Energy Estimation with a Guiding State; Optimal Quantum Algorithm for Ground-State Energy Estimation with a Guiding State; Improved Quantum Codes with Transversal T Gates; Nearly Optimal Amplitude Estimation at any Depth; Essentially optimal gate teleportation.",
     "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-08-26/digest.mp3",
-    "mp3_bytes": 18816429,
+    "mp3_bytes": 18091437,
     "papers": [
       {
         "rank": 1,
-        "uid": "2608.24864",
-        "title": "Dynamical Consequences of Nontrivial Topology of Molecular Conical Intersections",
-        "abs_url": "https://arxiv.org/abs/2608.24864",
-        "scirate_url": "https://scirate.com/arxiv/2608.24864",
+        "uid": "2608.24493",
+        "title": "Optimal Lower Bound for Ground-State Energy Estimation with a Guiding State",
+        "abs_url": "https://arxiv.org/abs/2608.24493",
+        "scirate_url": "https://scirate.com/arxiv/2608.24493",
         "scites": null
       },
       {
         "rank": 2,
-        "uid": "2608.24832",
-        "title": "Certified Randomness without Structure Against Shallow-Query Adversaries",
-        "abs_url": "https://arxiv.org/abs/2608.24832",
-        "scirate_url": "https://scirate.com/arxiv/2608.24832",
+        "uid": "2608.24494",
+        "title": "Optimal Quantum Algorithm for Ground-State Energy Estimation with a Guiding State",
+        "abs_url": "https://arxiv.org/abs/2608.24494",
+        "scirate_url": "https://scirate.com/arxiv/2608.24494",
         "scites": null
       },
       {
         "rank": 3,
-        "uid": "2608.24799",
-        "title": "Masked Differential-linear Distinguishers and Quantum Approaches",
-        "abs_url": "https://arxiv.org/abs/2608.24799",
-        "scirate_url": "https://scirate.com/arxiv/2608.24799",
+        "uid": "2608.24000",
+        "title": "Improved Quantum Codes with Transversal T Gates",
+        "abs_url": "https://arxiv.org/abs/2608.24000",
+        "scirate_url": "https://scirate.com/arxiv/2608.24000",
         "scites": null
       },
       {
         "rank": 4,
-        "uid": "2608.24781",
-        "title": "Graphix: A software framework for Measurement-Based Quantum Computation",
-        "abs_url": "https://arxiv.org/abs/2608.24781",
-        "scirate_url": "https://scirate.com/arxiv/2608.24781",
+        "uid": "2608.24434",
+        "title": "Nearly Optimal Amplitude Estimation at any Depth",
+        "abs_url": "https://arxiv.org/abs/2608.24434",
+        "scirate_url": "https://scirate.com/arxiv/2608.24434",
         "scites": null
       },
       {
         "rank": 5,
-        "uid": "2608.24770",
-        "title": "Geometry-controlled correlated electric-field noise in enclosed ion traps from billiard return spectra",
-        "abs_url": "https://arxiv.org/abs/2608.24770",
-        "scirate_url": "https://scirate.com/arxiv/2608.24770",
+        "uid": "2608.24345",
+        "title": "Essentially optimal gate teleportation",
+        "abs_url": "https://arxiv.org/abs/2608.24345",
+        "scirate_url": "https://scirate.com/arxiv/2608.24345",
         "scites": null
       }
     ]
