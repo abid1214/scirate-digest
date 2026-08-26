@@ -34,7 +34,9 @@ jobs:
     # scrape is routed through a scraping-API service (SCRAPERAPI_KEY or
     # SCRAPINGBEE_KEY secret) that fetches from residential proxies.
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    # Per-turn TTS makes many short Gemini requests; the pro model is slow,
+    # so the audio phase alone can take ~40 minutes.
+    timeout-minutes: 85
     steps:
       - uses: actions/checkout@v4
 
@@ -54,7 +56,7 @@ jobs:
           fi
 
       - name: Build digest
-        timeout-minutes: 40
+        timeout-minutes: 75
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SCRAPERAPI_KEY: ${{ secrets.SCRAPERAPI_KEY }}

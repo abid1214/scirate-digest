@@ -52,6 +52,7 @@ _BREAK_RE = re.compile(r"^\s*\[BREAK\]\s*$", re.IGNORECASE)
 # Musical bumper played at [BREAK] markers. Path is repo-relative in CI.
 STINGER_PATH = os.environ.get("STINGER_PATH") or "assets/stinger.mp3"
 BREAK_SILENCE_S = 0.6  # breathing room on each side of the stinger
+TURN_GAP_S = 0.35  # beat between speaker turns when synthesizing per-turn
 
 
 def split_segments(transcript: str) -> list[str]:
@@ -133,6 +134,20 @@ def render_chunk(chunk: list[tuple[str, str]]) -> str:
     return "\n".join(f"{s}: {t}" for s, t in chunk)
 
 
+def merge_consecutive_turns(
+    turns: list[tuple[str, str]], max_chars: int = MAX_CHARS
+) -> list[tuple[str, str]]:
+    """Join adjacent turns by the same speaker (capped at max_chars) so
+    per-turn synthesis makes one request per contiguous speaker run."""
+    merged: list[tuple[str, str]] = []
+    for s, t in turns:
+        if merged and merged[-1][0] == s and len(merged[-1][1]) + len(t) + 1 <= max_chars:
+            merged[-1] = (s, merged[-1][1] + " " + t)
+        else:
+            merged.append((s, t))
+    return merged
+
+
 # Gemini TTS takes natural-language performance direction in the input.
 # Override with GEMINI_TTS_STYLE.
 # Deliberately minimal: heavy character/energy direction was found to
@@ -152,9 +167,14 @@ def build_request_body(text: str, voices: dict[str, str], model: str) -> dict:
     transcript as a conversation and names the speakers, matching speech_config."""
     who = " and ".join(voices.keys())
     style = os.environ.get("GEMINI_TTS_STYLE") or DEFAULT_STYLE
+    lead = (
+        f"TTS the following conversation between {who}:"
+        if len(voices) > 1
+        else f"TTS the following podcast lines spoken by {who}:"
+    )
     return {
         "model": model,
-        "input": f"{style}\nTTS the following conversation between {who}:\n{text}",
+        "input": f"{style}\n{lead}\n{text}",
         "response_format": {"type": "audio"},
         "generation_config": {
             "speech_config": [{"speaker": s, "voice": v} for s, v in voices.items()]
@@ -244,21 +264,44 @@ def synthesize_dialogue(
             "No dialogue turns parsed — the script must use 'Maya:'/'Sam:' lines"
         )
 
-    # Chunk within each segment so [BREAK] boundaries align with synthesis
-    # boundaries and the stinger can be spliced between them.
-    seg_chunks = [chunk_turns(t) for t in seg_turns]
-    total = sum(len(c) for c in seg_chunks)
+    # Default mode synthesizes each speaker's turns as separate SINGLE-voice
+    # requests: with exactly one voice configured per request, the model has
+    # no speaker-to-voice assignment to get wrong, so voices can never swap
+    # or gender-drift mid-episode (which multi-speaker mode does, per chunk).
+    # GEMINI_TTS_MODE=multi restores whole-conversation chunks.
+    mode = (os.environ.get("GEMINI_TTS_MODE") or "turns").strip().lower()
     pcm = bytearray()
     rate = DEFAULT_RATE
     done = 0
-    for si, chunks in enumerate(seg_chunks):
-        if si:
-            pcm.extend(_stinger_pcm(rate))
-        for chunk in chunks:
-            done += 1
-            log.info("Gemini TTS chunk %d/%d", done, total)
-            data, rate = _synthesize_chunk(render_chunk(chunk), voices, api_key, model)
-            pcm.extend(data)
+    if mode == "multi":
+        # Chunk within each segment so [BREAK] boundaries align with synthesis
+        # boundaries and the stinger can be spliced between them.
+        seg_chunks = [chunk_turns(t) for t in seg_turns]
+        total = sum(len(c) for c in seg_chunks)
+        for si, chunks in enumerate(seg_chunks):
+            if si:
+                pcm.extend(_stinger_pcm(rate))
+            for chunk in chunks:
+                done += 1
+                log.info("Gemini TTS chunk %d/%d", done, total)
+                data, rate = _synthesize_chunk(render_chunk(chunk), voices, api_key, model)
+                pcm.extend(data)
+    else:
+        seg_groups = [merge_consecutive_turns(t) for t in seg_turns]
+        total = sum(len(g) for g in seg_groups)
+        gap = b"\x00\x00" * int(TURN_GAP_S * rate)
+        for si, groups in enumerate(seg_groups):
+            if si:
+                pcm.extend(_stinger_pcm(rate))
+            for gi, (speaker, text) in enumerate(groups):
+                done += 1
+                log.info("Gemini TTS turn %d/%d (%s)", done, total, speaker)
+                data, rate = _synthesize_chunk(
+                    f"{speaker}: {text}", {speaker: voices[speaker]}, api_key, model
+                )
+                if gi:
+                    pcm.extend(gap)
+                pcm.extend(data)
 
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
