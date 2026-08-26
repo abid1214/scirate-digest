@@ -91,8 +91,10 @@ optical bench, no atoms yet"), never as a recited list.
 - Let the hosts be people: Maya probes and occasionally pushes back; Sam \
 admits what surprised him; they hand off naturally.
 - PACING (hard limits): no single speaking turn may run longer than about a \
-minute of speech — roughly one hundred and twenty words; most turns should \
-be far shorter (two to four sentences). In the mailbag, each host's total \
+minute of speech — roughly one hundred and twenty words. Most turns should \
+run three to six sentences: substantial enough to develop one idea, never a \
+monologue. Avoid rapid one-line ping-pong — keep the whole episode to at \
+most about seventy speaking turns. In the mailbag, each host's total \
 contribution to a given question stays under a minute, so a question is \
 fully answered in under two minutes of back-and-forth.
 
