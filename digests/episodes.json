@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-08-27",
+    "title": "SciRate Digest \u2014 2026-08-27",
+    "summary": "Today's 5 papers: Real-time decoder for a MegaQuOp quantum computer using a single CPU; Fast-forwarding quantum algorithms for weakly nonlinear dissipative differential equations and beyond; Asymptotically optimal purification of noisy unitary channels in any dimension; Distributed Trotterization with optimal time-scaling entanglement cost; Fault-tolerant $|\\sqrt{ \\mathrm{T} }\\rangle$ state preparation and injection for more efficient fine-grained quantum circuit synthesis.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-08-27/digest.mp3",
+    "mp3_bytes": 16463277,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2608.25027",
+        "title": "Real-time decoder for a MegaQuOp quantum computer using a single CPU",
+        "abs_url": "https://arxiv.org/abs/2608.25027",
+        "scirate_url": "https://scirate.com/arxiv/2608.25027",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2608.25822",
+        "title": "Fast-forwarding quantum algorithms for weakly nonlinear dissipative differential equations and beyond",
+        "abs_url": "https://arxiv.org/abs/2608.25822",
+        "scirate_url": "https://scirate.com/arxiv/2608.25822",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2608.26061",
+        "title": "Asymptotically optimal purification of noisy unitary channels in any dimension",
+        "abs_url": "https://arxiv.org/abs/2608.26061",
+        "scirate_url": "https://scirate.com/arxiv/2608.26061",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2608.25896",
+        "title": "Distributed Trotterization with optimal time-scaling entanglement cost",
+        "abs_url": "https://arxiv.org/abs/2608.25896",
+        "scirate_url": "https://scirate.com/arxiv/2608.25896",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2608.25797",
+        "title": "Fault-tolerant $|\\sqrt{ \\mathrm{T} }\\rangle$ state preparation and injection for more efficient fine-grained quantum circuit synthesis",
+        "abs_url": "https://arxiv.org/abs/2608.25797",
+        "scirate_url": "https://scirate.com/arxiv/2608.25797",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-08-26",
     "title": "SciRate Digest \u2014 2026-08-26",
     "summary": "Today's 5 papers: Optimal Lower Bound for Ground-State Energy Estimation with a Guiding State; Optimal Quantum Algorithm for Ground-State Energy Estimation with a Guiding State; Improved Quantum Codes with Transversal T Gates; Nearly Optimal Amplitude Estimation at any Depth; Essentially optimal gate teleportation.",
