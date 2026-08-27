@@ -1,153 +1,171 @@
-Maya: I asked you what today's five papers had in common and you said "invoices."
+Maya: I spent Sunday watching my laptop fan scream at me because I asked it to render an eleven-minute video.
 
-Sam: I stand by it. Every one of these is somebody totalling up a bill — classical compute, simulated time, queries to a black box, entanglement, space-time volume — and then arguing about whether the number can be smaller.
+Sam: That's funny, because the top paper today runs the entire classical error-correction stack for a fault-tolerant quantum computer — hundreds of logical qubits — on a laptop. Twelve cores. It probably didn't even get warm.
 
-Maya: Welcome to The SciRate Daily Digest for Thursday, August twenty-seventh, twenty twenty-six. Today: a real-time decoder that runs on a laptop, a quantum differential-equation solver that stops caring how long you simulate, the exact price of cleaning up an unknown gate, distributed simulation where accuracy becomes free, and a magic state that's only half as magic.
+Maya: Welcome to the SciRate Daily Digest for Thursday, August twenty-seventh, twenty twenty-six. I'm Maya.
 
-Sam: Five different currencies, five different exchange rates. Let's start with the one that's been keeping architects up at night.
+Sam: And I'm Sam. Today: real-time decoding on consumer hardware, a quantum algorithm whose cost stops growing no matter how far into the future you integrate, the exact optimal way to clean up a noisy gate you don't know, an old counterexample in channel capacity rebuilt out of shuffles, and a distributed simulation protocol that stops overpaying for entanglement.
 
-[BREAK]
-
-Maya: So the top paper today is from Min Ye, Andrii Maksymov and Nicolas Delfosse, and the headline is almost rude in its simplicity. They decoded a full fault-tolerant program — hundreds of logical qubits, roughly a million non-Clifford gates — in real time, on twelve cores of a laptop.
-
-Sam: And "real time" is the load-bearing phrase. An error-corrected machine spits out syndrome measurements continuously, and if your classical decoder falls behind even slightly, the backlog compounds — the quantum computer sits there idling, decohering, waiting for permission to proceed. That fear is why people have been building custom FPGAs and dedicated decoding chips.
-
-Maya: Right, so what did they do that everyone else's decoders couldn't?
-
-Sam: The architecture did a lot of the work, honestly. This is a trapped-ion design where logical operations aren't done by cutting and merging code blocks — no lattice surgery. You keep the same syndrome extraction running and you inject cat-state measurements into the stream. And they noticed something lovely: every way a cat measurement can fail leaves exactly the same fingerprint as a failure already present in the ordinary round.
-
-Maya: Meaning the decoder doesn't have to learn a new problem every time you do a logical operation.
-
-Sam: Exactly — the graph the decoder walks over never changes shape. You just nudge some probability weights. So generating the error model on the fly, which is normally a whole compilation step, becomes bookkeeping. They run two decoders side by side: a steady one that maintains the running error frame, and a quick shallow one that only wakes up during a logical measurement, because that's the one thing the quantum computer is actually waiting on.
-
-Maya: Okay, here's my objection. None of this syndrome data came from an ion trap. It's all simulated, no closed-loop control system. Isn't the hard part exactly the integration?
-
-Sam: That's fair, and they say so. What I'd add is a second caveat that matters more to me: they assume a syndrome cycle takes one to five milliseconds. Trapped ions really are that slow, and slowness is a gift to your classical computer. A superconducting machine with microsecond cycles is roughly a thousand times harder on this axis. So this result is genuinely about trapped ions, not about decoding in general.
-
-Maya: And the slowdown numbers themselves?
-
-Sam: Under one percent at their better two-qubit error rate. Push the error rate up fivefold and it's a twelve percent stretch, plus some ugly tail behaviour — rare episodes where the decoder stalls for tens of milliseconds. Those tails are what an engineer would actually design around.
-
-Maya: Who should read it?
-
-Sam: Anyone who currently has "build a decoding ASIC" on their roadmap. This says: check your cycle time first, because you may be able to buy an off-the-shelf machine per handful of code blocks and be done.
+Maya: Five papers, no filler. Let's go.
 
 [BREAK]
 
-Sam: Next one starts from something that sounds like a theorem violation.
+Maya: Start with the thing that has quietly terrified hardware people for a decade. An error-corrected machine spits out measurement data constantly, and you have to interpret it faster than it arrives. If you can't — what actually happens?
 
-Maya: Go on.
+Sam: You get a backlog, and it's not a gentle one. The decoder falls behind, the machine has to wait, and the wait compounds — the classic result is that the slowdown grows exponentially in the length of the computation. So people have assumed you'd need dedicated hardware. Custom chips, field-programmable gate arrays sitting next to the cryostat, the whole industrial apparatus.
 
-Sam: There's a well-known no-fast-forwarding result — in general you cannot simulate a system's evolution in less time than the evolution itself takes. Yixiang Li and Dong An have a quantum algorithm for nonlinear differential equations whose cost has no explicit dependence on the simulated time at all. Simulate to a hundred, simulate to a million, same query count.
+Maya: And this group — Ye, Maksymov and Delfosse at IonQ — say: no, a laptop.
 
-Maya: So where's the escape hatch?
+Sam: A laptop, and not a memory experiment either. This is a full application-scale workload: roughly four hundred logical qubits, about a million of the expensive non-Clifford gates, tens of millions of syndrome-extraction cycles spread across eighty-eight code blocks and twenty magic-state factories. The whole classical pipeline, including building the error model on the fly, adds under half a percent to the runtime at their baseline gate error rate.
 
-Sam: Dissipation. If your system loses energy and forgets its initial condition, then the state at the end only remembers a short recent window. Everything before that has been washed out. So you don't simulate the whole trajectory — you start the clock late, near the finish line, and integrate only that window.
+Maya: Okay, but I want to know where the free lunch is coming from. Is this just "ion traps are slow"?
 
-Maya: That's intuitive for a linear system. These are nonlinear equations. How do you even define "dissipative" there?
+Sam: That's a real part of it and they're honest about it. Trapped-ion cycles are milliseconds where superconducting cycles are microseconds — so they've got something like a thousand times more slack per round. But there's genuine cleverness too. The nice trick is that they run two decoders with different jobs.
 
-Sam: That's the technical heart. They use Carleman embedding — you take a quadratic nonlinear system and lift it into an infinite linear one by carrying along all the powers of the solution, then truncate. The question nobody had nailed down: is the lifted linear system still strictly dissipative? They prove yes, provided the nonlinearity and forcing are weak relative to how strongly the linear part damps. That structural fact is what unlocks everything.
+Maya: Two? Why not just one good one.
 
-Maya: And the previous state of the art?
+Sam: Because most decoding isn't urgent. The main decoder maintains your bookkeeping of accumulated errors — it can lag a few cycles behind, take a wider window, be very accurate. But when a logical measurement result has to steer the next branch of the circuit, that's on the critical path, and you need an answer now. So they spawn a second, deliberately sloppier decoder with a two-cycle window just for those moments.
 
-Sam: Cost growing like the square root of the total simulated time. So this removes the last square root. There's also a readout trick I liked more than I expected — normally after Carleman you have to project back onto the first block of the lifted state, and post-selection costs you. They observe the exact lifted state factorizes as a tensor product, so you can just discard the extra register instead of measuring it.
+Maya: Sloppier how much, and how do they justify it?
 
-Maya: Discard, meaning you get a mixed state out.
+Sam: This is the argument I liked most. Their measurement readout has an intrinsic error floor — there are syndrome patterns that are genuinely ambiguous, no decoder can resolve them. So the fast decoder doesn't need to be spectacular; it only needs to be roughly ten times below that floor, whereas the background decoder needs to be about a thousand times below. Once you accept that, you can buy latency very cheaply.
 
-Sam: You do, and that's a real limitation. Fine if you want to estimate an observable, not fine if you wanted that state as input to something else coherently. And "no explicit time dependence" deserves scare quotes — time sneaks back in through the size of the final solution, because if your answer has decayed to nothing, your success probability decays with it.
+Maya: What's the honest health warning?
 
-Maya: What's the evidence quality here? Proofs plus numerics?
+Sam: The syndromes are simulated, not from hardware, and control-system input-output and networking latency are excluded — those are not tiny in practice. And the tail matters more than the average: crank the gate error rate up five-fold and their worst-case decoding episodes blow past the time budget by nearly a factor of three. The comfortable margins live at the good noise rate.
 
-Sam: Theorems for the main claim, and then two-dimensional toy models at short times for the numerics — which is thin. But the numerics do something useful: they show the fast-forwarding fails for conservative and non-resonant systems even when the Carleman linearization itself converges beautifully. Those two properties get conflated all the time, and this pulls them apart.
+Maya: So who should read it?
 
-[BREAK]
-
-Maya: Paper three goes back to an old sore point. Error correction has always assumed you know which gate you're protecting.
-
-Sam: Right — fault tolerance is built around a known instruction set. But there are situations where the operation itself is the unknown: you're calibrating a device, or learning a black-box unitary someone handed you, and every time you query it, it comes back smeared with noise. Ryotaro Niwa, Satoshi Yoshida and Mio Murao ask the clean version of that question. Given many noisy uses of an unknown unitary, how well can you synthesize one clean use of that same unitary?
-
-Maya: And they get an exact answer?
-
-Sam: The exact leading coefficient, for every dimension — matching upper and lower bounds. Before this, people had the qubit case with three copies, or bounds, or results restricted to non-adaptive strategies. And the punchline is that adaptivity buys you nothing asymptotically. The optimum is achieved by a plain parallel circuit that doesn't even need to know how strong the noise is.
-
-Maya: That surprises me. In almost every other estimation or learning problem, adaptive feedback helps.
-
-Sam: It surprised me too. The reason, roughly, is symmetry. The problem is covariant — it looks the same under rotating the unknown unitary — and once you impose that symmetry, the fancy sequential structure has nowhere useful to go. Adaptive strategies can't exploit information they're forbidden from extracting.
-
-Maya: What's the practical delta versus what someone would do today?
-
-Sam: Today you'd do the obvious two-step: purify a bunch of states, then convert stored states back into an operation via teleportation-like retrieval. That's quadratically wasteful in the target error. To halve your error, the naive route costs four times as many queries; theirs costs twice. Over a demanding calibration budget that's the difference between feasible and not.
-
-Maya: Caveats?
-
-Sam: Several, and they're upfront. It's depolarizing noise only. It's leading order in small noise, with that limit taken before the many-copies limit — so it's an asymptotic statement about a weak-noise regime. And the exact tightness only holds when the number of copies sits at particular values relative to the dimension. There's also a charming footnote: the authors disclose that an AI model supplied some initial proof ideas.
-
-Maya: Which is going to be its own conversation eventually.
-
-Sam: It is. For today I'd just say — the disclosure is the right norm, and the proof is a proof either way.
+Sam: Anyone budgeting classical co-processors for a fault-tolerant machine. The reframing is what's valuable — real-time decoding goes from "unsolved crisis" to "provisioning question," at least for architectures with slow cycles and simple logical operations. Superconducting groups don't get to relax.
 
 [BREAK]
 
-Maya: Fourth paper. Tell me the surprising bit first.
+Sam: Here's a puzzle for you. There's a well-known no-fast-forwarding result: in general you can't simulate quantum dynamics for a long time in less time than the dynamics takes. So what do we make of a paper claiming the cost of solving a differential equation carries no explicit dependence on how far ahead you integrate?
 
-Sam: In distributed quantum simulation, making your simulation more accurate normally costs more entanglement — a lot more. Tianfeng Feng and colleagues show it can cost nothing extra. The total entanglement depends only on the physical time you're simulating and the strength of the interactions, not on how finely you chop it up or how small an error you demand.
+Maya: I make of it that there's a loophole and you're about to tell me what it is.
 
-Maya: Unpack why the standard approach gets worse with accuracy.
+Sam: The loophole is dissipation. Li and An look at nonlinear differential equations where the linear part strongly damps and the nonlinearity is comparatively weak — think a fluid or chemical system driven by some forcing. Those systems forget their initial condition. After a while the state is determined entirely by the recent history of the driving, not by where you started.
 
-Sam: You've split a Hamiltonian across two machines. Some interactions cross the cut. The textbook move is teleport a qubit across, do the gate, teleport back — that's two ebits, a fixed price, every crossing gate. Now, Trotterization says: to be more accurate, chop time into more slices. Each crossing rotation gets weaker, but there are more of them. Fixed price times growing count equals a bill with no ceiling.
+Maya: So if it forgets, you don't have to integrate through the forgotten part.
 
-Maya: So they made the price track the rotation angle.
+Sam: Exactly that. The old approach was Carleman linearization — you embed a nonlinear system into a bigger linear one, at the price of infinitely many variables that you truncate. Their contribution is showing the truncated linear system is uniformly damping, which lets you throw away the initial condition entirely and only integrate over a fixed recent window whose length depends on your accuracy target, not on the horizon. Previous best for this kind of final-state preparation scaled like the square root of the simulated time.
 
-Sam: They consume a faintly entangled pair, tuned to that specific angle — barely entangled at all for a tiny rotation. The entanglement in it shrinks essentially like the square of the angle, which beats the linear growth in gate count. Total bill collapses to something proportional to interaction strength integrated over time, which they match against a communication-complexity lower bound. It's optimal in the time scaling.
+Maya: I want to push on "no explicit dependence." Explicit is doing work in that sentence.
 
-Maya: And it's probabilistic — repeat until success. What actually happens when it fails?
+Sam: It is, and they say so. Time still sneaks in through the back door: your success probability depends on how big the solution is at the end, and if the solution decays toward nothing, you pay for that in post-selection. So the result is only meaningful when there's an ongoing source keeping the solution from shrinking away. And the output is a mixed state close to the target, not a clean pure state.
 
-Sam: This is the neat mechanic. Each attempt succeeds with probability exactly one half, independent of the state and the angle. On failure you haven't done nothing — you've over-rotated in a predictable way, and you fix it by retrying with a pair tuned to double the angle. So the failures telescope, and your probability of still being stuck falls by half each round.
+Maya: What's the evidence base — is this a theorem plus toy numerics?
 
-Maya: Here's my problem. Entanglement entropy is an asymptotic dilution rate — it assumes you have blocks of identical copies to convert. And every retry round needs a round trip of classical communication.
+Sam: Theorem plus two-dimensional toy models, yes. But there's a secondary result I think is quietly the most useful part. In prior Carleman-based algorithms you had to post-select onto the piece of the register holding the actual solution, which costs you amplitude amplification. They notice that in this regime the lifted state factorizes — the junk register is unentangled from the answer — so you just discard it. That's free, and it applies to essentially every Carleman-based quantum solver.
 
-Sam: Both true. They bound the finite-copy overhead in an appendix but don't optimize it, and the classical latency and bits simply aren't counted as resources. Given the target is photonically linked modular machines where the round trip is a real optical delay, the adaptive rounds could eat the savings. They also report expected costs — no variance or tail analysis, which after the decoding paper's tail latency problem feels like an omission.
+Maya: Did they check whether the fast-forwarding extends past the damped case?
+
+Sam: They did, and it's a negative result they report honestly. For conservative systems and certain non-resonant ones, the lifted linear system isn't just non-dissipative — it's numerically anti-dissipative, and it gets worse the more terms you keep. So the machinery fails there. They sketch a contour-integral alternative, but there's no complexity proof for it.
 
 Maya: Verdict?
 
-Sam: Conceptually the right reframing: entanglement should be a budget on physical interaction, not a per-gate toll. Whether it survives contact with a real network is the next paper someone should write.
+Sam: Read it if you work on quantum ODE solvers. The lesson worth internalizing is that what enables fast-forwarding isn't the linearization being accurate — it's the lifted system being damped. Those are different properties and people have conflated them.
 
 [BREAK]
 
-Sam: Our last one connects straight back to where we started. That decoding paper was counting a million T gates. This one asks whether T is even the right thing to be counting.
+Maya: This next one starts from something that always bothered me. Error correction assumes you know which gate you're protecting. If someone hands you a black box that does some unknown rotation, but imperfectly — what do you even do?
 
-Maya: Berat Yenilen, Markus Müller and Manuel Rispler — the half-T state.
+Sam: Right, standard fault tolerance is useless. You can't build a syndrome for an operation you can't name. So the question becomes: give me several noisy uses of the same unknown box, plus perfect circuitry around it, and let me distill one clean use. That's "unitary purification," and it's been studied piecemeal — mostly for qubits, mostly for small numbers of queries.
 
-Sam: Right. Universal fault tolerance is usually Clifford gates plus one non-Clifford primitive, and compiling arbitrary rotations into long chains of that primitive dominates your resource budget. Natural thought: add a second, finer-grained rotation — half the strength — and your chains get shorter. The catch is that the new state has to be manufactured fault-tolerantly too, and if that's expensive you've just moved the cost.
+Maya: And Niwa, Yoshida and Murao close it out?
 
-Maya: So this is a paper that actually pays the manufacturing bill rather than assuming it away.
+Sam: They nail the exact optimal performance to leading order in the noise, in every dimension, for any number of queries — and crucially, the converse holds over the most general adaptive strategies. You're allowed to interleave, feed outputs back in, condition on measurements, whatever you like.
 
-Sam: That's what I liked. They build explicit flag-based preparation circuits on the fifteen-qubit tetrahedral color code and a smaller morphed version, exploiting the fact that the operator whose eigenstate you want has a nice transversal representative. Then they simulate preparation plus injection into a Steane-encoded data qubit under full circuit-level noise and do logical process tomography to measure what noise actually comes out.
+Maya: Let me guess: adaptivity helps.
 
-Maya: And what does come out?
+Sam: It doesn't. That's the headline. Asymptotically, the best adaptive scheme is matched by a plain parallel circuit — run all the boxes side by side, do a Schur transform, decode. And the optimal circuit is noise-agnostic: it doesn't need to know how strong the depolarizing noise is.
 
-Sam: A strongly phase-biased channel — the injection converts resource-state errors into Z-type noise. That's physically sensible and potentially exploitable, though they then conservatively throw the bias away and bound everything by a depolarizing channel, which is pessimistic.
+Maya: That's a nice practical property. What does it buy you over the dumb approach?
 
-Maya: Give me the trade in one line.
+Sam: The dumb approach is: learn the unknown unitary well, store the description, then re-synthesize it. That's storage-and-retrieval, and its cost scales like the inverse square of the target error. The optimal purification scales like the inverse of the error — so a full factor of one-over-epsilon better. As you demand more precision that gap widens without limit.
 
-Sam: Injecting the half-T state costs about two and a half times as much space-time volume as injecting a T. But feeding the real measured noise and real costs into a cost-aware synthesis search, compiling random single-qubit rotations gets twenty to thirty percent cheaper overall.
+Maya: And there's a second result about conjugation that I don't fully understand the significance of.
 
-Maya: I want to push on how much that number should be trusted. They're simulating distance-three and distance-two codes with a single ideal final round of error correction, no idling noise, and free all-to-all connectivity.
+Sam: This is what surprised me. If your box implements some unknown rotation and you want a box implementing its complex conjugate — in the noiseless setting, that's strictly harder than just copying it. Known separation. In the noisy setting, they show the asymptotic cost coefficient is identical. Noise erases the distinction between copying and conjugating.
 
-Sam: All true, and no distillation, and no study of what happens at larger code distance. The savings could shift either way once idling and routing are real. They also cap their search depth and don't benchmark against the asymptotically optimal classical synthesis algorithms, which is the comparison I'd most want.
+Maya: Caveats — and I'll flag one myself: this is all leading order in the noise.
 
-Maya: So who's it for?
+Sam: That's the big one. It's a statement as the noise goes to zero; nothing is claimed at fixed finite error strength. Also it's depolarizing noise specifically, identical and independent across every use of the box, with all the surrounding operations assumed perfect. And exact tightness only holds when the number of queries sits in the right relationship to the dimension — otherwise you have a converse bound without a matching protocol.
 
-Sam: Trapped-ion and neutral-atom groups already doing fault-tolerant injection on small codes — this is a concrete circuit they could run. And there's concurrent independent work targeting the same resource state, which usually means the idea's time has come.
+Maya: There's also a disclosure at the end that I think listeners should hear about.
+
+Sam: Yes — the authors state that a large language model supplied the initial proof ideas, which they then reconstructed and verified themselves. I think that's the right way to handle it, and it's going to come up again in about four minutes.
 
 [BREAK]
 
-Maya: One result each. Mine is the laptop. Not because a laptop is impressive hardware, but because it reframes real-time decoding from an emergency into a provisioning spreadsheet — so many code blocks per core, done. That's a much healthier place for a field to be.
+Maya: So the setup for this one is a genuinely strange fact from about fifteen years ago. Two noisy quantum channels used together can be less noisy than the sum of their parts.
 
-Sam: Mine's the adaptivity result. Getting told that all your clever feedback protocols are worth exactly nothing against a symmetric problem is the kind of negative result that saves people years. And the matching parallel circuit doesn't even need to know the noise strength, which is the sort of robustness you almost never get for free.
+Sam: Superadditivity, yes. Hastings proved it in two thousand nine, and the proof is unsatisfying in a specific way: it says such channels exist because a randomly chosen one works with high probability. Nobody could point at one. Nobody could say why it works.
+
+Maya: And Lovitz and Wu's move is to build them out of — permutations?
+
+Sam: Out of shuffles of a finite set. Matrices of zeros and ones. The reason that's even conceivable is a beautiful recent result — Bordenave and Collins showed that random permutation matrices converge, in a strong operator sense, to the same limiting object as Haar-random unitaries. So for the purposes of this construction, shuffling a big deck is as good as a continuous random rotation.
+
+Maya: Okay, but "random permutation" is still random. Where's the gain?
+
+Sam: The gain is that permutations are a discrete, finite search space. Once your object is combinatorial, derandomization machinery applies — there's work by O'Donnell and Wu that lets you deterministically find a permutation tuple with the right spectral properties in polynomial time. So this turns an existence proof into a search problem with an algorithm attached.
+
+Maya: And they had to make one part of the construction non-random to get there, right?
+
+Sam: That's the engineering trick. In the two-copy setting you need the output on a maximally entangled input to land on a particular state. They add an auxiliary phase register — a "clock" — which forces that output exactly, for every permutation tuple, no randomness required. So only a single-copy spectral condition remains probabilistic, and that's the part the derandomization handles.
+
+Maya: Now give me the number, because I've read it and I still don't believe it.
+
+Sam: They can write down an explicit instance: about fifty-eight million permutations of a set whose size is a number with over a hundred thousand digits.
+
+Maya: A hundred thousand digits. So this is not going in anyone's simulation.
+
+Sam: Not in this universe. And I want to be fair about what's delivered and what isn't. The stated hope was a structural explanation for why superadditivity happens — and the underlying mechanism here is still the same entangled-pair trick as before, just implemented with different matrices. The violation is still capped at a small constant, and it's the one-shot quantity that's non-additive, not the regularized capacity, which is the thing you'd actually care about for communication.
+
+Maya: So what's the real contribution?
+
+Sam: A transfer principle. "Take a construction that works in the free-probability limit, realize it with permutations, derandomize." That recipe should port to other additivity counterexamples. That's what people will build on, not the specific monstrous instance. And — same disclosure as the last paper — the authors say the main proof ideas originated from a language model, with human verification. Two of today's five. That's a trend, not a coincidence.
+
+[BREAK]
+
+Maya: Let's close the loop with the decoder paper. That one was about the classical budget of running a fault-tolerant machine. This last one is about the quantum budget when your machine doesn't fit in one box.
+
+Sam: Right — multiple processors, and the interactions that straddle the boundary between them have to be mediated by shared entanglement. Entanglement is the scarcest thing in a quantum network; you generate it slowly and it decays. So the currency question is: how many entangled pairs does a distributed simulation burn?
+
+Maya: And the standard answer is teleportation.
+
+Sam: Which has a pathology. Teleportation charges you a full entangled pair per cross-boundary operation regardless of how weak that operation is. And in Trotterized simulation, improving accuracy means chopping the evolution into more and more, gentler and gentler pieces. So each piece is tinier, and you're paying full price for each one. Your entanglement bill blows up precisely when you ask for precision.
+
+Maya: That's genuinely perverse. What do Feng, Sun, Xiao and Zhao do instead?
+
+Sam: A repeat-until-success gadget. Instead of a maximally entangled pair, they consume a weakly entangled state whose entanglement is tuned to match the rotation angle they're trying to implement. Local operations, a parity measurement, and one of two things happens: you get the rotation you wanted, or you get the rotation in the wrong direction — each with probability exactly one half.
+
+Maya: And on failure you're not back to square one?
+
+Sam: No, and this is the pretty part. On failure you're off by a known amount, so you retry with double the angle. The angle doubles, the remaining error halves in a sense, and the geometric series closes: the expected entanglement cost per gate is proportional to the angle itself, not to a fixed unit.
+
+Maya: Which means the Trotter number drops out.
+
+Sam: It cancels completely. Finer time-slicing means smaller angles means proportionally cheaper gates, and the total is just simulated time multiplied by the total strength of the interactions crossing the cut. No dependence on the target accuracy at all. And they show that dependence on time can't be improved — it matches a communication-complexity lower bound.
+
+Maya: I want to push on the accounting, though. "Expected entanglement" measured how?
+
+Sam: Fair challenge. It's entropy of entanglement, justified as an asymptotic dilution rate over the many identical weak rotations that recur across Trotter steps. In any single failure branch you're consuming close to a full pair for that round. So this is a good average-case currency, not a single-shot guarantee.
+
+Maya: And the crossover — when does this actually beat teleportation?
+
+Sam: Their proven constant means the advantage kicks in for rotation angles below roughly zero point two radians. Which is fine, that's the regime deep Trotterization lives in. The cost they don't price is latency: each gate can now need several rounds of adaptive classical communication back and forth across the network. In a real link, round trips may dominate everything.
+
+Maya: So the honest framing is: optimal in entanglement, silent on depth.
+
+Sam: That's it. And the extension beyond product formulas — to the more modern simulation algorithms — is wide open. If someone gets this working for those, it becomes the default primitive for multi-processor simulation.
+
+[BREAK]
+
+Maya: One result each. Mine's the two-decoder split — the idea that you can be deliberately inaccurate on the critical path because the readout has an ambiguity floor you can't beat anyway. That's a systems-engineering instinct showing up inside quantum error correction, and I want to see more of it.
+
+Sam: Mine is that noise makes conjugating an unknown gate exactly as cheap as copying it, when in the clean setting it's provably harder. I'd have bet against that. And I'll keep watching the authorship disclosures — two papers today crediting a language model with the initial proof ideas is worth everyone's attention.
 
 Maya: Links to all five papers are in the show notes.
 
-Sam: And there's a link there to send us questions — we read them, and the good ones end up in the mailbag.
-
-Maya: Thanks for listening. We'll see you tomorrow.
+Sam: And there's a link there to send us questions — we read them, and we like the ones that make us admit we don't know. See you tomorrow.

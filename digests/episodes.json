@@ -2,9 +2,9 @@
   {
     "date": "2026-08-27",
     "title": "SciRate Digest \u2014 2026-08-27",
-    "summary": "Today's 5 papers: Real-time decoder for a MegaQuOp quantum computer using a single CPU; Fast-forwarding quantum algorithms for weakly nonlinear dissipative differential equations and beyond; Asymptotically optimal purification of noisy unitary channels in any dimension; Distributed Trotterization with optimal time-scaling entanglement cost; Fault-tolerant $|\\sqrt{ \\mathrm{T} }\\rangle$ state preparation and injection for more efficient fine-grained quantum circuit synthesis.",
+    "summary": "Today's 5 papers: Real-time decoder for a MegaQuOp quantum computer using a single CPU; Fast-forwarding quantum algorithms for weakly nonlinear dissipative differential equations and beyond; Asymptotically optimal purification of noisy unitary channels in any dimension; Superadditivity of classical communication over quantum channels via random and deterministic permutations; Distributed Trotterization with optimal time-scaling entanglement cost.",
     "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-08-27/digest.mp3",
-    "mp3_bytes": 16463277,
+    "mp3_bytes": 18334125,
     "papers": [
       {
         "rank": 1,
@@ -32,18 +32,18 @@
       },
       {
         "rank": 4,
-        "uid": "2608.25896",
-        "title": "Distributed Trotterization with optimal time-scaling entanglement cost",
-        "abs_url": "https://arxiv.org/abs/2608.25896",
-        "scirate_url": "https://scirate.com/arxiv/2608.25896",
+        "uid": "2608.25961",
+        "title": "Superadditivity of classical communication over quantum channels via random and deterministic permutations",
+        "abs_url": "https://arxiv.org/abs/2608.25961",
+        "scirate_url": "https://scirate.com/arxiv/2608.25961",
         "scites": null
       },
       {
         "rank": 5,
-        "uid": "2608.25797",
-        "title": "Fault-tolerant $|\\sqrt{ \\mathrm{T} }\\rangle$ state preparation and injection for more efficient fine-grained quantum circuit synthesis",
-        "abs_url": "https://arxiv.org/abs/2608.25797",
-        "scirate_url": "https://scirate.com/arxiv/2608.25797",
+        "uid": "2608.25896",
+        "title": "Distributed Trotterization with optimal time-scaling entanglement cost",
+        "abs_url": "https://arxiv.org/abs/2608.25896",
+        "scirate_url": "https://scirate.com/arxiv/2608.25896",
         "scites": null
       }
     ]
