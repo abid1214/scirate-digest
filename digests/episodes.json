@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-08-28",
+    "title": "SciRate Digest \u2014 2026-08-28",
+    "summary": "Today's 5 papers: Fault-tolerant quantum computation cannot be achieved with constant spacetime overhead; Optimal cloning of mixed states; Strong Converse Exponent of Quantum State Merging; On supporting affine functionals for Entanglement of Formation; Quantum Chaos and Quantum Optimal Transport.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-08-28/digest.mp3",
+    "mp3_bytes": 20281773,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2608.26272",
+        "title": "Fault-tolerant quantum computation cannot be achieved with constant spacetime overhead",
+        "abs_url": "https://arxiv.org/abs/2608.26272",
+        "scirate_url": "https://scirate.com/arxiv/2608.26272",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2608.27298",
+        "title": "Optimal cloning of mixed states",
+        "abs_url": "https://arxiv.org/abs/2608.27298",
+        "scirate_url": "https://scirate.com/arxiv/2608.27298",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2608.27202",
+        "title": "Strong Converse Exponent of Quantum State Merging",
+        "abs_url": "https://arxiv.org/abs/2608.27202",
+        "scirate_url": "https://scirate.com/arxiv/2608.27202",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2608.27363",
+        "title": "On supporting affine functionals for Entanglement of Formation",
+        "abs_url": "https://arxiv.org/abs/2608.27363",
+        "scirate_url": "https://scirate.com/arxiv/2608.27363",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2608.27350",
+        "title": "Quantum Chaos and Quantum Optimal Transport",
+        "abs_url": "https://arxiv.org/abs/2608.27350",
+        "scirate_url": "https://scirate.com/arxiv/2608.27350",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-08-27",
     "title": "SciRate Digest \u2014 2026-08-27",
     "summary": "Today's 5 papers: Real-time decoder for a MegaQuOp quantum computer using a single CPU; Fast-forwarding quantum algorithms for weakly nonlinear dissipative differential equations and beyond; Asymptotically optimal purification of noisy unitary channels in any dimension; Superadditivity of classical communication over quantum channels via random and deterministic permutations; Distributed Trotterization with optimal time-scaling entanglement cost.",
