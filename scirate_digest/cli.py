@@ -163,37 +163,79 @@ def run(args: argparse.Namespace) -> Path:
     log.info("Wrote %s", out_dir / "digest.md")
 
     if not args.skip_summaries and not args.skip_audio:
-        script_text = (out_dir / "podcast_script.txt").read_text()
-        mp3_path = out_dir / "digest.mp3"
-        log.info("Synthesizing podcast audio via %s…", engine)
-        mp3 = None
-        if engine == "gemini":
-            from . import gemini_tts
-
-            try:
-                mp3 = gemini_tts.synthesize_dialogue(
-                    script_text, mp3_path,
-                    model=args.gemini_model or gemini_tts.DEFAULT_MODEL,
-                )
-            except Exception as exc:
-                # Never lose the episode to a Gemini hiccup. First fallback
-                # keeps two hosts by voicing each turn with its own edge
-                # voice; last resort is a single narrator.
-                log.error("Gemini TTS failed (%s); trying two-voice edge fallback", exc)
-                from . import tts
-
-                try:
-                    mp3 = tts.synthesize_dialogue(script_text, mp3_path)
-                except Exception as exc2:
-                    log.error("Two-voice fallback failed (%s); single narrator", exc2)
-                    script_text = _dialogue_to_narration(script_text)
-        if mp3 is None:
-            from . import tts  # imported lazily so --skip-audio needs no edge-tts
-
-            mp3 = tts.synthesize(script_text, mp3_path, voice=args.voice or tts.DEFAULT_VOICE)
-        log.info("Wrote %s (%.1f MB)", mp3, mp3.stat().st_size / 1e6)
+        _render_audio(
+            script_text=(out_dir / "podcast_script.txt").read_text(),
+            mp3_path=out_dir / "digest.mp3",
+            out_dir=out_dir,
+            date_str=date_str,
+            engine=engine,
+            gemini_model=args.gemini_model,
+            edge_voice=args.voice,
+        )
 
     return out_dir
+
+
+
+def _render_audio(
+    script_text: str,
+    mp3_path: Path,
+    out_dir: Path,
+    date_str: str,
+    engine: str,
+    gemini_model: str | None = None,
+    edge_voice: str | None = None,
+) -> dict:
+    """Synthesize the episode, falling back if Gemini fails, and record which
+    path actually produced the audio.
+
+    The returned metadata is also written to ``audio_meta.json`` beside the
+    episode and committed with it, so a finished run can be audited without
+    reading CI logs (a late/duplicate run once silently replaced good Gemini
+    audio with fallback voices and nothing in the repo showed it)."""
+    log.info("Synthesizing podcast audio via %s…", engine)
+    mp3 = None
+    rendered_with = None
+    model_used = gemini_model or None
+    if engine == "gemini":
+        from . import gemini_tts
+
+        model_used = gemini_model or gemini_tts.DEFAULT_MODEL
+        try:
+            mp3 = gemini_tts.synthesize_dialogue(script_text, mp3_path, model=model_used)
+            rendered_with = "gemini-per-turn"
+        except Exception as exc:
+            # Never lose the episode to a Gemini hiccup. First fallback keeps
+            # two hosts by voicing each turn with its own edge voice; last
+            # resort is a single narrator.
+            log.error("Gemini TTS failed (%s); trying two-voice edge fallback", exc)
+            from . import tts
+
+            try:
+                mp3 = tts.synthesize_dialogue(script_text, mp3_path)
+                rendered_with = "edge-two-voice"
+            except Exception as exc2:
+                log.error("Two-voice fallback failed (%s); single narrator", exc2)
+                script_text = _dialogue_to_narration(script_text)
+    if mp3 is None:
+        from . import tts  # imported lazily so --skip-audio needs no edge-tts
+
+        mp3 = tts.synthesize(script_text, mp3_path, voice=edge_voice or tts.DEFAULT_VOICE)
+        rendered_with = rendered_with or ("edge-narrator" if engine == "gemini" else "edge")
+
+    meta = {
+        "date": date_str,
+        "rendered_with": rendered_with,
+        "model": model_used,
+        "turns": sum(
+            1 for line in script_text.splitlines()
+            if line.split(":", 1)[0].strip() in ("Maya", "Sam")
+        ),
+        "mp3_bytes": mp3.stat().st_size,
+    }
+    log.info("Wrote %s (%.1f MB) via %s", mp3, meta["mp3_bytes"] / 1e6, rendered_with)
+    (out_dir / "audio_meta.json").write_text(json.dumps(meta, indent=2) + "\n")
+    return meta
 
 
 def load_discussed_uids(

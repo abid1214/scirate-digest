@@ -54,3 +54,89 @@ def test_load_discussed_uids_tolerates_bad_json(tmp_path):
     d = tmp_path / "2026-08-18"; d.mkdir()
     (d / "papers.json").write_text("not json{")
     assert load_discussed_uids(tmp_path) == set()
+
+
+def test_audio_meta_records_engine(tmp_path, monkeypatch):
+    """A finished run records which TTS path rendered the audio."""
+    import json
+    import types
+    from pathlib import Path
+
+    import scirate_digest
+    from scirate_digest import cli
+
+    out = tmp_path / "2026-01-01"
+    out.mkdir(parents=True)
+    script = "Maya: hello there.\nSam: hi back.\n"
+
+    def fake_synth(text, path, model=None):
+        Path(path).write_bytes(b"\x00" * 64)
+        return Path(path)
+
+    monkeypatch.setattr(
+        scirate_digest,
+        "gemini_tts",
+        types.SimpleNamespace(
+            DEFAULT_MODEL="gemini-2.5-flash-preview-tts",
+            synthesize_dialogue=fake_synth,
+        ),
+        raising=False,
+    )
+
+    meta = cli._render_audio(
+        script_text=script,
+        mp3_path=out / "digest.mp3",
+        out_dir=out,
+        date_str="2026-01-01",
+        engine="gemini",
+    )
+    assert meta["rendered_with"] == "gemini-per-turn"
+    assert meta["turns"] == 2
+    assert meta["model"] == "gemini-2.5-flash-preview-tts"
+    assert json.loads((out / "audio_meta.json").read_text())["rendered_with"] == (
+        "gemini-per-turn"
+    )
+
+
+def test_audio_meta_records_fallback(tmp_path, monkeypatch):
+    """A Gemini failure is recorded as the fallback that actually ran."""
+    import types
+    from pathlib import Path
+
+    import scirate_digest
+    from scirate_digest import cli
+
+    out = tmp_path / "2026-01-02"
+    out.mkdir(parents=True)
+
+    def boom(text, path, model=None):
+        raise RuntimeError("quota exceeded")
+
+    def _write_stub(text, path):
+        Path(path).write_bytes(b"\x00" * 32)
+        return Path(path)
+
+    monkeypatch.setattr(
+        scirate_digest,
+        "gemini_tts",
+        types.SimpleNamespace(DEFAULT_MODEL="m", synthesize_dialogue=boom),
+        raising=False,
+    )
+    monkeypatch.setattr(
+        scirate_digest,
+        "tts",
+        types.SimpleNamespace(
+            DEFAULT_VOICE="v",
+            synthesize_dialogue=_write_stub,
+        ),
+        raising=False,
+    )
+
+    meta = cli._render_audio(
+        script_text="Maya: a\nSam: b\n",
+        mp3_path=out / "digest.mp3",
+        out_dir=out,
+        date_str="2026-01-02",
+        engine="gemini",
+    )
+    assert meta["rendered_with"] == "edge-two-voice"

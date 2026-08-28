@@ -111,6 +111,9 @@ jobs:
           mkdir -p "digests/$DATE"
           cp "output/$DATE/digest.md" "output/$DATE/podcast_script.txt" \
              "output/$DATE/papers.json" "digests/$DATE/"
+          # Records which TTS path rendered the audio (gemini-per-turn vs a
+          # fallback), so an episode can be audited without reading CI logs.
+          cp "output/$DATE/audio_meta.json" "digests/$DATE/" 2>/dev/null || true
           # Push with retries. On each attempt, rebase our staged files onto
           # the latest branch tip and REGENERATE the derived feed from the
           # current manifest — so a concurrent push never causes a merge
