@@ -15,6 +15,9 @@ on:
       ids:
         description: "Space-separated arXiv IDs (skips the SciRate scrape)"
         default: ""
+      force:
+        description: "Re-render even if today's episode already exists"
+        default: "false"
 
 permissions:
   contents: write
@@ -55,7 +58,28 @@ jobs:
             sudo apt-get update && sudo apt-get install -y ffmpeg || true
           fi
 
+      # GitHub's cron can fire hours late (observed ~4h). Without this guard a
+      # late firing re-renders a date that already published, spending the
+      # day's Gemini TTS quota and replacing good audio with fallback voices.
+      - name: Skip if today's episode already exists
+        id: guard
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          DATE=$(date -u +%F)
+          if [ "${{ github.event.inputs.force }}" = "true" ]; then
+            echo "force requested; re-rendering $DATE"
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          elif [ -f "digests/$DATE/papers.json" ] \
+               && gh release view "digest-$DATE" >/dev/null 2>&1; then
+            echo "::notice::Episode for $DATE is already published; skipping. Dispatch with force=true to re-render."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Build digest
+        if: steps.guard.outputs.skip != 'true'
         timeout-minutes: 75
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -77,6 +101,7 @@ jobs:
             $EXTRA
 
       - name: Commit digest and update podcast feed
+        if: steps.guard.outputs.skip != 'true'
         run: |
           set -e
           DATE=$(date -u +%F)
@@ -106,6 +131,7 @@ jobs:
           echo "::error::could not push digest after retries"; exit 1
 
       - name: Publish podcast episode as a release
+        if: steps.guard.outputs.skip != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -120,6 +146,7 @@ jobs:
             "output/$DATE/digest.mp3#Podcast episode ($DATE)"
 
       - name: Close answered listener questions
+        if: steps.guard.outputs.skip != 'true'
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
@@ -129,7 +156,7 @@ jobs:
             || echo "::warning::could not close answered questions"
 
       - name: Upload artifacts (backup)
-        if: always()
+        if: always() && steps.guard.outputs.skip != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: digest
