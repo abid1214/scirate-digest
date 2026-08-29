@@ -26,8 +26,11 @@ DEFAULT_VOICE = "en-US-AndrewMultilingualNeural"
 
 # Host name -> edge voice for the two-host fallback.
 # Override with EDGE_DIALOGUE_VOICES="Maya=en-US-AriaNeural,Sam=...".
+# Microsoft's newest conversational neural voices. These are deterministic:
+# the same voice name always renders the same speaker, so the hosts never
+# drift or swap. Override with EDGE_DIALOGUE_VOICES="Maya=...,Sam=...".
 DEFAULT_DIALOGUE_VOICES = {
-    "Maya": "en-US-AriaNeural",
+    "Maya": "en-US-EmmaMultilingualNeural",
     "Sam": "en-US-AndrewMultilingualNeural",
 }
 

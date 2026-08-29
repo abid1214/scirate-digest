@@ -85,7 +85,10 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SCRAPERAPI_KEY: ${{ secrets.SCRAPERAPI_KEY }}
           SCRAPINGBEE_KEY: ${{ secrets.SCRAPINGBEE_KEY }}
-          # If set, episodes use Gemini two-host TTS; otherwise edge-tts.
+          # Voices default to edge-tts (deterministic: the hosts never drift).
+          # Set the VOICE_ENGINE repo variable to "gemini" to opt back in.
+          VOICE_ENGINE: ${{ vars.VOICE_ENGINE }}
+          EDGE_DIALOGUE_VOICES: ${{ vars.EDGE_DIALOGUE_VOICES }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_TTS_MODEL: ${{ vars.GEMINI_TTS_MODEL }}
           GEMINI_VOICES: ${{ vars.GEMINI_VOICES }}
