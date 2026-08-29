@@ -1,181 +1,173 @@
-Maya: I got a fortune cookie yesterday that said "the shortcut you take becomes the road you know."
+Maya: Sam, I've got a theory about today's batch. Every single one of these papers is really about someone realizing they'd been holding the wrong measuring stick.
 
-Sam: That's ominous for a Friday.
+Sam: That's uncomfortably accurate. Four of the five are people saying, the thing we've all been computing is either too weak, too trivial, or measuring the wrong quantity entirely — and here's what you should compute instead.
 
-Maya: It's also, weirdly, the whole show today. Every paper on this list is about a shortcut — swapping a hard question for an easier stand-in — and whether that stand-in tells you the truth.
+Maya: Welcome to the SciRate Daily Digest for Saturday, August twenty-ninth. Today: a sharp new lower bound on how many copies you need to test whether a quantum state is pure, a new family of contraction coefficients built for networks, an anomaly diagnostic for noisy dynamics, a classification result that makes cellular automata and phases of matter literally the same group, and certified randomness surviving an entangled attack.
 
-Sam: Some of them do. One of them turns out to be exactly right, which almost never happens, and one of them leaves a gap you can drive a truck through.
-
-Maya: Welcome to the SciRate Daily Digest for Friday, August twenty-ninth, twenty twenty-six. I'm Maya.
-
-Sam: And I'm Sam. Today: a one-page proof that nails how many copies of a quantum state you need to tell pure from noisy; a new way to measure how much correlation a noisy channel destroys when the rest of the world is watching; an anomaly diagnostic for open systems built by rotating time into space; a classification result that dissolves a twenty-year mismatch between two ways of labeling quantum phases; and the first real security proof for a family of random number generators that are already shipping.
-
-Maya: No mail today, so let's get straight into it.
+Sam: Testing, contracting, rotating spacetime, classifying, and certifying. Let's go.
 
 [BREAK]
 
-Maya: Paper one. Very concrete stake: I hand you a black box that spits out copies of an unknown quantum state. You want to know if it's a nice clean pure state or basically noise. How many copies do you burn?
+Maya: Start with the one everybody actually runs into in a lab. You've got an unknown state, you want to know if it's pure. In principle you can do better by measuring many copies together in one giant joint measurement. In practice nobody can do that.
 
-Sam: If you can do a joint measurement on many copies at once, shockingly few — a constant number, independent of how big the system is. But nobody's lab does that. Real experiments measure one copy, get an outcome, maybe choose the next measurement based on that outcome, repeat. And in that world the cost blows up: you need a number of copies growing like the square root of the dimension.
+Sam: Right, real experiments measure one copy, look at the outcome, then choose what to do with the next copy. That adaptive single-copy class is the honest model, and it's notoriously painful to prove lower bounds against, because the adaptivity gives the algorithm a tree of options. So the standard move is to relax: prove your bound against a bigger, mathematically nicer class of strategies that contains all the adaptive ones.
 
-Maya: Square root of the dimension being — for a system of many qubits — exponentially many.
+Maya: And the risk is obvious — you prove something about a class that includes strategies nobody could ever build, so your bound is weak.
 
-Sam: Right, it's brutal. And that upper bound has been known for a while. The hard part is proving you can't do better, because "adaptive" is a nightmare to reason about. The standard tool is a learning tree with martingale arguments, and it's genuinely painful. So people relax: instead of proving it against adaptive single-copy strategies, prove it against a bigger, friendlier class of measurements that contains them.
+Sam: Exactly what happened historically. Harrow's bound via this route said purity testing needs a number of copies growing like the fourth root of the dimension. The truth was believed to be the square root. Akresh and Beckey close that gap completely — same relaxation, much better argument, and they land exactly on the square root.
 
-Maya: And here's my worry. If the class is bigger, the lower bound is in principle stronger — but only if the class isn't so much bigger that it can do things no real experiment can. Otherwise you prove something true and useless.
+Maya: So the relaxation was never the problem. The proof was.
 
-Sam: That has been exactly the problem. The relaxation people use is called PPT — measurements that stay positive when you partially transpose any subset of the copies. Previous work with it got you the fourth root of the dimension for purity testing, not the square root. And for product testing — deciding if a bipartite state is entangled or not — the PPT bound was only the eighth root. Way off.
+Sam: That's the headline, and I think it's the part people will remember. The class here is measurements that stay positive under partial transposition on every subset of the copy registers. And the bound they get says the bias — how well you can tell many copies of a random pure state from many copies of the totally mixed state — grows only like the number of copies squared divided by the dimension. Set that to something order one and you get the square root.
 
-Maya: So the shortcut was leaking.
+Maya: How do they actually get there? Because "elementary" and "tight" don't usually show up in the same sentence.
 
-Sam: Akresh and Beckey close it. They write the difference between the many-copy random-pure-state ensemble and pure noise as a telescoping sum, where each term is "depolarize exactly one more copy." Then they partial-transpose on that one site, and the algebra collapses into something you can bound with traces instead of trace norms. The bias comes out growing like the square of the number of copies over the dimension — which forces the square root. Tight. Same argument, applied to each party's symmetric subspace, upgrades product testing from the eighth root to the square root too.
+Sam: They telescope. Instead of comparing the pure-state ensemble to the maximally mixed state in one shot, they walk from one to the other by depolarizing a single copy at a time, and bound each little step. Then the partial transpose does something almost cute: it turns the swap operators that generate the symmetric subspace into projectors onto maximally entangled pairs, and those commute with what's left. Everything stays positive, the norms collapse, and you're done.
 
-Maya: Quartic improvement from a page of algebra.
+Maya: And this isn't just purity. There's a second target.
 
-Sam: And crucially it holds for every dimension and every copy number — no "assume dimension much bigger than copies" caveat that Schur-Weyl arguments usually need. It's the first case I know where the PPT relaxation is asymptotically sharp for these tasks. The shortcut is the road.
+Sam: Product testing — is this bipartite state entangled or not. Same telescoping, done on both halves. That bound goes from the eighth root of the dimension up to the square root. That's a quartic improvement, and it matches a known algorithm that doesn't even need adaptivity.
 
-Maya: What doesn't it give you?
+Maya: Which connects to a genuinely famous open problem, doesn't it?
 
-Sam: Product testing only for two parties and fixed error — no dependence on how close to product you're testing. And I want to be careful about a thing people will over-read: the PPT model treats each bipartite copy as one register, so it says nothing about local operations within a copy. This does not settle whether efficient product testing collapses QMA-of-two-provers to QMA. Also — the authors state plainly that they used a chatbot as a research collaborator in deriving and refining the results.
+Sam: It does. If somebody found an efficient product tester using only local operations and classical communication, the complexity class with two unentangled provers would collapse to the ordinary one. This result pushes hard in the other direction. Now, caveats — the product testing is only for two parties, and only in the regime where you're far from product by a constant amount. They don't get the fine-grained dependence there. And the technique doesn't yet reach stabilizer testing, where the optimal answer is known and their method falls short.
 
-Maya: Which is either a footnote or the start of a much longer conversation.
+Maya: We covered a paper on hypothesis testing between quantum ensembles a few days back, and this feels like the practical cousin — same question of how much structure you can squeeze out of many labelled copies.
 
-Sam: I'd read it as a data point, not a verdict. Who should read the paper: anyone teaching or writing quantum learning-theory lower bounds. What I'd watch: whether the same telescoping trick cracks stabilizer testing, which is still open.
-
-[BREAK]
-
-Maya: Paper two starts from something every physicist learns early: noise never makes two states easier to tell apart. Data processing.
-
-Sam: Right, and the interesting question is always the strict version — how much worse does noise make it? That number is the contraction coefficient, and there's a beautiful classical theory around it going back to Doeblin in the nineteen-thirties. The quantum version has a stubborn wrinkle. If your system is entangled with a reference you don't touch, that reference can carry distinguishability of its own, and the standard coefficient just ignores it.
-
-Maya: So you'd be crediting the channel for destroying something it never had access to.
-
-Sam: Worse — the existing quantum fix, the "complete" contraction coefficient, only behaves if the two states you're comparing look identical on the reference. Which basically never happens in a network. Hirche, George, Nuradha and Wilde define a conditional version: take the total divergence, subtract off whatever divergence already lives in the reference marginals, and ask how the remainder shrinks.
-
-Maya: Bookkeeping. What does it buy?
-
-Sam: An exact identity, and it's the heart of the paper. That conditional coefficient for relative entropy is precisely equal to the contraction coefficient of conditional mutual information — how much conditional correlation the channel destroys. Two quantities that came from different traditions, one from divergence theory, one from correlation measures, turn out to be the same number.
-
-Maya: Equalities like that usually cost you an optimization over everything in the universe.
-
-Sam: That's the second thing that got me. The optimization over reference systems collapses — a single classical bit of a register is enough to saturate it. That's the difference between a definition and a computable quantity. They also give a Doeblin-style upper bound, semidefinite-programmable, that's strictly stronger than what the complete coefficient gave you.
-
-Maya: Give me the thing this actually predicts.
-
-Sam: Two. One, they get a quantum analogue of the Polyanskiy–Wu network bound — how correlation degrades through a relay where part of the signal is erased. Two, a notion they call replacing time: how long before a noisy memory's correlation with a reference is indistinguishable from having just thrown the memory away and replaced it. They show that's asymptotically equivalent to ordinary mixing time, which is reassuring rather than surprising, but it's a reference-aware version, which is what you want for memory lifetime claims.
-
-Maya: And the surprising technical bit?
-
-Sam: Tensorization. In general, quantum strong data processing constants do not tensorize — running two copies in parallel can contract better than either alone, which breaks the classical intuition badly. These mutual-information-based constants do tensorize. I did not expect that to survive.
-
-Maya: Open ends?
-
-Sam: One equality in their dictionary is still only an inequality. The relative-entropy tensorization is approximate outside special channels like depolarizing at its fixed point. And the expansion-coefficient analogues are frequently just zero, so don't get excited about those. Audience: Markov semigroup people, quantum differential privacy, anyone quoting a memory lifetime.
+Sam: Same neighborhood. Who should read this: anyone writing sample-complexity lower bounds. The proof is short enough to teach.
 
 [BREAK]
 
-Maya: Paper three opens on a genuine embarrassment in the literature. Sam, set it up.
+Sam: Next one starts from a definition that doesn't work.
 
-Sam: Lieb-Schultz-Mattis. A spin-one-half chain with translation symmetry and full spin-rotation symmetry cannot have a unique, gapped, featureless ground state. It's one of the cleanest anomaly arguments in condensed matter — the symmetries are incompatible with boredom.
+Maya: Set it up for me. Contraction coefficients — what are they for?
 
-Maya: And people wanted the open-system version. Noisy dynamics, a channel applied over and over.
+Sam: Data processing says noise can only destroy your ability to tell two states apart. A contraction coefficient quantifies how much: the worst-case fraction of distinguishability that survives one pass through a channel. If it's well below one, correlations die fast, and that gives you mixing times, memory lifetimes, privacy bounds, capacity bounds. It's a workhorse.
 
-Sam: They did, and the natural move was to look at the Liouvillian — the generator of the dissipative evolution — and ask whether it's gapless or has degenerate steady states. Here's the embarrassment: for a strongly symmetric channel, that degeneracy is forced by symmetry and probability conservation alone. You get it with no anomaly whatsoever. The diagnostic fires on everything.
+Maya: So where does it break?
 
-Maya: So it's a smoke detector that goes off when you boil water.
+Sam: When you have side information. Say the two states you're comparing are each correlated with some reference system that the noise never touches. The natural thing is to just tack the reference on and take the worst case — and that's trivially one, because you can hide all the distinguishability in the untouched reference and the channel never gets a chance to destroy it. Useless.
 
-Sam: Exactly. Gopalakrishnan, Liu, Lu, Pollmann and You fix it by rotating the picture ninety degrees. Take the channel, apply it many times, vectorize it — and then treat the time direction as a spatial direction. What you get is a mixed-state symmetry-protected topological state in one higher dimension, built by a coupled-wire construction where each column carries conjugate rotation representations and the leftover dangling wires at the boundary keep the anomaly.
+Maya: So people patched it by forbidding that.
 
-Maya: And the dynamical questions become static questions about that wavefunction.
+Sam: They forced the two states to look identical on the reference — equal marginals. Clean, but artificial, especially in a network, where the whole point is that correlations are distributed unevenly. Hirche, George, Nuradha and Wilde do something better: allow any reference, but subtract off the distinguishability the reference already carries. Credit it, rather than ban it.
 
-Sam: With a dictionary. The input state and the evolved state become the two spatial edges. Temporal correlations of the channel become the strange correlator of the topological state — a standard diagnostic. And the object that carries the anomaly is the singular value spectrum of the channel's transfer matrix, which is dual to the operator entanglement of that state.
+Maya: And that gives a number that's actually informative?
 
-Maya: Singular values, not eigenvalues. Is that a real distinction or a technical preference?
+Sam: More than informative — it's exactly a known quantity in disguise. Their main theorem says this conditional coefficient for relative entropy equals the contraction coefficient of conditional mutual information. And here's the part I didn't expect: in that optimization, a single classical bit of side system suffices. You'd think you'd need an unbounded quantum reference. You don't.
 
-Sam: It's real and it's the punchline. The transfer matrix isn't Hermitian, so its eigenvalues can be wildly misleading — you can have a spectrum that looks perfectly trivial. The claim is that an anomalous channel can never have a single dominant singular vector. Concretely, for a spin-one-half chain with strong rotation symmetry and weak translation symmetry, they prove a twisted replica correlator in time cannot decay exponentially — it's either constant or power law.
+Maya: That's the difference between a definition and a tool. What can you compute with it?
 
-Maya: Meaning the noisy dynamics can't just relax into featureless soup. It has to remember.
+Sam: They get a strengthened Doeblin-type bound — if the channel has some minimum chance of just resetting its input, that alone caps how much conditional correlation survives, and their version is strictly stronger than what the equal-marginal coefficient gave. They also lift a classical network bound of Polyanskiy and Wu into the quantum setting: if you route through a relay, the contraction across the whole path factorizes in a controlled way. And they define a "replacing time" — how long until the channel might as well have swapped your state for a fixed one — which turns out to be asymptotically the same as mixing time.
 
-Sam: That's the physical content, and it's falsifiable — find a strictly local anomalous channel whose temporal correlator decays exponentially and the whole framework is wrong.
+Maya: Where does this actually get used first?
 
-Maya: How would anyone measure a twisted replica correlator? That sounds like multiple copies and interference.
+Sam: I'd guess distributed protocols. We talked earlier this week about entanglement costs for splitting a simulation across processors — the question of how quickly noise eats correlations between chips is exactly conditional, not marginal. That's the natural customer.
 
-Sam: It is, and that's the honest cost. It's a Rényi quantity, so experimentally you're in replica-protocol territory — expensive, and the answer can depend on which replica index you choose. In tensor-network simulation it's cheap, which is where I expect the first checks. There's also a structural limitation: the construction assumes a strictly local channel repeated identically with translation-invariant product ancillas. Time-dependent noise is outside the frame.
+Maya: What's still missing?
 
-Maya: And the bound only forbids one behavior.
-
-Sam: One-sided, yes. It rules out trivial decay, it doesn't tell you which non-trivial outcome you got — including strong-to-weak spontaneous symmetry breaking, which is pushed to appendices. Also, the numerics supporting the singular-spectrum claim are promised in a section I'd want to read carefully before quoting the result.
+Sam: One of the four rungs on their ladder is only proven as an inequality, not an equality — they can't yet close it. Tensorization is exact for mutual-information coefficients, only approximate for the relative-entropy ones. And computability is semidefinite upper bounds, not exact evaluation. So it's a structural paper, not yet a calculator.
 
 [BREAK]
 
-Maya: Paper four. Sam, you told me before we recorded that this one made you put your coffee down.
+Maya: Now a contradiction I want you to resolve. Lieb-Schultz-Mattis says a system with a certain symmetry structure can't have a unique, boring, gapped ground state. Fine, for closed systems. What goes wrong when you make it noisy?
 
-Sam: It did. There are two ways to classify short-range-entangled phases of matter. One labels states — which ground states can be connected by shallow circuits. The other labels dynamics — quantum cellular automata, strictly locality-preserving evolutions, modulo circuits. Everyone expected these to be two views of one thing. They aren't. There are automata that act trivially on every state, and there are chiral phases — think a p-plus-i-p superconductor — that are believed unreachable by any automaton at all.
+Sam: The diagnostic goes wrong. In a closed system you look at the spectrum of the Hamiltonian: degeneracy or gaplessness means the anomaly bit. So people did the obvious thing for open systems — look at the spectrum of the dissipative evolution operator. Problem is, if your channel has a strong symmetry, that spectrum is degenerate and gapless no matter what. Every strongly symmetric open system looks anomalous. The test always says yes.
 
-Maya: A mismatch that's been sitting there for years.
+Maya: So the test carries no information at all.
 
-Sam: Jones, Sopenko and Thorngren argue the mismatch is an artifact. Specifically, an artifact of insisting each lattice site holds finitely many degrees of freedom. Let each site carry an infinite-dimensional algebra — a type one factor, operator-algebra machinery — and the two classifications become literally the same abelian group. Same group. And both equal a third thing: a Brauer group of invertible algebras living one dimension down. On the boundary.
+Sam: None. Gopalakrishnan, Liu, Lu, Pollmann and You fix this with a rotation. Take a channel you apply over and over, vectorize it, and then swap the time direction with one spatial direction. What you get is a state in one higher dimension — specifically a mixed-state symmetry-protected topological state. Running your noisy dynamics forward in time becomes moving sideways across that higher-dimensional state.
 
-Maya: So the dynamics, the states, and a boundary invariant are three faces of one object.
+Maya: And the anomaly comes along for the ride.
 
-Sam: And that boundary algebra is constructed, not assumed — it's a genuine bulk-boundary correspondence attached to an invertible state. From there they build a K-theory spectrum whose homotopy groups reproduce the classification in each dimension, which is an algebraic realization of the loop spectrum Kitaev conjectured years ago.
+Sam: It becomes a boundary property of the higher-dimensional state, which is a thing we understand well. Their picture for the identity channel is lovely: a stack of wires connected by entangled pairs, where each single spin-one-half wire is anomalous but each pair of wires isn't — so the bulk is fine and the edges are stuck. Add symmetric ancilla couplings, trace them out, and you still have that protected structure.
 
-Maya: Is any of this populated with actual examples, or is it an empty theorem?
+Maya: Okay, but what does that buy us as a measurement?
 
-Sam: That's the part I liked most. They discretize chiral conformal field theories — the Majorana theory with central charge one-half, and the E-eight theory — and show those discretizations are invertible and nontrivial in the Brauer group. That gives you the first explicit nontrivial automata and invertible states in two spatial dimensions from this construction. Chiral phases, which the old framework said were unreachable, become reachable.
+Sam: Two things. First, a temporal correlator with a twist in it — insert an operator, evolve, insert again, and normalize. That object is the mirror image of what's called a strange correlator in the topological state, and the anomaly forbids it from decaying exponentially. So it either saturates or falls off only as a power. That's a real observable in time.
 
-Maya: Okay, here's my objection, and I don't think it's a small one. Infinite-dimensional Hilbert space per site isn't a real material. Copper doesn't do that. Aren't you buying the theorem by weakening what a lattice means?
+Maya: And second?
 
-Sam: You're right that it's a modeling choice and the paper says so. My defense is that it's the same kind of move as stabilization in K-theory — you allow ancillas and the bookkeeping becomes clean. What you get in exchange is concrete: chiral phases now admit commuting local Hamiltonians and zero-correlation representatives. What you pay is that those Hamiltonians are unbounded. Whether that's physics or accounting, I genuinely don't know yet.
+Sam: This is the "wrong ruler" moment. The right spectral diagnostic isn't the eigenvalues of the evolution operator — it's the singular values. Those are dual to the operator entanglement spectrum of the topological state, and the anomaly forbids a unique dominant singular vector. Eigenvalues are contaminated by generic symmetry effects; singular values aren't.
 
-Maya: What's still conjectural?
+Maya: How much of this is proven versus argued?
 
-Sam: The natural guess — that for a chain the group is the integers, generated by E-eight — is unproven. Nontriviality here comes through an orbifold anomaly argument tied to central charge not being divisible by three, so the general chiral case is future work. And the key splitting property is only proved for free fermions in one dimension and rational diagonal theories; higher dimensions are conjecture. Read it if you work on topological classification or algebraic field theory. It is not light reading.
+Sam: Honest answer: it's a dictionary plus physics arguments. The identification of these anomalies with topological boundaries leans on coupled-wire and field-theory reasoning that's standard but heuristic. They give a tensor-network construction, which is the right way to test it numerically. And the correlator is nonlinear in the state — several replicas — so measuring it on hardware means replica tricks or post-selection-style overhead. Not free.
 
-[BREAK]
+Maya: Who reads it?
 
-Maya: Last paper, and it rhymes with the first one. Both take an optimization nobody can solve and replace it with a relaxation you can compute. In paper one the relaxation turned out to be exactly right. Here?
-
-Sam: Here there's a visible gap, and the authors are upfront about it. Setup: semi-device-independent random number generators. You don't characterize your devices and you don't run a loophole-free Bell test — you assume one thing, a bound on the energy of the prepared states, essentially mean photon number. That's attractive because it's cheap, and these things are deployed at megahertz to gigahertz rates.
-
-Maya: And something broke.
-
-Sam: Recent work showed the old security proofs quietly assumed the preparation box and the measurement box share only classical correlations. If an eavesdropper pre-distributes entanglement between the two boxes, she mounts strictly stronger attacks and those rates are invalid. It was left genuinely unclear whether any certified randomness survives.
-
-Maya: So the question is binary: is there anything left, or is the whole scheme dead?
-
-Sam: Ranu, Wooltorton, Abbott and Fawzi answer yes, there's something left, and they do it with certified bounds rather than seesaw heuristics — that distinction matters, because a seesaw gives you an attack, not a guarantee. They adapt the NPA hierarchy to this prepare-and-measure setting and get a real upper bound on the adversary's guessing probability, with no assumption on dimension at all.
-
-Maya: How do you run NPA when the constraint applies to only part of what's measured?
-
-Sam: That's the reusable trick. The measurement acts jointly on the transmitted signal and the device's entangled share, but the energy bound only touches the signal. So they block-decompose the measurement operators in a basis of the signal system, which leaves blocks acting purely on the entangled share — and those commute with everything on the signal side. For the unbounded dimension, they keep the ground and excited subspaces explicit and dump every higher block into a single auxiliary operator constrained only by sandwich relations that never mention dimension.
-
-Maya: And numerically?
-
-Sam: Positive randomness with no dimension assumption up to an energy parameter around zero point one eight. It's also noise robust — at low energy you keep randomness down to roughly sixty percent of the ideal correlation value, which is not a knife's edge.
-
-Maya: Where's the gap you flagged?
-
-Sam: Their certification dies at about zero point one eight, but known attacks still leave entropy on the table out to about zero point three two. Nearly a factor of two, and nobody knows how much is slack in the relaxation versus genuinely stronger attacks they haven't found. They could only run the hierarchy at level two, so there's headroom in principle but not in compute.
-
-Maya: Practical question. These generators are already in products. Does this change hardware, or just the paperwork?
-
-Sam: It can change your operating point — if you were running at high mean photon number and quoting rates from the old proofs, you may need to back off. And two honest limits: everything here is finite but unbounded dimension, so true infinite-dimensional optical modes are still open, and the analysis is single-round, independent-and-identically-distributed min-entropy. Finite-round security is future work; they gesture at the Brown–Fawzi–Fawzi machinery for it but don't do it.
-
-Maya: Still, going from "no proof exists" to "here's a certified region" is the right direction.
-
-Sam: It restores a foundation. It just doesn't tell you yet where the true boundary is.
+Sam: Anyone doing dissipative state preparation or open-system topology, and anyone with a noisy simulator looking for a diagnostic that isn't automatically triggered by a conservation law.
 
 [BREAK]
 
-Maya: One result each. Mine's the purity testing proof. Not because the answer is new — the square root was already believed — but because a relaxation people had written off as lossy turned out to be exactly sharp, and the argument fits on a page. That reframes what the tool is for.
+Sam: Paper four is the one that genuinely surprised me, and the surprise is a mismatch that turns out to be self-inflicted.
 
-Sam: I'll take the spacetime duality paper. The idea that you diagnose an anomaly in noisy dynamics by rotating time into space and reading off the operator entanglement — and that it's singular values, not eigenvalues, that carry the signal — that's the kind of reframing that makes a stuck problem move. I want to see the numerics.
+Maya: Which mismatch?
+
+Sam: Two classification programs that should agree and don't. On one side, short-range-entangled phases of matter — states you can make with a shallow circuit, up to equivalence. On the other, quantum cellular automata: strictly locality-preserving discrete dynamics, one step, no time-continuum. There's a natural map from automata to phases, and with ordinary finite-dimensional sites that map is neither one-to-one nor onto. It's just broken.
+
+Maya: And the fix is what — a bigger box?
+
+Sam: Bigger sites. Jones, Sopenko and Thorngren redo everything allowing infinitely many degrees of freedom per site — von Neumann algebras rather than matrices. And then three things become the same group: automata on your space with an extra dimension stacked on, invertible phases on that same space, and a purely algebraic object, a Brauer group of invertible quasi-local algebras built from the boundary.
+
+Maya: Wait. The mismatch was an artifact of the finite-dimensional assumption?
+
+Sam: That's the claim, and the middle step is a rigorous bulk-boundary correspondence: to an invertible state they attach a boundary algebra, and that algebra is the invariant. Once you have that, you can go hunting for nontrivial examples — and they find them in chiral conformal field theory. They discretize the Majorana net at central charge one half, and the exceptional one at level one, and show those give nontrivial classes.
+
+Maya: Which means what, physically?
+
+Sam: It means chiral phases — the ones with nonzero edge central charge, quantum Hall-like — can be produced by a cellular automaton, and by commuting local Hamiltonians, once you allow infinite-dimensional on-site spaces. In two dimensions that group is provably nonzero, where before there were no rigorous nontrivial examples at all.
+
+Maya: I want to push on the infinite-dimensional sites, though. That feels like a place where you can smuggle in resources. If each site secretly has unlimited ancillas, haven't you changed the physics?
+
+Sam: That's the right objection and the authors flag it as a modelling choice. Their partial defense is a structure theorem: for rational conformal nets, the discretized diagonal construction is isomorphic, with bounded spread, to an honest matrix algebra — an extended split property that says the degrees of freedom really are lattice-like. But that's established in one spatial dimension only. In higher dimensions it's a hope.
+
+Maya: What else is conjectural?
+
+Sam: They assume the invertible states have strictly zero correlation length, and whether every phase has such a representative isn't known. The guess that the two-dimensional group is generated by the exceptional example is a conjecture. And nontriviality for every nonzero central charge is proven only when the charge isn't divisible by three — the rest is deferred.
+
+Maya: And they build a K-theory spectrum out of this too.
+
+Sam: They do, and it realizes the shape Kitaev conjectured years ago — the classification in one dimension is the loop space of the next. That's the piece the operator-algebra community will chew on for a while.
+
+[BREAK]
+
+Maya: Last one, and it's a repair job. Semi-device-independent random number generation, energy-constrained flavor. Explain the setup like I'm buying one.
+
+Sam: You have a box that prepares states and a box that measures them. You don't trust either. You don't even assume a dimension. All you assume is a cap on the energy of what's sent — in photonics, a bound on mean photon number. That's a cheap, fast assumption, and these devices run at megahertz to gigahertz rates. From the observed correlations you certify how many bits an adversary can't predict.
+
+Maya: And the assumption people didn't notice they were making?
+
+Sam: That the two boxes only share classical correlations. Recent work showed an eavesdropper can secretly entangle them, produce correlations that look better than classical, and eat into your certified randomness. That left an ugly open question: under that attack, do you get any private randomness at all, or does the whole scheme collapse?
+
+Maya: And the answer is?
+
+Sam: You get some. Ranu, Wooltorton, Abbott and Fawzi build a semidefinite hierarchy — the NPA-style machinery, adapted — and produce genuine upper bounds on the adversary's guessing probability, dimension-free. Before this, what people had were seesaw searches, which find attacks and therefore give the wrong direction: they tell you randomness might be there, never that it is.
+
+Maya: What was the technical blocker?
+
+Sam: The measurement acts jointly on the incoming message and the device's own entangled share, which destroys the commuting structure the hierarchy needs. Their trick is to expand the measurement in the source basis so the blocks act on the message alone and commute with the source operators again. The leftover problem is projectivity — that the measurement is sharp — because that ties every block to every other one across all dimensions. So they keep the low-energy blocks explicitly and lump everything else into one auxiliary operator obeying a handful of sandwich relations that hold in every dimension.
+
+Maya: And the certified region?
+
+Sam: Randomness survives up to an energy parameter of about zero point one eight. The best known attacks only kill it above roughly zero point three. So there's a real gap, and the honest reading is they don't know whether that gap is slack in the relaxation or genuine attacks nobody has found.
+
+Maya: I'd want to know which. That's a factor of nearly two in your operating range.
+
+Sam: Agreed, and they're upfront that they only run the hierarchy to a modest level and truncate some of the constraints, so slack is plausible. Bigger caveats: single-round, independent-and-identically-distributed, min-entropy only — no finite-size analysis yet, though they point at existing machinery that should slot in. And the bounds hold for arbitrarily large finite dimension but not infinite-dimensional systems, which is exactly the photonic setting they're motivated by.
+
+Maya: We covered fast key-rate computation for quantum key distribution earlier this week — same discipline, isn't it? Turning a security claim into a convex program you can actually solve.
+
+Sam: Same discipline, and the same tension: the certified number is always more conservative than the true one, and the research is about squeezing that down. This one squeezes it from nothing to something, which is the biggest step there is.
+
+[BREAK]
+
+Maya: One result each. Mine is the purity testing bound. Not because of the exponent — because it says a relaxation everyone assumed was lossy was actually tight all along, and nobody had worked hard enough to see it.
+
+Sam: Mine is the singular values. The idea that for noisy dynamics you should stop looking at eigenvalues and look at singular values instead is the kind of correction that's obvious in hindsight and changes what people plot.
 
 Maya: Links to all five papers are in the show notes.
 
-Sam: And there's a link there to send us questions — we do read them, and good ones end up in the mailbag.
+Sam: And there's a link there for sending us questions — we read them, and we like the ones that make us go back and check.
 
-Maya: For the SciRate Daily Digest, I'm Maya.
-
-Sam: I'm Sam. See you tomorrow.
+Maya: Thanks for listening. We'll see you tomorrow.

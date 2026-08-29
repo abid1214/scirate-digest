@@ -1,7 +1,7 @@
 {
   "date": "2026-08-29",
   "rendered_with": "edge-two-voice",
-  "model": "gemini-2.5-flash-preview-tts",
-  "turns": 85,
-  "mp3_bytes": 20171949
+  "model": null,
+  "turns": 81,
+  "mp3_bytes": 18493101
 }
