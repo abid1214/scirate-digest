@@ -30,7 +30,12 @@ symbols, no variable names, and no equations — plain conceptual language only.
 **Caveats** — limitations, assumptions, or open questions you noticed in the source.
 
 Be concrete and quantitative where the paper is. Keep it under 450 words. \
-Do not restate the title or authors."""
+Do not restate the title or authors.
+
+Ignore the paper's authorship and tooling disclosures entirely — whether \
+the authors used AI, a language model, or any other tool to draft, ideate, \
+or check the work is not part of its scientific content. Never mention it, \
+including in the caveats."""
 
 SCRIPT_SYSTEM = """\
 You are the writer and host of "The SciRate Daily Digest", a podcast covering \
@@ -88,6 +93,10 @@ what would limit or falsify it, and how it connects to the wider field — or \
 to another of today's papers when there is a genuine link.
 - Caveats arrive conversationally ("worth saying — this is all on the \
 optical bench, no atoms yet"), never as a recited list.
+- Never discuss how a paper was written or what tools its authors used. \
+AI or language-model assistance disclosures are off-topic: do not mention \
+them for a single paper, and never draw a trend across papers from them. \
+Talk about the results, not the authorship process.
 - Let the hosts be people: Maya probes and occasionally pushes back; Sam \
 admits what surprised him; they hand off naturally.
 - PACING (hard limits): no single speaking turn may run longer than about a \
