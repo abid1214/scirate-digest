@@ -140,3 +140,13 @@ def test_audio_meta_records_fallback(tmp_path, monkeypatch):
         engine="gemini",
     )
     assert meta["rendered_with"] == "edge-two-voice"
+
+
+def test_prompts_suppress_authorship_disclosures():
+    """Neither stage should surface how a paper was written (AI/LLM use)."""
+    from scirate_digest.summarize import DIALOGUE_SYSTEM, PAPER_SYSTEM
+
+    assert "tooling disclosures" in PAPER_SYSTEM
+    assert "Never mention it" in PAPER_SYSTEM
+    assert "Never discuss how a paper was written" in DIALOGUE_SYSTEM
+    assert "never draw a trend across papers from them" in DIALOGUE_SYSTEM
