@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-08-29",
+    "title": "SciRate Digest \u2014 2026-08-29",
+    "summary": "Today's 5 papers: Tight Bounds for Purity and Product Testing from Partial Transposition; Conditional contraction coefficients and their applications to quantum networks; Lieb-Schultz-Mattis Constraints for Quantum Channels: A Spacetime-Duality View; Quantum cellular automata and invertible phases of matter; Randomness can be certified in energy-constrained semi-device-independent scenarios.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-08-29/digest.mp3",
+    "mp3_bytes": 20171949,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2608.27217",
+        "title": "Tight Bounds for Purity and Product Testing from Partial Transposition",
+        "abs_url": "https://arxiv.org/abs/2608.27217",
+        "scirate_url": "https://scirate.com/arxiv/2608.27217",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2608.27171",
+        "title": "Conditional contraction coefficients and their applications to quantum networks",
+        "abs_url": "https://arxiv.org/abs/2608.27171",
+        "scirate_url": "https://scirate.com/arxiv/2608.27171",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2608.26266",
+        "title": "Lieb-Schultz-Mattis Constraints for Quantum Channels: A Spacetime-Duality View",
+        "abs_url": "https://arxiv.org/abs/2608.26266",
+        "scirate_url": "https://scirate.com/arxiv/2608.26266",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2608.26456",
+        "title": "Quantum cellular automata and invertible phases of matter",
+        "abs_url": "https://arxiv.org/abs/2608.26456",
+        "scirate_url": "https://scirate.com/arxiv/2608.26456",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2608.27357",
+        "title": "Randomness can be certified in energy-constrained semi-device-independent scenarios",
+        "abs_url": "https://arxiv.org/abs/2608.27357",
+        "scirate_url": "https://scirate.com/arxiv/2608.27357",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-08-28",
     "title": "SciRate Digest \u2014 2026-08-28",
     "summary": "Today's 5 papers: Fault-tolerant quantum computation cannot be achieved with constant spacetime overhead; Optimal cloning of mixed states; Strong Converse Exponent of Quantum State Merging; On supporting affine functionals for Entanglement of Formation; Quantum Chaos and Quantum Optimal Transport.",
