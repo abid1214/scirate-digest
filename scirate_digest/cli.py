@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import re
 import logging
 import os
 import sys
@@ -147,13 +148,16 @@ def run(args: argparse.Namespace) -> Path:
             log.warning("Could not fetch listener questions (%s); skipping mailbag", exc)
         (out_dir / "questions.json").write_text(json.dumps(questions, indent=2))
 
-        log.info("Writing podcast script (%s)…", "two-host dialogue" if engine == "gemini" else "narration")
-        if engine == "gemini":
-            script = summarize.write_dialogue_script(
-                client, papers, date_str, model=args.model, questions=questions
-            )
-        else:
-            script = summarize.write_podcast_script(client, papers, date_str, model=args.model)
+        recent = load_recent_episodes(exclude_date=date_str)
+        if recent:
+            log.info("Recalling %d previous episode(s) for continuity", len(recent))
+        log.info("Writing podcast script (two-host dialogue)…")
+        # Two hosts are the format of the show; the engine only decides who
+        # speaks it. (Narration is a last-resort fallback inside _render_audio.)
+        script = summarize.write_dialogue_script(
+            client, papers, date_str, model=args.model,
+            questions=questions, recent=recent,
+        )
         (out_dir / "podcast_script.txt").write_text(script)
 
     (out_dir / "papers.json").write_text(
@@ -217,11 +221,21 @@ def _render_audio(
             except Exception as exc2:
                 log.error("Two-voice fallback failed (%s); single narrator", exc2)
                 script_text = _dialogue_to_narration(script_text)
+    if mp3 is None and rendered_with is None:
+        # Default path: deterministic edge voices, one per host.
+        from . import tts
+
+        try:
+            mp3 = tts.synthesize_dialogue(script_text, mp3_path)
+            rendered_with = "edge-two-voice"
+        except Exception as exc:
+            log.error("Two-voice synthesis failed (%s); single narrator", exc)
+            script_text = _dialogue_to_narration(script_text)
     if mp3 is None:
         from . import tts  # imported lazily so --skip-audio needs no edge-tts
 
         mp3 = tts.synthesize(script_text, mp3_path, voice=edge_voice or tts.DEFAULT_VOICE)
-        rendered_with = rendered_with or ("edge-narrator" if engine == "gemini" else "edge")
+        rendered_with = "edge-narrator"
 
     meta = {
         "date": date_str,
@@ -259,6 +273,62 @@ def load_discussed_uids(
         except (json.JSONDecodeError, OSError) as exc:
             log.warning("Could not read %s (%s); ignoring it", pj, exc)
     return seen
+
+
+
+_SECTION_RE = re.compile(r"\*\*(.+?)\*\*(.*?)(?=\n\*\*|\Z)", re.DOTALL)
+
+
+def _takeaway(summary: str, limit: int = 220) -> str:
+    """One plain-language line describing a paper, for cross-episode recall.
+
+    Prefers the notation-free "big picture" section (it is already written to
+    be speakable) and falls back to the TL;DR."""
+    if not summary:
+        return ""
+    sections = {m.group(1).strip().lower(): m.group(2).strip()
+                for m in _SECTION_RE.finditer(summary)}
+    text = sections.get("the big picture") or sections.get("tl;dr") or ""
+    text = " ".join(text.split()).lstrip("—-– ").strip()
+    if not text:
+        return ""
+    first = text.split(". ")[0].rstrip(".")
+    return (first[:limit].rstrip() + "…") if len(first) > limit else first
+
+
+def load_recent_episodes(
+    digests_dir: Path = Path("digests"),
+    exclude_date: str | None = None,
+    limit: int = 5,
+) -> list[dict]:
+    """The last few episodes as {date, papers:[{title, takeaway}]}, newest first.
+
+    Gives the scriptwriter enough to make a grounded callback ("this builds on
+    the decoder paper we covered Monday") and to avoid opening the same way two
+    days running. Titles and one line each — never whole summaries, which would
+    tempt the hosts into re-reviewing old papers."""
+    if not digests_dir.is_dir():
+        return []
+    episodes: list[dict] = []
+    for d in sorted(digests_dir.glob("*/papers.json"), reverse=True):
+        date = d.parent.name
+        if exclude_date and date == exclude_date:
+            continue
+        try:
+            papers = json.loads(d.read_text())
+        except (json.JSONDecodeError, OSError) as exc:
+            log.warning("Could not read %s (%s); ignoring it", d, exc)
+            continue
+        entries = [
+            {"title": p.get("title", "").strip(),
+             "takeaway": _takeaway(p.get("summary") or "")}
+            for p in papers if p.get("title")
+        ]
+        if entries:
+            episodes.append({"date": date, "papers": entries})
+        if len(episodes) >= limit:
+            break
+    return episodes
 
 
 def _resolve_engine(args: argparse.Namespace) -> str:

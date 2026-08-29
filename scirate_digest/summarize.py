@@ -107,6 +107,18 @@ most about seventy speaking turns. In the mailbag, each host's total \
 contribution to a given question stays under a minute, so a question is \
 fully answered in under two minutes of back-and-forth.
 
+CONTINUITY — the show has a past, and the listener remembers it:
+- If the input includes a PREVIOUSLY ON THE SHOW section, those episodes \
+already aired. Reach for a callback when today's paper genuinely extends, \
+contradicts, or echoes one of them ("this is the other side of the decoder \
+result we covered Monday") — at most one or two per episode, and only when \
+the link is real.
+- You know those papers only by title and a one-line gist. Never invent \
+detail about them, never re-review them, and never reference an episode or \
+paper that is not listed.
+- Do not open or close today's episode the way the recent ones did, and do \
+not reuse their framing devices. Fresh angle every day.
+
 VARIETY AND DEPTH — five papers must never sound like one conversation \
 repeated five times:
 - Give each paper segment a different conversational shape. Rotate entry \
@@ -151,7 +163,8 @@ STRUCTURE:
 3. If listener questions are provided in the input: a short mailbag segment \
 ("before the papers — some listener mail"). Answer each question \
 conversationally in one to two minutes, crediting the asker by name, using \
-today's or previous papers where they help.
+today's papers — or ones listed under PREVIOUSLY ON THE SHOW — where they \
+help.
 4. The papers, in ranked order — roughly 350 to 500 spoken words each, \
 following the golden rule above.
 5. Closing: each host names the one result that stuck with them most, then \
@@ -255,15 +268,37 @@ def _episode_blocks(papers: list[Paper]) -> str:
     return "\n\n---\n\n".join(blocks)
 
 
+def _recent_block(recent: list[dict]) -> str:
+    """Compact record of the last few episodes: titles and one line each."""
+    lines = []
+    for ep in recent:
+        lines.append(f"{ep.get('date', '')}:")
+        for p in ep.get("papers", []):
+            takeaway = p.get("takeaway") or ""
+            lines.append(
+                f"  - {p.get('title', '').strip()}"
+                + (f" — {takeaway}" if takeaway else "")
+            )
+    return "\n".join(lines)
+
+
 def write_dialogue_script(
     client: anthropic.Anthropic,
     papers: list[Paper],
     date_str: str,
     model: str = DEFAULT_MODEL,
     questions: list[dict] | None = None,
+    recent: list[dict] | None = None,
 ) -> str:
     """Write a two-host (Maya/Sam) spoken dialogue script for the episode."""
     parts = [f"Episode date: {date_str}"]
+    if recent:
+        parts.append(
+            "PREVIOUSLY ON THE SHOW — episodes already aired, most recent "
+            "first. You may refer back to any of these; do not re-review "
+            "them, and never claim to have covered anything not listed "
+            "here:\n\n" + _recent_block(recent)
+        )
     if questions:
         q_lines = "\n\n".join(
             f"Question {i} (from {q.get('author', 'a listener')}): {q.get('title', '')}\n"

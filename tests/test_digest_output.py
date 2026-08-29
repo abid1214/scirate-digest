@@ -150,3 +150,54 @@ def test_prompts_suppress_authorship_disclosures():
     assert "Never mention it" in PAPER_SYSTEM
     assert "Never discuss how a paper was written" in DIALOGUE_SYSTEM
     assert "never draw a trend across papers from them" in DIALOGUE_SYSTEM
+
+
+def test_edge_engine_renders_two_voices(tmp_path, monkeypatch):
+    """The default engine must voice the dialogue, not collapse to a narrator."""
+    import types
+    from pathlib import Path
+
+    import scirate_digest
+    from scirate_digest import cli
+
+    out = tmp_path / "2026-01-03"
+    out.mkdir(parents=True)
+    calls = []
+
+    def two_voice(text, path):
+        calls.append("dialogue")
+        Path(path).write_bytes(b"\x00" * 16)
+        return Path(path)
+
+    def narrator(text, path, voice=None):
+        calls.append("narrator")
+        Path(path).write_bytes(b"\x00" * 16)
+        return Path(path)
+
+    monkeypatch.setattr(
+        scirate_digest, "tts",
+        types.SimpleNamespace(DEFAULT_VOICE="v", synthesize_dialogue=two_voice,
+                              synthesize=narrator),
+        raising=False,
+    )
+    meta = cli._render_audio(
+        script_text="Maya: a\nSam: b\n", mp3_path=out / "digest.mp3",
+        out_dir=out, date_str="2026-01-03", engine="edge",
+    )
+    assert calls == ["dialogue"]
+    assert meta["rendered_with"] == "edge-two-voice"
+
+
+def test_recent_episode_context_is_titles_only():
+    """Callback context carries titles and one line, never whole summaries."""
+    from scirate_digest.summarize import _recent_block
+
+    block = _recent_block([
+        {"date": "2026-01-02", "papers": [
+            {"title": "A code paper", "takeaway": "Cheaper error correction"},
+            {"title": "No takeaway paper", "takeaway": ""},
+        ]},
+    ])
+    assert "2026-01-02:" in block
+    assert "- A code paper — Cheaper error correction" in block
+    assert "- No takeaway paper" in block
