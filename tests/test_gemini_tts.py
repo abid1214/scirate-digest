@@ -98,6 +98,25 @@ def test_edge_dialogue_voices_env(monkeypatch):
     assert load_dialogue_voices() == {"Maya": "en-GB-SoniaNeural", "Sam": "en-AU-WilliamNeural"}
 
 
+def test_engine_defaults_to_edge(monkeypatch):
+    """Deterministic voices are the default; Gemini is explicit opt-in."""
+    import argparse
+    from scirate_digest.cli import _resolve_engine
+
+    args = argparse.Namespace(voice_engine="auto")
+    monkeypatch.setenv("GEMINI_API_KEY", "present-but-not-selected")
+    monkeypatch.delenv("VOICE_ENGINE", raising=False)
+    assert _resolve_engine(args) == "edge"
+
+    monkeypatch.setenv("VOICE_ENGINE", "gemini")
+    assert _resolve_engine(args) == "gemini"
+
+    monkeypatch.setenv("VOICE_ENGINE", "")          # unset repo var in CI
+    assert _resolve_engine(args) == "edge"
+
+    assert _resolve_engine(argparse.Namespace(voice_engine="gemini")) == "gemini"
+
+
 def test_merge_consecutive_turns():
     from scirate_digest.gemini_tts import merge_consecutive_turns
     turns = [("Maya", "one."), ("Maya", "two."), ("Sam", "three."),

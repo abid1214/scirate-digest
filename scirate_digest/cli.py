@@ -262,9 +262,21 @@ def load_discussed_uids(
 
 
 def _resolve_engine(args: argparse.Namespace) -> str:
+    """Pick the TTS engine.
+
+    Default is edge: its neural voices are deterministic, so Maya and Sam
+    sound identical in every turn of every episode. Gemini's TTS re-generates
+    the voice on each request, and in practice it never held a stable pair —
+    whole-conversation chunks drifted across an episode, and per-turn requests
+    varied turn to turn (measured: the female host smearing 130-180 Hz into
+    the male range). Set VOICE_ENGINE=gemini (or --voice-engine gemini) to
+    opt back in."""
     if args.voice_engine != "auto":
         return args.voice_engine
-    return "gemini" if os.environ.get("GEMINI_API_KEY") else "edge"
+    env = (os.environ.get("VOICE_ENGINE") or "").strip().lower()
+    if env in ("edge", "gemini"):
+        return env
+    return "edge"
 
 
 def _dialogue_to_narration(script: str) -> str:
