@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-08-30",
+    "title": "SciRate Digest \u2014 2026-08-30",
+    "summary": "Today's 5 papers: Quantum-Inspired Computational Fluid Dynamics for Transient Turbulent Compressible Flows; Pseudodeterminism and MA != NP^BPP in Communication Complexity; How quantum is quantum geometry?; Least Variable Quantum Counting Processes; The Find Rows and Columns and Decode algorithm for quantum expander codes.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-08-30/digest.mp3",
+    "mp3_bytes": 20150445,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2608.26995",
+        "title": "Quantum-Inspired Computational Fluid Dynamics for Transient Turbulent Compressible Flows",
+        "abs_url": "https://arxiv.org/abs/2608.26995",
+        "scirate_url": "https://scirate.com/arxiv/2608.26995",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2608.26425",
+        "title": "Pseudodeterminism and MA != NP^BPP in Communication Complexity",
+        "abs_url": "https://arxiv.org/abs/2608.26425",
+        "scirate_url": "https://scirate.com/arxiv/2608.26425",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2608.26269",
+        "title": "How quantum is quantum geometry?",
+        "abs_url": "https://arxiv.org/abs/2608.26269",
+        "scirate_url": "https://scirate.com/arxiv/2608.26269",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2608.26240",
+        "title": "Least Variable Quantum Counting Processes",
+        "abs_url": "https://arxiv.org/abs/2608.26240",
+        "scirate_url": "https://scirate.com/arxiv/2608.26240",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2608.27211",
+        "title": "The Find Rows and Columns and Decode algorithm for quantum expander codes",
+        "abs_url": "https://arxiv.org/abs/2608.27211",
+        "scirate_url": "https://scirate.com/arxiv/2608.27211",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-08-29",
     "title": "SciRate Digest \u2014 2026-08-29",
     "summary": "Today's 5 papers: Tight Bounds for Purity and Product Testing from Partial Transposition; Conditional contraction coefficients and their applications to quantum networks; Lieb-Schultz-Mattis Constraints for Quantum Channels: A Spacetime-Duality View; Quantum cellular automata and invertible phases of matter; Randomness can be certified in energy-constrained semi-device-independent scenarios.",

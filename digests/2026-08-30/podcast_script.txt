@@ -1,0 +1,187 @@
+Maya: Sam, I've got a heresy to open with. I think a lot of the word "quantum" in paper titles is doing marketing work.
+
+Sam: That is a bold thing to say on a quantum podcast. But honestly? Today's stack half agrees with you. We've got a classical fluid solver borrowing quantum many-body compression, and a paper arguing that most of what we call quantum geometry can be done by a spinning top.
+
+Maya: And in the other direction — a paper where a quantum clock genuinely beats every classical machine of the same memory. So the border traffic goes both ways.
+
+Sam: Both ways, and today we're standing right on the line.
+
+[BREAK]
+
+Maya: This is the SciRate Daily Digest for August thirtieth, twenty twenty-six. I'm Maya.
+
+Sam: And I'm Sam. On the docket: tensor networks learning to divide, so they can finally do compressible turbulence; a communication complexity separation about algorithms that have to commit to one answer; the classical shadow of quantum geometry; the least jittery clock you can build with a fixed amount of memory; and a decoder for expander codes that corrects more than fifteen times the errors of its predecessors.
+
+Maya: No mail today, so straight into it.
+
+[BREAK]
+
+Maya: Let's start with fluids. The stake here is concrete: aerospace people want to simulate compressible turbulent flow — air moving fast enough that density changes, viscosity changes with temperature, sound matters. And the tensor-network crowd has been circling that problem for years without being able to touch it.
+
+Sam: Right, and the reason why is almost comically mundane. These methods take a fluid field on a grid and compress it into a tensor train — the same object condensed matter people use to compress many-body wavefunctions. Adding two compressed fields is easy. Multiplying them point by point is doable. But dividing one by another? Or taking a square root? Nobody had an efficient algorithm that stays inside the compressed format.
+
+Maya: And you need division for compressible flow because...
+
+Sam: Because momentum divided by density is velocity, and temperature depends on that ratio, and viscosity depends on temperature. Incompressible flow lets you treat density as a constant and duck the whole issue. So compressibility was blocked by arithmetic, not physics.
+
+Maya: So what's the fix?
+
+Sam: Newton–Raphson. The classic root-finding iteration for a reciprocal uses only multiplication and subtraction — which they already have. So they seed it with a good polynomial guess over the range the field actually lives in, iterate, and never decompress. Square root is then built on top of division. And they check convergence using inner products, so even the error estimate stays compressed.
+
+Maya: That's elegant. What did they build with it?
+
+Sam: An end-to-end direct numerical simulation of the compressible Navier–Stokes equations — fourth-order derivatives, Runge–Kutta stepping, temperature-dependent viscosity via Sutherland's law, everything living in tensor-train format from initialization to the final energy diagnostics. They run a Taylor–Green vortex, the standard decaying-turbulence test, and compare against an established classical solver. Early on the kinetic energy agrees to under a tenth of a percent.
+
+Maya: Early on. What happens late?
+
+Sam: It drifts to a few percent, and they don't have an explanation. That's the honest reading. But the thing that made me sit up is a trick they call simultaneous simulation: you add one extra index to the tensor and pack several independent runs — different Mach numbers, say — into a single compressed object. Two cases cost about twenty percent more than one, instead of twice as much.
+
+Maya: That's the industrial use case, isn't it? Nobody runs one simulation, they run a parameter sweep.
+
+Sam: Exactly. If that scales to dozens of cases, it changes the economics of design studies more than any single-run speedup would.
+
+Maya: Okay, here's my objection. They never report wall-clock time against the classical solver. So we have accuracy but no demonstrated speedup — and the whole premise is that compression saves you work.
+
+Sam: That's fair, and it gets worse in a specific, quantifiable way. They measure how much compression the field actually admits as turbulence develops, and it degrades sharply right at peak enstrophy — right when the flow gets interesting. The required rank grows as a power law in Reynolds number, and the case they most wanted to run, they couldn't, because it wouldn't fit in memory.
+
+Maya: So the method is best exactly where the flow is dullest.
+
+Sam: For now. Also: periodic box, no walls, no geometry, and the grid is deliberately coarse. This is a plumbing paper, and it should be read as one — the plumbing was genuinely missing, and now it isn't. Anyone doing tensor trains who needs a pointwise nonlinear function should read the division algorithm regardless of whether they care about fluids.
+
+Maya: And there's a link back to Thursday, when we did fast-forwarding quantum algorithms for weakly nonlinear dissipative equations. Every time a quantum algorithm claims a PDE speedup, this is the classical baseline it has to beat.
+
+Sam: And the baseline just got harder to beat. That's the healthy version of this competition.
+
+[BREAK]
+
+Maya: Next one is a puzzle, and I want you to explain why it isn't a contradiction. There's a two-party problem where a randomized protocol that never gives a wrong answer costs almost nothing. But a randomized protocol that has to give the same answer every time costs enormously more.
+
+Sam: Right, and the resolution is in what "never wrong" is allowed to do. A zero-sided-error protocol can bail. It says "one", or "zero", or "I don't know" — and when it commits, it's right. Cheap. The expensive property is called pseudodeterminism: on every input, your randomized protocol has to almost always produce the same canonical answer.
+
+Maya: Why would anyone demand that?
+
+Sam: Because if a subroutine gives you a different valid answer each time you call it, you can't reuse the output. Think of anything where two parties, or two runs, need to agree on the same object — a canonical representative, a shared reference. You want the randomness to affect whether you succeed, not what you succeed with.
+
+Maya: And the result is that this costs you the square root of the input size in bits exchanged, versus logarithmic without the requirement.
+
+Sam: Nearly the square root, yes — an exponential gap, in a model where you can actually prove things. And there was already a separation like this announced recently, but it was weaker: the cheap protocol there could make two-sided errors. Here the upper bound is the strongest kind — the problem sits in both one-sided classes at once — and the proof is simpler.
+
+Maya: Simpler how? Because these lifting arguments usually read like a machine no human designed.
+
+Sam: The idea is that you take a hard function in query complexity, compose it with a small gadget — here, inner product on a logarithmic-size block — and lift the difficulty into communication. The snag is that the slickest existing query-complexity proofs aren't liftable. So a chunk of the work is re-engineering the lower bound arguments to be liftable at all, and then running an iterative process that flips coordinates of the input while keeping a rectangle of protocol transcripts dense in one-inputs, until it walks the input into a contradiction.
+
+Maya: And the second result?
+
+Sam: Merlin–Arthur communication is not contained in nondeterminism with a randomized oracle. That closes an open question from Göös's landscape survey of the communication polynomial hierarchy — a map with a lot of blank regions. There's a nice technical wrinkle where the acceptance probability re-boosts itself for free by looking at nearby valid inputs.
+
+Maya: Let me push. These are partial functions — promise problems. So there's some inputs where the answer is simply undefined and the protocol is off the hook. Does that hollow out the claim?
+
+Sam: It weakens it, and the paper says so. For pseudodeterminism it's arguably less damaging than usual, because the whole point is that the protocol must commit to something even on inputs where no answer is required — that's where the hardness bites. But yes: no general lifting theorem for these classes comes out, the arguments are bespoke to that gadget, and none of this transfers to time complexity. Communication complexity is the sandbox where we can prove separations we can't prove where we want them.
+
+Maya: Who reads this?
+
+Sam: Anyone in lifting or communication lower bounds. And the paper flags its own next targets — a couple of them are still open even in query complexity, which is where I'd expect the follow-ups to land first.
+
+[BREAK]
+
+Maya: Now the one that will annoy people. Quantum geometry — Berry curvature, the quantum metric — has become the organizing language for a decade of band physics. Anomalous Hall effects, superfluid stiffness in flat bands, Wannier function spreads. And two very serious people just asked how much of it needs quantum mechanics at all.
+
+Sam: And the answer is: less than the name suggests. Their toy model is a point particle carrying a classical magnetic moment — literally a little spinning top — and the field it precesses in depends on the particle's momentum. Crucially, there's no kinetic energy term at all. It's a flat band by construction.
+
+Maya: And from that they get?
+
+Sam: The component of the moment along the field generates the anomalous velocity — the sideways drift you'd attribute to Berry curvature. The precessing transverse component generates a classical geometric tensor that obeys the same inequalities the quantum one does, plus a position spread, plus an orbital magnetic moment. All in Hamiltonian classical mechanics with Poisson brackets.
+
+Maya: Okay, but isn't this just semiclassical wavepacket theory with the quantum content hidden in the setup? The field depending on momentum is doing a lot of work.
+
+Sam: That's the right worry, and here's what convinced me it's more than bookkeeping. The striking result is mass generation. You have a particle with no dispersion — infinitely heavy, in the usual sense. Apply a uniform force and nothing interesting happens; the fast precession just wobbles and averages away. But apply a position-dependent force — a spring — and it modulates the precession at exactly the precession frequency, rectifying the wobble into a steady drift. Out pops an effective inertial mass and a Drude weight in a system that had no kinetic energy to begin with.
+
+Maya: A flat band that conducts because it's being squeezed.
+
+Sam: And there's a two-particle version that's cleaner still: two individually immobile particles that interact acquire a joint mass, set by the interaction averaged over their fast orbits. That speaks directly to the flat-band superconductivity story, where the superfluid weight is attributed to quantum geometry.
+
+Maya: So what survives as irreducibly quantum?
+
+Sam: Three things, by their accounting. Equilibrium magnetization — classically forbidden, that's the Bohr–van Leeuwen theorem. Condensation and phase rigidity, which is what makes a superconductor a superconductor. And the topology, which needs momentum space to be a compact torus — a Brillouin zone. Their momentum space is flat and infinite, so there's no Chern number, and the moment's magnitude is a free continuous parameter rather than a half-integer.
+
+Maya: Which is a real limitation, not a footnote. And the emergent mass isn't a true kinetic energy?
+
+Sam: No — it depends on the separation between particles and dies once they're farther apart than the interaction range plus their orbit sizes. Also the two precessions have to dephase for the effect to survive; if they stayed correlated it would cancel. No disorder, no scattering, no many-body treatment.
+
+Maya: Still, the message lands. If you measure an anomalous Hall signal or a metric-bounded localization length, you have not thereby demonstrated quantumness.
+
+Sam: You've demonstrated fast degrees of freedom slaved to slow ones. Which is generic. I think that's a useful discipline for how these experiments get pitched.
+
+[BREAK]
+
+Maya: Fourth paper, and it starts from a question you could pose to a first-year: you want a device that ticks after a given average delay, with as little jitter as possible, and it only has a fixed number of internal states. How good can it be?
+
+Sam: For classical machines, that's now settled. There's a trade-off locking together memory size, mean waiting time and variance, and it had only been proven for the two-state case — everything beyond was conjecture. This paper proves it for any number of states, and identifies the optimal design: a staircase, where you advance one rung at a time with a biased coin flip, and tick when you reach the top.
+
+Maya: The most boring possible clock is optimal.
+
+Sam: Among classical ones, yes. The proof route is lovely — they Poissonize the chain, replacing each discrete step with a random exponential wait, which turns it into a continuous-time absorbing Markov chain where an old optimality theorem of Aldous and Shepp applies. Then they map back and the bound survives.
+
+Maya: And then quantum machines break it.
+
+Sam: With the same number of internal states, yes. Numerically, in every dimension they checked. And the mechanism has a clear picture: the optimal quantum clock keeps itself almost invisible to the detector for a long stretch — evolving coherently in a "dark" direction — and then steers into the detectable direction right when the tick is due. Classically you can't hide like that; your hazard rate is just a probability of firing each step.
+
+Maya: So the variance shortfall is a certificate of nonclassicality at fixed memory.
+
+Sam: That's exactly how they frame it — a cost function that goes negative only if your temporal statistics couldn't have come from any classical machine of that size. That's more useful than a generic macrorealism test, because it's dimension-resolved. You can say: whatever this box is doing, it needs more than this many classical states.
+
+Maya: Now the caution. This is numerics, and it's numerics inside an ansatz — they assume the no-tick evolution has a single coherent branch and the detection is rank-one.
+
+Sam: They check it against unrestricted searches in small dimension, and it holds up there. But it's not proven globally optimal, and the qubit asymptotic they quote lives inside that family. The other thing I'd flag: they find precision improving faster than the square of the memory size — closer to the power of two and a third in their fits — and that can't be the truth forever, because there's a known asymptotic bound that's quadratic.
+
+Maya: So it's a finite-size effect that must cross over somewhere, and nobody knows where.
+
+Sam: Nobody knows where. Which is a genuinely good open problem — it's the gap between what small clocks can do and what the asymptotics allow. And all of this assumes the clock resets each cycle and the dynamics don't change in time.
+
+Maya: Who should read it?
+
+Sam: Quantum thermodynamics of timekeeping, obviously. But also anyone doing waiting-time statistics in quantum jump trajectories — the optimal solution converges to a rank-one jump unraveling, which is a very familiar object arriving from an unfamiliar direction.
+
+[BREAK]
+
+Maya: Last paper, and it pairs with something we covered Thursday — the real-time decoder that kept up with a million-operation machine on a single processor. That was engineering: throughput, realistic noise. This one is the opposite currency.
+
+Sam: Completely. This is provable correction radius against a worst-case adversary. Quantum expander codes have decoders that come with theorems — fix any error below some weight, in linear time. The trouble is those decoders have been theoretically clean and practically hopeless.
+
+Maya: Hopeless how?
+
+Sam: Two ways. They need very strong expansion, which forces high-degree graphs, which means expensive checks. And the inner loop examines subsets of stabilizer generators around each vertex — a cost that's exponential in the degree. So you're paying twice for the same design choice.
+
+Maya: And the new approach?
+
+Sam: Transplanted from classical coding. Viderman had a two-stage strategy: don't try to correct the error directly, first localize a small region that's guaranteed to contain it, then solve exactly inside that region. This paper carries that into the quantum setting, and the trick is exploiting the grid structure of hypergraph product codes — the localization runs independently on rows and on columns, driven only by where the syndrome shows up.
+
+Maya: So no enumerating neighborhoods.
+
+Sam: None. The localization is just repeated neighborhood growth, and the final step is a linear-algebra solve made cheap by finding an ordering that makes the relevant matrix triangular. Linear time, and it parallelizes to logarithmic depth.
+
+Maya: And the headline number.
+
+Sam: On their benchmark example, it corrects about fifteen times more adversarial errors than the previous small-set decoders — and it works under substantially weaker expansion, which is the part I'd emphasize. Weaker expansion requirement means degree-three graphs are in play instead of exotic high-degree ones. That's a real reduction in what the hardware has to check.
+
+Maya: Where's the catch? Because "adversarial worst case" is doing a lot of lifting in that sentence.
+
+Sam: It is. There's no threshold analysis under random noise, which is what an experimentalist actually wants. No noisy syndrome measurements, no single-shot story. It's restricted to hypergraph products, so the distance only grows like the square root of the block length — these aren't the asymptotically good codes everyone is chasing. And the logarithmic depth isn't free: at the most aggressive parameter setting the number of localization rounds can grow like the square root of the block length, so you buy the depth back by slightly shrinking the guaranteed radius.
+
+Maya: And the fifteen-times figure is one parameter choice.
+
+Sam: One example, yes. But it answers open questions from two recent papers, and it removes the exponential-in-degree constant that made this whole family a blackboard exercise. I'd watch for someone running it on random noise and reporting a threshold. That's the number that decides whether it leaves the theory literature.
+
+[BREAK]
+
+Maya: Sam, one result that stuck.
+
+Sam: The flat band that acquires a mass because you squeeze it. A particle with no dispersion, no kinetic energy, and a spring force rectifies its precession into genuine inertia. That reframes a whole class of transport claims and I'm still turning it over.
+
+Maya: Mine's the counting clock — that the best classical timer with limited memory is just a staircase of biased coin flips, proven after years as a conjecture, and that a quantum machine of the same size beats it by hiding from its own detector. That's a very physical picture of where quantum advantage actually lives.
+
+Sam: And the fluid solver, quietly, might be the one with the largest install base — if the parameter-sweep trick holds up.
+
+Maya: Links to all five are in the show notes, along with a link to send us questions — we read them, and they turn into segments.
+
+Sam: Back tomorrow. Thanks for listening.
