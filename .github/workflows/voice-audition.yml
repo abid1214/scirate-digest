@@ -1,0 +1,64 @@
+name: Voice audition
+
+# Renders one MP3 where each candidate host voice reads the same lines, so a
+# pair can be chosen by ear instead of by reputation. Publishes to the
+# "voice-audition" release so it can be played from a phone.
+on:
+  workflow_dispatch:
+    inputs:
+      voices:
+        description: "Comma-separated edge-tts voices to compare"
+        default: "en-US-AvaMultilingualNeural,en-US-EmmaMultilingualNeural,en-US-JennyNeural,en-US-AriaNeural,en-US-MichelleNeural"
+      text:
+        description: "Sample line to read (blank = default)"
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  audition:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update && sudo apt-get install -y ffmpeg
+          fi
+
+      - name: Render audition
+        run: |
+          TEXT="${{ github.event.inputs.text }}"
+          if [ -n "$TEXT" ]; then
+            python -m scirate_digest.audition \
+              --voices "${{ github.event.inputs.voices }}" \
+              --out audition.mp3 --text "$TEXT"
+          else
+            python -m scirate_digest.audition \
+              --voices "${{ github.event.inputs.voices }}" \
+              --out audition.mp3
+          fi
+
+      - name: Publish audition
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete voice-audition --yes --cleanup-tag || true
+          gh release create voice-audition \
+            --title "Voice audition" \
+            --notes "Candidates in order: ${{ github.event.inputs.voices }}" \
+            --target "${GITHUB_REF_NAME}" \
+            "audition.mp3#Voice audition"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: audition
+          path: audition.mp3

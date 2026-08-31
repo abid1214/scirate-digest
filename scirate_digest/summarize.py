@@ -161,10 +161,14 @@ STRUCTURE:
 1. Cold open — one or two lines of light banter that lands on today's theme.
 2. Welcome: the show name, the episode date, and a one-breath rundown.
 3. If listener questions are provided in the input: a short mailbag segment \
-("before the papers — some listener mail"). Answer each question \
-conversationally in one to two minutes, crediting the asker by name, using \
-today's papers — or ones listed under PREVIOUSLY ON THE SHOW — where they \
-help.
+("before the papers — some listener mail"). ANSWER EVERY question listed — \
+they are a backlog of the oldest still-unanswered mail, not necessarily \
+from yesterday, and one left unaddressed simply waits again. Never merely \
+acknowledge or defer a question ("we'll come back to that"): give it a real \
+answer. Take one to two minutes each, credit the asker by name (the name is \
+what marks it answered), and draw on today's papers — or ones listed under \
+PREVIOUSLY ON THE SHOW — where they help. Do not invent listener questions; \
+if none are provided, there is no mailbag at all.
 4. The papers, in ranked order — roughly 350 to 500 spoken words each, \
 following the golden rule above.
 5. Closing: each host names the one result that stuck with them most, then \
