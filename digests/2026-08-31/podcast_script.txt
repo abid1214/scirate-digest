@@ -1,0 +1,163 @@
+Maya: I have a confession. Last night I spent an hour trying to remember what a double coset is.
+
+Sam: And?
+
+Maya: I got there. Eventually. And it turned out to be time well spent, because two of today's five papers live and die on that idea.
+
+Sam: Which is fitting, because most of today's list is the same move. Somebody stares at a problem people have been solving by brute force, finds the algebraic structure hiding underneath, and the search just evaporates.
+
+[BREAK]
+
+Maya: This is The SciRate Daily Digest for Monday, August thirty-first, twenty twenty-six. I'm Maya.
+
+Sam: And I'm Sam. On the docket today: two companion papers on Fourier transforms over groups that don't commute, an optimization everyone assumed was hopeless that turns out to have a closed-form answer, a learned decoder for concatenated codes, and an algebraic theory for the code family people have been finding by lottery.
+
+Maya: No mailbag today, so let's go straight in.
+
+[BREAK]
+
+Maya: Sam, start us with the thing that's been stuck for thirty years.
+
+Sam: The quantum Fourier transform. For commutative groups — adding numbers modulo something — we've had efficient circuits since the early nineties, and that's the engine inside period finding and therefore inside Shor's algorithm. The moment your group stops commuting, we only have efficient transforms for a small handful of families. That's one big reason the non-abelian hidden subgroup problem — the thing that would give you graph isomorphism, and certain lattice problems — has gone essentially nowhere for decades.
+
+Maya: So this is a "we need better tools" paper rather than a "here's an algorithm" paper.
+
+Sam: Two tools, and they're both classical representation theory brought over carefully. One takes a Fourier transform you already have for a subgroup and induces it up to the whole group, organized by double cosets — think of them as the coarse blocks the big group falls into when you sandwich it between two copies of the subgroup. The other exploits how representations of a normal subgroup extend upward. None of that is new mathematics. Turning them into reusable circuit primitives is.
+
+Maya: And what do they point them at?
+
+Sam: The group of two-by-two invertible matrices over a finite field. That's the smallest interesting example of a finite group of Lie type — the family that accounts for most of the finite simple groups. The best previous circuits scaled with the size of the field. Theirs scale with its logarithm. That's an exponential improvement in the parameter that matters, and it's the first family of this kind with a genuinely polylogarithmic transform.
+
+Maya: Something has to become cheap for that to happen. What is it?
+
+Sam: Two things. Their chain of subgroups — diagonal matrices, then upper triangular, then everything — has the property that when you restrict a representation down, nothing ever appears twice, so there's a canonical basis to work in. And in that basis all the messy overlap coefficients turn out to be Gauss sums, classical number-theoretic objects, which they implement as one phase gate. The single block that naively grows with the field gets factored using a gate that asks whether a certain quadratic splits over that field, and routes the computation down two different branches depending on the answer.
+
+Maya: That's lovely, and I want to push on it. There's no algorithm at the end of this paper. What is the polylogarithmic transform actually for?
+
+Sam: Fair, and they say so plainly — no end-to-end application. My read is this is infrastructure. If you wanted to attack a hidden subgroup problem over a matrix group, you previously couldn't even take the Fourier transform without paying exponentially. Now you can, and the question becomes whether the measurement afterwards tells you anything. Worth flagging: the efficiency inherits Shor's discrete-log routine, everything is approximate, and it's a transform in one specific basis they fix — some of those choices aren't canonical.
+
+Maya: And bigger matrices?
+
+Sam: Not obvious at all. The two-by-two case works partly because the Bruhat decomposition gives you only two double cosets, which keeps it tractable. Rank three and up, nobody knows. Read this if you work on non-abelian hidden subgroup problems or Schur-type transforms.
+
+[BREAK]
+
+Maya: Same lead authors, second paper, and this one reads like a detective story.
+
+Sam: It does. The Fourier transform over the permutation group is a genuine workhorse — it sits inside quantum algorithms for representation-theory quantities like Kronecker coefficients, and it's the bottleneck in the fastest known Schur transform when the local dimension is large. There are two explicit circuit constructions in the literature: an older one from the late nineties, and a newer one that claimed a better exponent.
+
+Maya: And the punchline is the newer one isn't actually faster.
+
+Sam: The newer one's advertised cost grows like the cube of the number of objects being permuted. When you compile it honestly into one- and two-qubit gates, one of its multi-qubit building blocks costs far more than advertised — the published figure was that block's depth, not its total gate count. The true cost sits between the cube and the fourth power. Meanwhile the older construction, long assumed to cost the fourth power, drops to the cube if you make one clever choice.
+
+Maya: What choice?
+
+Sam: Which coset representatives you loop over. Pick the powers of the full cycle — shift everything around by one, repeatedly — and consecutive gates in the circuit partially cancel. What survives are adjacent-transposition gates that are cheap in the standard encoding. That's the whole trick, and a factor of the system size falls out of it.
+
+Maya: Let me be the skeptical listener. Who cares about a polynomial exponent?
+
+Sam: Because every application downstream is a polynomial speedup, not an exponential one. If your algorithm's advantage is a square-root factor and your subroutine's exponent is off by half a power, the advantage can disappear entirely. The exponent is the whole ballgame here. Anyone quoting a quantum speedup for Kronecker or plethysm coefficient estimation should redo their bookkeeping today.
+
+Maya: What's the standard of evidence? Proof, simulation, hardware?
+
+Sam: Careful circuit-level accounting, gate by gate, with constructions concrete enough to hand to a compiler. No numerics, no hardware. They also found a real gap in the newer construction's basis — certain paths through the recursion were dropped from the target space after the recursive step. You only find that kind of thing by rebuilding the whole thing from scratch.
+
+Maya: Limitations?
+
+Sam: No lower bound, so the cube may not be the end of the road. The qubit count is superlinear — noticeably more than the information-theoretic minimum for storing these path labels. Constants aren't optimized. But paired with the toolbox paper it's a nice one-two: one says here's how to build new transforms, the other says here's what it truly costs once you do.
+
+[BREAK]
+
+Maya: Different world. Magic. Remind me what it is, and then tell me what's non-local about it.
+
+Sam: Magic — nonstabilizerness — is the resource that makes a state hard to simulate classically. Clifford circuits are free and tractable; magic is everything beyond that. Here's the wrinkle: how much magic a state has depends on the local axes you measure it in. Alice can rotate her half of a shared state and change the number.
+
+Maya: So the honest question is what survives every possible local rotation.
+
+Sam: Right — strip out everything either party could undo on their own, and whatever's left lives in the correlations. That quantity is perfectly well defined, but computing it means minimizing over two exponentially large groups of local unitaries, and it had resisted everybody. This paper solves it exactly for one particular measure of magic — the stabilizer fidelity, the overlap with the nearest stabilizer state.
+
+Maya: Exactly, as in a closed form?
+
+Sam: A closed form that depends only on the entanglement spectrum, the list of Schmidt weights across the cut. The reason is a quantization: any stabilizer state, cut in two, is equivalent to some whole number of Bell pairs, so its spectrum is flat with a power-of-two number of entries. So you're really asking how close your spectrum is to a flat one of that shape. The double optimization collapses to picking one integer — which power of two — and the optimal state is just the sorted one.
+
+Maya: What does that buy someone at the bench or the keyboard?
+
+Sam: You can read it straight off a tensor-network simulation, because bond spectra are exactly what a matrix-product-state code already hands you. Compare that to the fixed-basis version of this quantity, which people can only push to around nine qubits before it becomes hopeless. And it's robust to small errors in the spectrum, so randomized measurements or entanglement-Hamiltonian tomography could get at it experimentally.
+
+Maya: Give me the number that surprised you.
+
+Sam: Nonlocal magic is at most logarithmic in the entanglement entropy. So across any area-law state it's a constant — it does not grow with system size at all. At a critical point, where entropy itself grows logarithmically, this grows like the logarithm of a logarithm, which is barely growing. Random states across a balanced cut settle to a constant below a quarter of a bit. It's a genuinely tiny quantity.
+
+Maya: Then here's my problem. It's not an entanglement monotone, and by your own description there are enormously entangled states with exactly zero nonlocal magic. What is it measuring?
+
+Sam: That objection is right, and it's in the caveats. It isn't entanglement and doesn't claim to be. What makes me take it seriously is that the same spectral feature — how weight spreads across octaves of Schmidt rank — independently controls embezzlement: whether you can lend out entanglement catalytically without noticeably damaging your state. Those two facts have no business being the same fact, and they agree to within a fixed constant.
+
+Maya: What's untested?
+
+Sam: The critical-point scaling assumes a smoothed form of the conformal field theory spectrum; nobody's checked it in finite chains. Mixed states are wide open. And the exactness is specific to this one measure — the other magic monotones only get bracketed.
+
+[BREAK]
+
+Maya: Decoders. We've had two in the last week — the single-CPU real-time decoder on Thursday, the expander-code decoder yesterday. What's different about this one?
+
+Sam: Different code family, different philosophy. Concatenated codes: you encode, then encode the encoded qubits again, several levels deep. They're appealing because you get high rate and transversal gates. But every family has needed its own hand-built decoder, and those decoders usually throw information away — treating bit-flips and phase-flips separately, or truncating a combinatorial search.
+
+Maya: And the fix here is a neural network.
+
+Sam: A structured one, which is the point. Concatenation already gives you a tree. They put belief vectors at every level of that tree, for all three Pauli types, and let messages flow both up and down. Small networks at each level learn only how to combine four channels of incoming evidence — Pauli compatibility, stabilizer constraints, information from the level above, information from below. The architecture carries the physics; the learning is just the combining rule.
+
+Maya: And the headline result?
+
+Sam: On the concatenated Hamming code that packs seven logical qubits into fifteen, the pseudo-threshold under depolarizing noise roughly doubles — from about six and a half percent to a little over twelve. That's the crossing point where encoding starts helping you rather than hurting. Doubling your noise budget is not a tweak.
+
+Maya: Is that toy noise, or circuit-level?
+
+Sam: They go further. Fine-tuned on circuit-level data inside teleportation-based error correction, against the purpose-built level-by-level decoder for many-hypercube codes, they get about seventeen times fewer logical failures on a logical two-qubit gate. And it works on a non-CSS concatenated code where no specialized decoder exists at all.
+
+Maya: Here's where I get suspicious. Twenty-plus rounds of message passing with neural nets at every node, and I don't see a latency number anywhere. The real-time decoder we covered Thursday runs on one CPU precisely because it has to keep up with the machine.
+
+Sam: That's my main reservation too. No throughput analysis, no parameter counts, no hardware study. A fixed iteration count is at least more pipeline-friendly than a combinatorial search, but "better in principle" is not a latency budget. Second thing: their circuit-level comparison uses a stricter postselection rule than the work it's beating, and the cost of that postselection isn't reported. I'd want that before I quoted the seventeen.
+
+Maya: Does the advantage hold at low noise?
+
+Sam: It shrinks — down to roughly three and a half times as you go quieter, because both decoders hit the same floor, set by a non-fault-tolerant preparation step at the top level. That's a protocol problem, not a decoder problem. And each code and each level needs its own training run, which is a real cost if you're exploring a design space. Still, if you design concatenated codes, this changes what you can evaluate.
+
+[BREAK]
+
+Maya: Last paper, and Sam, before we started you said you wanted to attach the caveat up front on this one.
+
+Sam: I do. Bivariate bicycle codes — the low-overhead quantum LDPC codes that got a lot of attention as a near-term route to fault tolerance. Almost every good instance was found by brute-force search over pairs of defining polynomials. You search, you find something with nice parameters, and nobody can tell you why it works.
+
+Maya: And this paper explains why.
+
+Sam: It embeds the whole family into classical two-dimensional cyclic code theory. The underlying ring splits into a product of finite fields, one for each orbit of points on a grid of roots of unity. After that, everything is bookkeeping about where your two defining polynomials vanish on that grid. The number of logical qubits gets a closed form, controlled entirely by the orbits where both polynomials vanish. Orbits where only one vanishes contribute nothing — they prove those are homologically trivial.
+
+Maya: You get the dimension without ever writing down a parity-check matrix?
+
+Sam: Never write down a stabilizer matrix. They re-derive the parameters of the known codes — the ninety-qubit one, the hundred-and-sixty-two-qubit one — purely from which orbits are zeros. That's the design principle: you can see which roots buy you dimension, which buy you distance, and the tension between them.
+
+Maya: Now the caveat.
+
+Sam: The distance bounds are loose. On one example the bound gives two when the actual distance is twenty-six. So this is not a certification tool. You cannot use it to prove your code is good.
+
+Maya: Then what's the case for reading it? "Explains codes we already found" is nice, not necessary.
+
+Sam: Two things. First, the symmetry theory — they prove unconditionally that a certain signed block-swapping duality always exists, which is the ingredient you need for fold-transversal logical gates. Those gates are how you do cheap logic on these codes, so that's not decoration. Second, they get an exact formula for what happens under lifts and covers — the operation people use to grow small codes into big ones — and it now works over any field, not just special cases.
+
+Maya: What breaks it?
+
+Sam: It needs the ring to split cleanly. Repeated roots and you're back in Gröbner-basis machinery, which is exactly what this was built to avoid. The automorphism results are restricted to prime fields and to a subgroup of the symmetries. And they concede the check weights of their examples are probably impractical — there's no control over stabilizer weight and no new code tables. The systematic search is deferred.
+
+Maya: So read it if you design codes, not if you're choosing one to build.
+
+Sam: Exactly. It's the theory that should have preceded the search, arriving afterwards — which is normal, and still useful. It also rhymes with the overhead impossibility result we discussed Friday: knowing why a family has the parameters it has is how you find out where its real ceiling sits.
+
+[BREAK]
+
+Maya: One result each. Mine is the transversal choice in the permutation-group paper. A whole factor of the system size falling out of picking better coset representatives, in a construction that had been sitting there for twenty-five years.
+
+Sam: Mine's the magic one. An entire area-law phase carrying only a constant amount of nonlocal magic, no matter how big you make it — and that same number telling you whether the state can embezzle entanglement. I did not see that connection coming.
+
+Maya: Links to all five papers are in the show notes.
+
+Sam: And there's a form there for sending us questions — we read them, and they shape these segments more than you'd guess. Until tomorrow.

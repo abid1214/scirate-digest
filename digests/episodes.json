@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-08-31",
+    "title": "SciRate Digest \u2014 2026-08-31",
+    "summary": "Today's 5 papers: Quantum Fourier transform toolbox; Quantum Fourier transform for the symmetric group; Exact quantification of nonlocal magic; Learning to Decode Concatenated Quantum Codes with Hierarchical Message Passing; Spectral Theory of Semisimple Bivariate Bicycle Codes.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-08-31/digest.mp3",
+    "mp3_bytes": 17811885,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2608.28573",
+        "title": "Quantum Fourier transform toolbox",
+        "abs_url": "https://arxiv.org/abs/2608.28573",
+        "scirate_url": "https://scirate.com/arxiv/2608.28573",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2608.28569",
+        "title": "Quantum Fourier transform for the symmetric group",
+        "abs_url": "https://arxiv.org/abs/2608.28569",
+        "scirate_url": "https://scirate.com/arxiv/2608.28569",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2608.28563",
+        "title": "Exact quantification of nonlocal magic",
+        "abs_url": "https://arxiv.org/abs/2608.28563",
+        "scirate_url": "https://scirate.com/arxiv/2608.28563",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2608.28571",
+        "title": "Learning to Decode Concatenated Quantum Codes with Hierarchical Message Passing",
+        "abs_url": "https://arxiv.org/abs/2608.28571",
+        "scirate_url": "https://scirate.com/arxiv/2608.28571",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2608.27565",
+        "title": "Spectral Theory of Semisimple Bivariate Bicycle Codes",
+        "abs_url": "https://arxiv.org/abs/2608.27565",
+        "scirate_url": "https://scirate.com/arxiv/2608.27565",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-08-30",
     "title": "SciRate Digest \u2014 2026-08-30",
     "summary": "Today's 5 papers: Quantum-Inspired Computational Fluid Dynamics for Transient Turbulent Compressible Flows; Pseudodeterminism and MA != NP^BPP in Communication Complexity; How quantum is quantum geometry?; Least Variable Quantum Counting Processes; The Find Rows and Columns and Decode algorithm for quantum expander codes.",
