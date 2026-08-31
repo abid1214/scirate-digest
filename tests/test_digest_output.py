@@ -201,3 +201,36 @@ def test_recent_episode_context_is_titles_only():
     assert "2026-01-02:" in block
     assert "- A code paper — Cheaper error correction" in block
     assert "- No takeaway paper" in block
+
+
+def test_audio_meta_records_the_actual_voices(tmp_path, monkeypatch):
+    """Which voices spoke is recorded, so an episode is never ambiguous."""
+    import types
+    from pathlib import Path
+
+    import scirate_digest
+    from scirate_digest import cli
+
+    out = tmp_path / "2026-01-04"
+    out.mkdir(parents=True)
+
+    def two_voice(text, path):
+        Path(path).write_bytes(b"\x00" * 16)
+        return Path(path)
+
+    monkeypatch.setattr(
+        scirate_digest, "tts",
+        types.SimpleNamespace(
+            DEFAULT_VOICE="v",
+            synthesize_dialogue=two_voice,
+            load_dialogue_voices=lambda: {"Maya": "en-US-AvaMultilingualNeural",
+                                          "Sam": "en-US-AndrewMultilingualNeural"},
+        ),
+        raising=False,
+    )
+    meta = cli._render_audio(
+        script_text="Maya: a\nSam: b\n", mp3_path=out / "digest.mp3",
+        out_dir=out, date_str="2026-01-04", engine="edge",
+    )
+    assert meta["voices"]["Maya"] == "en-US-AvaMultilingualNeural"
+    assert meta["voices"]["Sam"] == "en-US-AndrewMultilingualNeural"
