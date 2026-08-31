@@ -237,10 +237,28 @@ def _render_audio(
         mp3 = tts.synthesize(script_text, mp3_path, voice=edge_voice or tts.DEFAULT_VOICE)
         rendered_with = "edge-narrator"
 
+    # Recorded for the audit trail only — never let it cost us an episode.
+    voices = None
+    try:
+        if rendered_with == "edge-two-voice":
+            from . import tts
+
+            voices = tts.load_dialogue_voices()
+        elif rendered_with == "edge-narrator":
+            from . import tts
+
+            voices = {"narrator": edge_voice or tts.DEFAULT_VOICE}
+        elif rendered_with == "gemini-per-turn":
+            from . import gemini_tts
+
+            voices = gemini_tts.load_voices()
+    except Exception as exc:  # pragma: no cover - defensive
+        log.warning("Could not record voice names (%s)", exc)
     meta = {
         "date": date_str,
         "rendered_with": rendered_with,
         "model": model_used,
+        "voices": voices,
         "turns": sum(
             1 for line in script_text.splitlines()
             if line.split(":", 1)[0].strip() in ("Maya", "Sam")
