@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import logging
+import subprocess
 import tempfile
 from pathlib import Path
 
@@ -42,22 +43,32 @@ def _short_name(voice: str) -> str:
     return "".join(out).strip()
 
 
+def _silence(path: Path, seconds: float = 0.7) -> Path:
+    """A short gap between options — plain silence, not the show stinger."""
+    subprocess.run(
+        ["ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono",
+         "-t", f"{seconds}", "-b:a", "48k", str(path)],
+        check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+    )
+    return path
+
+
 def render(voices: list[str], out_path: Path, sample: str = SAMPLE,
            announcer: str = ANNOUNCER) -> Path:
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory() as td:
         tmp = Path(td)
+        gap = _silence(tmp / "gap.mp3")
         parts: list[Path] = []
         for i, voice in enumerate(voices, 1):
             label = tmp / f"{i:02d}-label.mp3"
             body = tmp / f"{i:02d}-body.mp3"
+            log.info("Rendering option %d: %s", i, voice)
             tts.synthesize(f"Option {i}. {_short_name(voice)}.", label,
                            voice=announcer)
-            log.info("Rendering option %d: %s", i, voice)
             tts.synthesize(sample, body, voice=voice)
-            parts += [label, tts._break_audio_file(tmp / f"gap{i}"), body,
-                      tts._break_audio_file(tmp / f"gap{i}b")]
+            parts += [label, gap, body, gap]
         tts._concat_mp3(parts, out_path, reencode=True)
     return out_path
 
