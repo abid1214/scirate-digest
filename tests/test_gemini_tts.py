@@ -171,3 +171,31 @@ def test_audition_labels_are_speakable():
     assert _short_name("en-US-AvaMultilingualNeural") == "Ava Multilingual"
     assert _short_name("en-US-JennyNeural") == "Jenny"
     assert _short_name("en-GB-SoniaNeural") == "Sonia"
+
+
+def test_audition_assembles_label_and_sample_per_voice(tmp_path, monkeypatch):
+    """Each candidate gets an announced label and the same sample, in order."""
+    import subprocess
+    from pathlib import Path
+
+    from scirate_digest import audition
+
+    rendered = []
+
+    def fake_synth(text, out_path, voice=None):
+        rendered.append((voice, text[:12]))
+        subprocess.run(
+            ["ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono",
+             "-t", "0.3", "-b:a", "48k", str(out_path)],
+            check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        return Path(out_path)
+
+    monkeypatch.setattr(audition.tts, "synthesize", fake_synth)
+    out = audition.render(["en-US-JennyNeural", "en-US-AriaNeural"],
+                          tmp_path / "a.mp3", sample="Sample line.")
+    assert out.exists() and out.stat().st_size > 0
+    # announcer label then the candidate reading the sample, for each voice
+    assert [v for v, _ in rendered] == [
+        audition.ANNOUNCER, "en-US-JennyNeural",
+        audition.ANNOUNCER, "en-US-AriaNeural",
+    ]
