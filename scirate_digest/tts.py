@@ -67,15 +67,39 @@ def synthesize(text: str, out_path: Path, voice: str = DEFAULT_VOICE) -> Path:
     return out_path
 
 
+TURN_ATTEMPTS = 4
+
+
 async def _synthesize_turns(turns, voices, seg_dir: Path) -> list[Path]:
+    """Render each turn in its host's voice.
+
+    The free endpoint intermittently answers a request with no audio. A
+    single such miss used to fail the whole gather and drop the episode to
+    one narrator, so each turn is retried on its own before giving up."""
     import edge_tts
 
     sem = asyncio.Semaphore(4)  # be kind to the free endpoint
     paths = [seg_dir / f"seg{i:04d}.mp3" for i in range(len(turns))]
 
     async def one(i, speaker, text):
-        async with sem:
-            await edge_tts.Communicate(text, voice=voices[speaker]).save(str(paths[i]))
+        last = None
+        for attempt in range(TURN_ATTEMPTS):
+            async with sem:
+                try:
+                    await edge_tts.Communicate(
+                        text, voice=voices[speaker]).save(str(paths[i]))
+                    if paths[i].exists() and paths[i].stat().st_size > 0:
+                        return
+                    last = RuntimeError("empty audio file")
+                except Exception as exc:
+                    last = exc
+            if attempt < TURN_ATTEMPTS - 1:
+                wait = 2.0 * (attempt + 1)
+                log.info("Turn %d (%s) failed (%s); retrying in %.0fs",
+                         i, speaker, last, wait)
+                await asyncio.sleep(wait)
+        raise RuntimeError(
+            f"turn {i} ({speaker}) failed after {TURN_ATTEMPTS} attempts: {last}")
 
     await asyncio.gather(*(one(i, s, t) for i, (s, t) in enumerate(turns)))
     return paths

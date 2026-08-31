@@ -199,3 +199,61 @@ def test_audition_assembles_label_and_sample_per_voice(tmp_path, monkeypatch):
         audition.ANNOUNCER, "en-US-JennyNeural",
         audition.ANNOUNCER, "en-US-AriaNeural",
     ]
+
+
+def test_turn_retry_survives_a_flaky_request(tmp_path, monkeypatch):
+    """One bad response must not cost the whole two-voice episode."""
+    import asyncio
+
+    from scirate_digest import tts
+
+    calls = {"n": 0}
+
+    class FakeCommunicate:
+        def __init__(self, text, voice=None):
+            self.text, self.voice = text, voice
+
+        async def save(self, path):
+            calls["n"] += 1
+            # first attempt at the second turn returns no audio
+            if self.text == "second" and calls["n"] <= 2:
+                raise RuntimeError("No audio was received.")
+            Path = type(tmp_path)
+            Path(path).write_bytes(b"\x00" * 8)
+
+    monkeypatch.setattr(tts, "TURN_ATTEMPTS", 3)
+    monkeypatch.setitem(
+        __import__("sys").modules, "edge_tts",
+        type("m", (), {"Communicate": FakeCommunicate}),
+    )
+    real_sleep = asyncio.sleep
+    monkeypatch.setattr(asyncio, "sleep", lambda *_a, **_k: real_sleep(0))
+
+    turns = [("Maya", "first"), ("Sam", "second")]
+    voices = {"Maya": "v1", "Sam": "v2"}
+    paths = asyncio.run(tts._synthesize_turns(turns, voices, tmp_path))
+    assert all(p.exists() and p.stat().st_size > 0 for p in paths)
+
+
+def test_turn_retry_gives_up_eventually(tmp_path, monkeypatch):
+    import asyncio
+
+    from scirate_digest import tts
+
+    class AlwaysFails:
+        def __init__(self, text, voice=None):
+            pass
+
+        async def save(self, path):
+            raise RuntimeError("No audio was received.")
+
+    monkeypatch.setattr(tts, "TURN_ATTEMPTS", 2)
+    monkeypatch.setitem(
+        __import__("sys").modules, "edge_tts",
+        type("m", (), {"Communicate": AlwaysFails}),
+    )
+    real_sleep = asyncio.sleep
+    monkeypatch.setattr(asyncio, "sleep", lambda *_a, **_k: real_sleep(0))
+
+    with __import__("pytest").raises(RuntimeError, match="failed after 2 attempts"):
+        asyncio.run(tts._synthesize_turns([("Maya", "x")], {"Maya": "v"}, tmp_path))
