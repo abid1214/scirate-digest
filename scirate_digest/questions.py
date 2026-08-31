@@ -12,6 +12,7 @@ import argparse
 import json
 import logging
 import os
+import re
 from pathlib import Path
 
 import requests
@@ -20,7 +21,7 @@ log = logging.getLogger(__name__)
 
 REPO = "abid1214/scirate-digest"
 API = "https://api.github.com/repos/{repo}"
-MAX_QUESTIONS = 5
+MAX_QUESTIONS = 2
 MAX_BODY_CHARS = 1200
 
 
@@ -69,6 +70,34 @@ def fetch_open_questions(repo: str = REPO, token: str | None = None) -> list[dic
     return parse_issues(resp.json())
 
 
+
+def _distinctive(text: str) -> set[str]:
+    return {w for w in re.findall(r"[a-z]{5,}", text.lower())}
+
+
+def answered_in_script(script: str, question: dict) -> bool:
+    """Did the episode actually answer this question?
+
+    The script is told to credit the asker by name, so their handle appearing
+    is the primary signal; failing that, most of the question's distinctive
+    words showing up counts. Anything else is treated as unanswered, which
+    keeps the issue open for a later episode instead of silently closing a
+    question the hosts never reached."""
+    low = script.lower()
+    author = (question.get("author") or "").strip().lower()
+    if author and author != "a listener" and author in low:
+        return True
+    words = _distinctive(question.get("title", ""))
+    if not words:
+        return False
+    hits = sum(1 for w in words if w in low)
+    return hits >= max(2, int(0.6 * len(words)))
+
+
+def filter_answered(script: str, questions: list[dict]) -> list[dict]:
+    return [q for q in questions if answered_in_script(script, q)]
+
+
 def close_answered(questions: list[dict], date: str, repo: str = REPO,
                    token: str | None = None) -> None:
     token = token or os.environ.get("GITHUB_TOKEN")
@@ -92,7 +121,10 @@ def main(argv: list[str] | None = None) -> int:
     logging.basicConfig(level=logging.INFO)
     ap = argparse.ArgumentParser(description="Listener Q&A bookkeeping.")
     ap.add_argument("--close-file", type=Path,
-                    help="questions.json written by the digest run; close each")
+                    help="questions.json written by the digest run")
+    ap.add_argument("--script", type=Path,
+                    help="podcast_script.txt; only questions the episode "
+                         "actually answered are closed")
     ap.add_argument("--date", help="episode date YYYY-MM-DD (for --close-file)")
     args = ap.parse_args(argv)
 
@@ -102,10 +134,21 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         questions = json.loads(args.close_file.read_text())
         if not questions:
+            print("no questions were queued; nothing to close")
+            return 0
+        if args.script and args.script.exists():
+            script = args.script.read_text()
+            answered = filter_answered(script, questions)
+            skipped = [q for q in questions if q not in answered]
+            for q in skipped:
+                print(f"#{q['number']} was not answered on air; leaving it open")
+        else:
+            answered = questions
+        if not answered:
             print("no questions were answered; nothing to close")
             return 0
-        close_answered(questions, args.date)
-        print(f"closed {len(questions)} answered question(s)")
+        close_answered(answered, args.date)
+        print(f"closed {len(answered)} answered question(s)")
     else:
         for q in fetch_open_questions():
             print(f"#{q['number']} (from {q['author']}): {q['title']}")

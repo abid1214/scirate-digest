@@ -39,4 +39,41 @@ def test_parse_strips_prefix_and_truncates():
 
 def test_parse_caps_question_count():
     issues = [_issue(number=i, title=f"Q: question {i}") for i in range(10)]
-    assert len(parse_issues(issues)) == 5
+    assert len(parse_issues(issues)) == 2
+
+
+def test_only_answered_questions_are_closed():
+    """A question the episode never reached must stay open for next time."""
+    from scirate_digest.questions import filter_answered
+
+    script = (
+        "Maya: Before the papers, some mail. Ada asks about decoder latency.\n"
+        "Sam: Great question, Ada — the short answer is streaming decoders.\n"
+    )
+    queued = [
+        {"number": 1, "title": "how do decoders keep up", "author": "ada"},
+        {"number": 2, "title": "what limits photonic interconnect fidelity",
+         "author": "bob"},
+    ]
+    answered = filter_answered(script, queued)
+    assert [q["number"] for q in answered] == [1]
+
+
+def test_answered_detected_without_author_credit():
+    """Falls back to the question's distinctive wording."""
+    from scirate_digest.questions import answered_in_script
+
+    script = ("Sam: On tensor network decoders and how they handle "
+              "correlated noise across syndrome rounds…")
+    q = {"number": 3, "title": "tensor network decoders correlated noise",
+         "author": "a listener"}
+    assert answered_in_script(script, q)
+
+
+def test_unanswered_question_is_not_closed_by_stray_words():
+    from scirate_digest.questions import answered_in_script
+
+    script = "Maya: Today's papers are about quantum codes and decoders.\n"
+    q = {"number": 4, "author": "carol",
+         "title": "photonic interconnect fidelity budgets in modular machines"}
+    assert not answered_in_script(script, q)

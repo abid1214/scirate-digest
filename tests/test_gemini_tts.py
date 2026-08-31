@@ -162,3 +162,12 @@ def test_narration_strips_breaks():
     out = _dialogue_to_narration("Maya: a\n[BREAK]\nSam: b")
     assert "[BREAK]" not in out
     assert out == "a\n\nb"
+
+
+def test_audition_labels_are_speakable():
+    """Voice ids are announced as readable names, not raw identifiers."""
+    from scirate_digest.audition import _short_name
+
+    assert _short_name("en-US-AvaMultilingualNeural") == "Ava Multilingual"
+    assert _short_name("en-US-JennyNeural") == "Jenny"
+    assert _short_name("en-GB-SoniaNeural") == "Sonia"

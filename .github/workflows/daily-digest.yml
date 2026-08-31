@@ -157,8 +157,11 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           DATE=$(date -u +%F)
+          # Only closes questions the episode actually answered; the rest
+          # stay open and are picked up by a later mailbag.
           python -m scirate_digest.questions \
-            --close-file "output/$DATE/questions.json" --date "$DATE" \
+            --close-file "output/$DATE/questions.json" \
+            --script "output/$DATE/podcast_script.txt" --date "$DATE" \
             || echo "::warning::could not close answered questions"
 
       - name: Upload artifacts (backup)

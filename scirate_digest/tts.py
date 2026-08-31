@@ -30,12 +30,12 @@ DEFAULT_VOICE = "en-US-AndrewMultilingualNeural"
 # the same voice name always renders the same speaker, so the hosts never
 # drift or swap. Override with EDGE_DIALOGUE_VOICES="Maya=...,Sam=...".
 DEFAULT_DIALOGUE_VOICES = {
-    # Aria against Andrew measured the cleanest host separation of the pairs
-    # tried (6.3 pooled SDs between the two speakers' pitch, 1.2% of speech
-    # segments near the boundary; Emma/Andrew managed only 4.8 SD because
-    # Emma's range overlaps Andrew's). Distinguishable hosts matter more here
-    # than a marginally warmer timbre.
-    "Maya": "en-US-AriaNeural",
+    # Ava is the most natural-sounding of Microsoft's female voices; Aria
+    # separated from Sam more cleanly (6.5 vs ~5 pooled SDs) but reads as
+    # flat and synthetic, which was the louder complaint. Run the
+    # voice-audition workflow to compare candidates by ear and set the
+    # winner via EDGE_DIALOGUE_VOICES.
+    "Maya": "en-US-AvaMultilingualNeural",
     "Sam": "en-US-AndrewMultilingualNeural",
 }
 
