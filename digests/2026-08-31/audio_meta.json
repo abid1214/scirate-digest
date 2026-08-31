@@ -1,10 +1,11 @@
 {
   "date": "2026-08-31",
-  "rendered_with": "edge-narrator",
+  "rendered_with": "edge-two-voice",
   "model": null,
   "voices": {
-    "narrator": "en-US-AndrewMultilingualNeural"
+    "Maya": "en-US-AvaMultilingualNeural",
+    "Sam": "en-US-AndrewMultilingualNeural"
   },
-  "turns": 0,
-  "mp3_bytes": 6236352
+  "turns": 66,
+  "mp3_bytes": 16897965
 }
