@@ -1,0 +1,187 @@
+Maya: Sam, on the walk in you told me the most useful sentence in science is "you can't."
+
+Sam: And then today's queue showed up to prove it. We've got a floor nobody can drill under, a family of code states that provably cannot exist, and — my favorite — one guarantee you get for free whether you asked for it or not.
+
+Maya: This is the SciRate Daily Digest for Tuesday, September first, twenty twenty-six. I'm Maya.
+
+Sam: And I'm Sam. On the docket: a big review of neutral-atom quantum computing, certified randomness with the last assumption stripped out, a pair of companion papers rebuilding approximate error correction from scratch, and bosonic codes living on a curved, higher-handled phase space.
+
+Maya: No listener mail in the bag today, so we go straight to the atoms.
+
+[BREAK]
+
+Maya: Top of the list is a review chapter by Mark Saffman, simply titled "Neutral atom quantum computing." Sam, reviews don't usually rocket up the scite counts. Why this one?
+
+Sam: Because the field has been moving faster than anyone can track from individual papers. Five years ago neutral atoms were proof-of-principle two-qubit gates. Now you have arrays with tens of thousands of trap sites and early logical qubits. What nobody had was a single document saying: here is where the performance actually sits, and here is the wall it's approaching.
+
+Maya: So what's the wall?
+
+Sam: The one I'd underline is the entanglement error floor for Rydberg gates. You entangle two atoms by exciting them into these enormous, highly-excited electronic states where they push on each other hard. The minimum achievable gate error is set by one number — the interaction strength times how long that excited state survives before it decays. The bigger that product, the better you can do, and no pulse shape gets you under it.
+
+Maya: But there's a fudge factor in front of it, presumably, and that's where the paper adds something?
+
+Sam: Exactly right, and that's the fun part. The prefactor was loosely bounded before; the review consolidates the tight value, and then points out that a driving scheme which excites both qubit states at once, tuned to a resonance between the atoms, knocks that prefactor down by roughly forty percent. So the scaling is physics, but the constant is still engineering — and it now has a known best value to chase.
+
+Maya: What else changed the landscape? I keep hearing people switch atomic species.
+
+Sam: That's the other thread. The alkaline-earth-like atoms — ytterbium, strontium — buy you coherence times measured in seconds, up to tens of seconds with echo, against tens of milliseconds for the old rubidium and cesium workhorses. That's about a thousandfold, and it's why nearly everyone building a serious machine has migrated.
+
+Maya: Coherence isn't the binding constraint though, is it? You still have to read the things out.
+
+Sam: And that's where he's refreshingly blunt. He does the photon-counting arithmetic: to get a readout error of one in ten thousand you need to catch roughly eight or nine photons, which means scattering on the order of a hundred, which sets a fundamental readout time near a microsecond. Then he notes that a published few-microsecond imaging demonstration actually consumed several hundred microseconds in practice, because you have to recool the atom or you lose it.
+
+Maya: So the honest number is two orders of magnitude worse than the floor. That's the thing that sets your error-correction cycle time.
+
+Sam: It is, and it connects straight to the real-time decoder paper we covered Thursday — the whole point there was that decoding has to keep pace with the measurement stream. If the measurement stream is slow because you're recooling atoms, that's a different, gentler problem for the decoder people and a harder one for the atom people.
+
+Maya: Verdict?
+
+Sam: Read it if you're benchmarking platforms, or you're a student entering the field and want one map instead of forty papers. The caveat is real, though: the best numbers he quotes come from different machines. No one apparatus has the coherence and the fast readout and the gate fidelity at once. What I'd watch for is whether that improved Rydberg driving scheme gets a clean experimental demonstration, and whether fast imaging survives contact with recooling.
+
+[BREAK]
+
+Maya: Next up, certified randomness. And Sam, I want to start with something that sounds like a joke: the previous security proofs only covered adversaries that behave politely.
+
+Sam: That's not far off. Set the scene: certified randomness is where you, a classical user with a laptop, ask a remote quantum computer a hard question, and from the answers you can prove the bits you got back are genuinely fresh — not replayed, not pre-computed, not known to the server. It's one of very few near-term quantum applications with an obvious commercial hook.
+
+Maya: And the hash-based version — that's the one where the whole protocol is a single round?
+
+Sam: Right. You send a challenge, the machine sends back a candidate answer, you check it against a hash function. Non-interactive, publicly verifiable, no entanglement between labs, no loophole-free Bell test. Beautiful. But the security proofs had two crutches. One line of work assumed an unproven complexity conjecture. The other proved things unconditionally, but only against a cheating device that makes its hash queries in very few rounds of adaptivity.
+
+Maya: Which is exactly the thing a cheater wouldn't do.
+
+Sam: Precisely. A real adversary queries, looks at the answer, decides what to query next, forever. Restricting adaptivity is like proving your lock is secure against burglars who aren't allowed to look at it while picking it. This paper removes that restriction. Against an adversary making subexponentially many fully adaptive queries, they prove unconditionally that it either fails your verification check or its output has high min-entropy — genuine randomness.
+
+Maya: Unconditionally, but in the idealized model where the hash function is a perfect random oracle.
+
+Sam: Yes, and that's the honest boundary. In the real world you instantiate with something like SHA-3 and hope. But within that model there's no complexity conjecture left, and that matters — the field spent years with a "modulo this conjecture" asterisk on the headline claim.
+
+Maya: What's the machinery? Something has to be new.
+
+Sam: The technical heart is a way of measuring how much a quantum adversary "cares" about a given input, using the square root of its query weight as the currency, and then recasting the whole reprogramming argument as a geometric feasibility question — they call it the query-norm polytope. That's the piece I'd expect to get reused, because adaptive-adversary reprogramming shows up everywhere in post-quantum crypto proofs.
+
+Maya: They also had to change the protocol itself, though.
+
+Sam: They did, and this is where it gets slightly baroque. Their argument only preserves about the square root of the codeword coordinates, so the underlying code has to be decodable from a vanishingly small fraction of agreement. They use folded Reed–Solomon at a very low rate, which then breaks completeness — the honest quantum prover stops succeeding — so they deliberately bias the oracle to fix it. It's a redesign, not a drop-in proof upgrade.
+
+Maya: Let me push on practicality. Over the weekend we covered a semi-device-independent randomness scheme where you only need to bound the energy of the light you send. That's off-the-shelf optics. This needs a quantum computer running a genuinely hard proof-of-quantumness circuit.
+
+Sam: Fair, and those two live at opposite ends of a trust spectrum. The optical scheme trusts your photon-number monitoring but runs today at high rates. This one trusts essentially nothing about the device, but the honest prover is expensive, the base protocol certifies only a handful of bits before you amplify it, and there's no noise analysis at all. That's the gap someone needs to close next.
+
+Maya: So who should read it?
+
+Sam: Cryptographers, mostly. If you build randomness beacons, this is the foundation you were waiting for. If you're an experimentalist, nothing changed today — but the thing you'd eventually deploy just got a lot more solid underneath.
+
+[BREAK]
+
+Maya: Now, two papers from the same group, and I want to take them in a slightly odd order. Start with the punchline paper: universal recovery in approximate quantum error correction, by Elimelech, Albert and Barg.
+
+Sam: The claim, in one sentence: you don't need to know your noise. In exact error correction that's the deal we all grew up with — if your code corrects a list of possible errors, then a single fixed decoder handles any noise process built out of that list. You design the code against a distance, not against a channel.
+
+Maya: And approximate correction was supposed to have lost that.
+
+Sam: That was the folklore, and it's why the approximate literature is full of decoders hand-tailored to one specific channel — amplitude damping, say. What these authors show is that the old picture survives. One recovery map, depending only on the code and the error list, works uniformly across the whole family of noise processes you can build from that list.
+
+Maya: How much does that universality cost you? There's usually a price for being channel-agnostic.
+
+Sam: This is the part that genuinely surprised me. In the average-case setting, the price is exactly zero. The best error achievable by a universal decoder equals the best error achievable by a decoder that knew your channel in advance. Not "within a constant factor" — equal.
+
+Maya: Equal is a strong word. How do they get it?
+
+Sam: A minimax argument. The figure of merit is linear in the decoder and linear in the channel, both sets are compact and convex, so you can swap the order of optimizing over decoders and over channels. Once you see it that way it's almost forced — but nobody had set the problem up so it could be seen that way.
+
+Maya: What about worst case, which is what I'd actually want for a fault-tolerance threshold?
+
+Sam: There you don't get equality, but you do get existence: a universal recovery whose error is bounded by roughly the square root of a quantity measuring how much information leaks to the environment. That's a factor of about one-point-four better than the previous bound, which tightens the sufficient condition for approximate correction across the board.
+
+Maya: Existence. So no one can hand me a circuit.
+
+Sam: Correct, and that's my main reservation — the worst-case proof runs through a purification argument and isn't obviously constructive. But they do give an explicit decoder for the average case: a Petz map built directly out of the error set. And they prove it's the same object as the so-called polar decoder that people had constructed in a much narrower setting. Two communities were building the same thing.
+
+Maya: How badly does the explicit one underperform the optimum?
+
+Sam: It can be off by something that grows with the square root of the number of errors in your set, so for large error sets that's a real gap. Also everything is finite-dimensional, and the average-case criterion is the weaker one — it's fidelity on a single entangled input, not the hardest input.
+
+Maya: Who reads this?
+
+Sam: Anyone designing codes for structured noise where exact correction is simply unavailable — bosonic modes, fermions, atoms. It means your code construction now comes with a decoder attached, defined by the error list, and you can stop redoing the analysis every time the noise model shifts.
+
+[BREAK]
+
+Maya: And now the paper underneath that one, which came out a few weeks earlier — the framework paper, "Theory of approximate quantum error correction and the error-set model." Sam, I gather it opens with a quote it intends to demolish.
+
+Sam: It does. There's a well-known line from Crépeau, Gottesman and Smith to the effect that approximate codes just don't have a sensible notion of distance. That's been the received wisdom for about twenty years, and it's had real consequences — it's why approximate QEC has been a collection of case studies rather than a theory.
+
+Maya: So what was the missing ingredient?
+
+Sam: A restriction that turns out to be exactly the right one. They define a class of channels they call controlled by an error set: the noise operators are allowed to be any mixture of your listed errors, but the matrix of mixing coefficients has to be a contraction — loosely, you're not allowed to amplify the errors while recombining them. Under that one condition, a single code parameter gives a guarantee for the entire family.
+
+Maya: And that condition isn't secretly doing all the work by excluding the interesting noise?
+
+Sam: That was my worry too. But the class is closed under mixing, it doesn't depend on how you wrote down the Kraus operators, and it contains the physical cases people care about. What you get back is enormous: a genuine approximate distance, and the classic equivalence where correcting a certain number of erasures is as good as correcting half as many arbitrary errors — now with quantitative constants in the approximate setting.
+
+Maya: Give me something concrete that this buys, not just structural tidiness.
+
+Sam: Asymptotically good approximate code families in three settings that had none. They build them out of what they call partition codes — take a good classical code, chop it into blocks, and let each logical state be a uniform superposition over a block. That machinery gives them families for fermionic Majorana noise, for deletion errors, and — tying back to our first paper — for one-dimensional chains of Rydberg-blockaded atoms, where you physically cannot have two excited neighbours.
+
+Maya: That's a nice loop. The hardware constraint that makes neutral-atom gates work is also the constraint the code has to live inside.
+
+Sam: Right, and there's one more result I liked: for amplitude damping — photon loss, essentially — they show that correcting a number of damping errors growing linearly with the system can be genuinely easier than correcting the same number of arbitrary errors. That's a concrete asymptotic separation, not a constant-factor observation.
+
+Maya: Limitations?
+
+Sam: Several worth naming. The existence proofs for the good constructions lean on convex partition arguments that are not computable in practice — the random-code version is the usable one, and it needs your codeword count to dwarf your logical dimension. The constants in the erasure-to-error conversion grow with dimension. And there's no necessary-and-sufficient criterion here; approximate stabilizer codes specifically are still open.
+
+Maya: And notably, no decoder — which is precisely the hole the other paper fills.
+
+Sam: Which is why they read as one work in two halves. Take them together: framework, then the decoder that makes the framework operational.
+
+[BREAK]
+
+Maya: Last one, and Sam, you described this to me earlier as the most beautiful code that can't exist.
+
+Sam: I'll stand by that too. Here's the setup. Continuous-variable codes — codes made out of oscillator modes rather than qubits — can be organized by the shape of the phase space they live in. If the phase space is a sphere, you get finite stabilizer groups and exact code states. If it's a flat torus, you get grid codes, the GKP codes people are actually building in labs, where you can't have exact states but you can approximate them arbitrarily well with finite energy.
+
+Maya: And this paper asks what happens on a curved surface with handles.
+
+Sam: Negatively curved, higher genus — a doughnut with two or more holes. Two bosonic modes together naturally carry the right symmetry, and the stabilizers become two-mode squeezing operations. The code words turn out to be classical objects from number theory — automorphic forms — and the number of logical states you get is fixed by a theorem from algebraic geometry, Riemann–Roch. Which is already a strange sentence to say about a quantum memory.
+
+Maya: What does the geometry buy you that a torus doesn't?
+
+Sam: Logical gates. The encoded gate group is the symmetry group of the surface. For the genus-two Bolza curve, that's the full single-qubit Clifford group — forty-eight elements — and every one of them is implemented by a Gaussian operation. Squeezing and beam splitters. In grid codes you work quite hard for your Clifford gates; here they fall out of the surface's symmetry for free. And there's a theorem saying any finite group you like is achievable this way with just two oscillators.
+
+Maya: Okay. So where's the trapdoor?
+
+Sam: The same curvature that gives you that rich symmetry kills the states. The surface group is non-amenable — meaning, roughly, you cannot average over it; it expands too fast, like a tree rather than a flat lattice. They prove that non-amenability forces a spectral gap in the stabilizer Hamiltonian, on the order of a third to a half. And a gap means no normalizable state, not even approximately, can satisfy all the stabilizers at once. Not "hard to make." Cannot exist.
+
+Maya: That's a sharp dividing line. Flat you can average, curved you can't.
+
+Sam: And that's the real contribution, I think — an amenability dichotomy for phase-space codes. It's an infinite-dimensional cousin of the expansion-based obstructions people know from lattice models.
+
+Maya: But hold on — they didn't just prove it, they simulated a circuit-QED implementation?
+
+Sam: They did, two cavities with a transmon and a pump, and it's a nice piece of evidence. Stabilizing a single generator by dissipation converges beautifully — the stabilizer expectation climbs from near zero to near one over a few hundred rounds. Turn on two or more generators and it plateaus, with the energy stuck at order one. That's the gap showing up in a simulator, exactly as predicted.
+
+Maya: So is this a dead end dressed up nicely?
+
+Sam: Not quite, and here's the loophole they flag themselves. The no-go is about exact unitary stabilizers. There's a whole class of finite-energy, damped variants — the trick people use to make grid codes physical — and whether those evade the obstruction is genuinely open. Also, the gap value itself is partly numerical, extrapolated from a truncated simulation, and the squeezing you'd need is around thirteen decibels, which is demanding.
+
+Maya: Who should actually read it?
+
+Sam: Continuous-variable code designers, for the classification. Anyone who likes geometric quantization, for the machinery. But I'd read it mostly as a boundary marker: it tells you where in the space of phase-space codes there's no point looking.
+
+[BREAK]
+
+Maya: Sam, one result that stuck.
+
+Sam: The equality. Universal decoding in approximate error correction costs exactly nothing in the average case. I expected a factor, a loss, something — and it's a swap of two optimizations. That's the kind of result that quietly deletes a paragraph of caveats from a hundred future papers.
+
+Maya: Mine's the readout gap in the neutral-atom review. A one-microsecond theoretical floor, several hundred microseconds once you actually keep the atom. That single honest sentence tells you more about the road to fault tolerance than any fidelity record.
+
+Sam: And it's the kind of thing you only find in a review, where someone has to reconcile numbers from different labs.
+
+Maya: Links to all five papers are in the show notes. The show notes also have a link for sending us questions — we read them, and we answer them on air.
+
+Sam: Send us the ones you argued about with a colleague and didn't settle. Those make the best segments.
+
+Maya: We'll see you tomorrow.

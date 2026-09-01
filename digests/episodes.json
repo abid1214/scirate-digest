@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-09-01",
+    "title": "SciRate Digest \u2014 2026-09-01",
+    "summary": "Today's 5 papers: Neutral atom quantum computing; Unconditional Certified Randomness without Structure; Universal recovery in approximate quantum error correction; Theory of approximate quantum error correction and the error-set model; Bosonic codes from compact phase spaces.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-09-01/digest.mp3",
+    "mp3_bytes": 19566765,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2608.30783",
+        "title": "Neutral atom quantum computing",
+        "abs_url": "https://arxiv.org/abs/2608.30783",
+        "scirate_url": "https://scirate.com/arxiv/2608.30783",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2608.31112",
+        "title": "Unconditional Certified Randomness without Structure",
+        "abs_url": "https://arxiv.org/abs/2608.31112",
+        "scirate_url": "https://scirate.com/arxiv/2608.31112",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2608.28962",
+        "title": "Universal recovery in approximate quantum error correction",
+        "abs_url": "https://arxiv.org/abs/2608.28962",
+        "scirate_url": "https://scirate.com/arxiv/2608.28962",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2607.22995",
+        "title": "Theory of approximate quantum error correction and the error-set model",
+        "abs_url": "https://arxiv.org/abs/2607.22995",
+        "scirate_url": "https://scirate.com/arxiv/2607.22995",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2608.31156",
+        "title": "Bosonic codes from compact phase spaces",
+        "abs_url": "https://arxiv.org/abs/2608.31156",
+        "scirate_url": "https://scirate.com/arxiv/2608.31156",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-08-31",
     "title": "SciRate Digest \u2014 2026-08-31",
     "summary": "Today's 5 papers: Quantum Fourier transform toolbox; Quantum Fourier transform for the symmetric group; Exact quantification of nonlocal magic; Learning to Decode Concatenated Quantum Codes with Hierarchical Message Passing; Spectral Theory of Semisimple Bivariate Bicycle Codes.",
