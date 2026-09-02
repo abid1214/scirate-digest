@@ -1,0 +1,169 @@
+Maya: Sam, confession to open with. Half of what I think I know about quantum information isn't physics — it's convention. Somebody made a reasonable choice in nineteen ninety-something and nobody re-litigated it.
+
+Sam: That is a suspiciously good description of today's arXiv. Every paper on the list takes one of those unexamined choices and asks whether it was ever necessary. Spoiler: mostly no.
+
+Maya: Welcome to the SciRate Daily Digest for Wednesday, September second, twenty twenty-six. Today: scrambling circuits that are one gate layer deep, a proof of quantumness for a machine that measures exactly once, error models that calibrate themselves, encoders that are allowed to be sloppy on purpose, and an anyon that breaks a locality axiom.
+
+Sam: No mail in the bag today, so let's get straight into it.
+
+[BREAK]
+
+Maya: Start with the one everybody's going to be talking about. Anshu, Balasubramanian, Haferkamp, Harrow and Tan — depth-one expanders on the unitary group.
+
+Sam: To set the stage: a quantum expander is a small, fixed menu of circuits with the property that if you keep picking one at random and applying it, your state scrambles toward maximally mixed about as fast as if you'd used genuinely random unitaries. Tiny menu, random-looking behaviour. They're the workhorse behind entanglement tests, complexity lower bounds, all sorts of counterexamples.
+
+Maya: And the folklore was that the circuits on that menu have to be deep.
+
+Sam: Right, because scrambling has to move information across the whole system, and one layer of nearest-neighbour gates moves it one step. Everybody assumed the depth had to grow with the number of qubits. This paper says: no. Sixteen unitaries, each of them a single layer of two-qubit gates on a line, and the mixing is as good as any expander.
+
+Maya: How on earth do you get global scrambling out of one layer?
+
+Sam: This is the part I loved. You import it from pure algebra. There's a group of invertible matrices over the bits — zero and one, addition without carry — and it acts naturally on bit strings. Under that action, the elementary row operations of that group are exactly CNOT gates. Kassabov built a famously efficient generating set for those matrix groups years ago, in group theory, for reasons having nothing to do with qubits. The authors noticed that his generators, once you relabel the wires, are layers of CNOTs with disjoint supports. Depth one, for free.
+
+Maya: So the expansion was always sitting there in the group theory and nobody had translated the dictionary.
+
+Sam: Exactly that. Then they add a single-qubit rotation on one wire to promote it from a classical-ish design to a genuine quantum expander, and the analysis is quite delicate — the CNOT layers alone have a small leftover symmetry, and they compute precisely how much the extra gate shrinks it.
+
+Maya: Okay, but what does minimal depth actually buy you? Beyond the aesthetics.
+
+Sam: It buys you an embedding. Because each circuit is one layer of neighbouring gates, you can bake the whole thing into a one-dimensional local Hamiltonian. And that settles a long-standing question: how much entanglement can a frustration-free chain carry as a function of its energy gap? Frustration-free meaning the ground state minimizes every local term at once — the jigsaw where every piece fits locally.
+
+Maya: And the answer?
+
+Sam: They build a chain whose gap closes like the inverse square of the length, and whose unique ground state has entanglement proportional to the length — volume law, in one dimension, frustration free. That's the conjectured optimal trade-off, and previous constructions got dramatically less entanglement for the same gap.
+
+Maya: What's the catch? There's always a constant hiding.
+
+Sam: The constant is brutal — the spectral gap of the expander is something like five parts in a billion. Asymptotically irrelevant, practically a punchline. It also needs the qubit count divisible by three and a periodic chain, though concurrent work relaxes that at slightly more depth.
+
+Maya: And there's a second headline in there about designs, isn't there?
+
+Sam: Yes, and it may outlast the first. They get a generating set for the full unitary group whose mixing rate degrades neither as you go to higher moments nor as the dimension grows — which settles a conjecture of Lubotzky that had been circulating via Bourgain. Concretely: approximate unitary designs in depth that grows only linearly in qubit number times moment order, matching a counting bound. Anyone doing randomized benchmarking or design theory should read this one.
+
+[BREAK]
+
+Maya: Staying on shallow circuits, but the stakes are completely different. Alexandru Gheorghiu, verifiable quantum advantage in extremely low depth.
+
+Sam: The problem here is proof of quantumness. You have a device. It claims to be quantum. You are a laptop. Can you hand it a challenge, get back one string, and become convinced no classical machine could have produced it? Cryptographers solved that years ago — but the honest quantum prover had to run a big circuit, and in most versions it had to measure in the middle and react to the outcome in real time.
+
+Maya: Mid-circuit measurement and feed-forward — which is exactly the thing that's expensive and slow on real hardware.
+
+Sam: Painfully so. This paper removes it. The honest prover runs one shallow unitary and then measures everything, once, at the end. No adaptivity, no oracle, polynomial width. And the shallowness is extreme: the depth grows like the logarithm of the logarithm of the security parameter, which for any security level a human would actually pick is a small constant number of layers.
+
+Maya: What's the guarantee on the other side? How badly does a classical cheater do?
+
+Sam: A classical sampler running in sub-exponential time can't pass with probability better than about three in four, while the honest quantum device passes essentially always. So the gap is real but modest — you'd repeat to build confidence.
+
+Maya: How does he squeeze a lattice-based protocol into that few layers? Lattice crypto is arithmetic-heavy.
+
+Sam: The trick is a randomized encoding. Instead of computing the affine map directly, the prover computes a scrambled version where every output symbol depends on only about three input words, and the scrambling is undone in the verifier's head, not in the circuit. Two layers of masks: one to stop inputs being reused across rows, one to break up the carry structure within a row.
+
+Maya: The carries being the thing that makes binary arithmetic sequential.
+
+Sam: Right, and here's the honest cost. Those carry terms are nonlinear in the secret, and the security no longer follows from standard lattice hardness. He has to posit a new variant of the adaptive-hardcore-bit assumption tailored to those carry predicates, on top of a knowledge-type lattice assumption that is not efficiently falsifiable.
+
+Maya: So we're not in "assuming lattices are hard" territory. We're in "assuming this specific new thing is hard, and no one can even in principle produce a counterexample cheaply."
+
+Sam: That's fair, and the paper is upfront about it. There's partial supporting evidence, no reduction. I'd say the value isn't "deploy this tomorrow" — it's the structural discovery that shallow circuits retain enough cryptographic structure for efficient white-box verification, plus a very sharp identification of what blocks going all the way down to constant depth with bounded gates: you'd need claw-free functions over a small modulus, which nobody knows how to build.
+
+Maya: And noise? A real shallow circuit isn't a perfect shallow circuit.
+
+Sam: Not analyzed, and that's the gap I'd watch. Also the verification is private-coin — the verifier holds a trapdoor, so you can't publish the transcript and let the world check it. Compare that to the certified randomness work we covered yesterday, where the whole appeal was a commercial protocol with a clean trust story. Different corner of the same design space.
+
+[BREAK]
+
+Maya: Next one starts, for me, as an apparent circularity. Pancotti, Saravanan and Svore — exact learning of quantum noise with tensor networks.
+
+Sam: Set up the tension, because you've got it right.
+
+Maya: A decoder needs an error model — which faults happen, how often. You normally get that from dedicated characterization experiments, which eat device time and go stale as the machine drifts. These authors say: skip that, and fit the error model by making the decoder's own predictions match reality. But the decoder is the thing you're trying to make good. Isn't that a snake eating its tail?
+
+Sam: It sounds like it, and the reason it isn't comes down to what they're fitting against. Not syndromes — logical outcomes. In a memory experiment you eventually know whether the logical qubit flipped. So the loss is: the decoder, given the current guess of the noise model, predicts a probability that the logical flipped; compare that prediction to what actually happened, in the standard cross-entropy sense, and push the fault probabilities downhill.
+
+Maya: So the ground truth is external to the decoder.
+
+Sam: Exactly, and they prove it's not a heuristic. Whatever minimizes that loss is the true posterior — meaning a sufficiently expressive model saturates the best decoding performance information-theoretically available. That's a real proposition, not a hopeful sentence.
+
+Maya: And what makes tensor networks the right tool?
+
+Sam: Because they build the entire decoder as one tensor network — the check structure as copy tensors, the noise as a tensor hanging off each fault leg, the logical observable as an extra row — the contraction is exact and end-to-end differentiable. You get analytic gradients of the logical error probability with respect to every fault rate. For independent faults the derivative collapses to a difference of two clamped probabilities, which is cheap.
+
+Maya: Numbers. What did they actually recover?
+
+Sam: Starting from a completely uniform initialization — every fault equally likely, no prior knowledge — they recover a noise model that matches Google's independently characterized Sycamore error model to within about two percent in logical error rate, on distance-three surface code data over three rounds. And they simulate drift as a random walk and re-fit online with warm starts, tracking a perfect-knowledge baseline.
+
+Maya: Distance three is small. And how real is the data?
+
+Sam: That's the honest caveat, and it's the big one. The shots are sampled from the characterized model, not from the physical chip. So model misspecification — the thing that actually bites on hardware — is untested. Also, despite framing around correlated noise, the fit here uses an independent-fault model. And exact contraction blows up with the treewidth of the code, so surface codes at real distances need approximate contraction, which they propose but don't demonstrate.
+
+Maya: There's also an identifiability point buried in there, right? Some faults are invisible.
+
+Sam: Yes — faults that trigger no detector and flip no logical are simply unrecoverable, so you learn the model modulo those. Which is fine for decoding and misleading if you wanted physics. Pair this with the learned hierarchical decoder we discussed Monday and you can see the field converging on a picture where both the decoder and the model it consumes are fitted objects rather than derived ones.
+
+[BREAK]
+
+Maya: Paper four is the one that genuinely surprised me. Bikun Li and Liang Jiang — high-rank encoding can improve approximate error correction.
+
+Sam: The convention under the microscope: an encoder takes a pure logical state to a pure physical state. Definite input, definite codeword. Every code you've ever seen works that way.
+
+Maya: And the claim is that's suboptimal?
+
+Sam: Strictly suboptimal, for some noise. They exhibit an explicit channel — one logical qudit encoded into two, judged by entanglement fidelity — where every single optimal encoder is randomizing. It must take a pure logical state to a mixed physical state. There is no pure-in, pure-out encoder that matches it.
+
+Maya: My instinct is that you've smuggled in classical randomness. Isn't "mix over two good codes" just probabilistic encoding?
+
+Sam: That was my first thought too, and they close it off. The optimal encoder is an extreme point of the set of channels — it can't be written as a mixture of other encodings. So the gain comes from genuine quantum randomization inside the encoder, not from flipping a coin over codes. And the fidelity objective is linear in the encoder, so a mixture could never beat both of its ingredients anyway.
+
+Maya: How big is the advantage?
+
+Sam: Small, and this is where the paper is nicely self-limiting. They also sharpen the classic rounding bound — the statement of "if you insist on a pure encoder, here's what it costs you." The old estimate was linear in the infidelity. They show it's quadratic near perfect recovery, and their example saturates that ceiling asymptotically as the logical dimension grows.
+
+Maya: So it's a second-order effect. Which is comforting if you build codes for a living.
+
+Sam: Very. If your recovery is already decent, the pure-encoding convention costs you almost nothing. But the structural point stands, and it matters for a specific community: people running numerical encoder–decoder optimizations, who have historically found rank-one optima and quietly parametrized their search that way. This says that parametrization is not without loss of generality. Encoder rank might even be a resource worth quantifying.
+
+Maya: What's the weak spot?
+
+Sam: The channel is reverse-engineered. They construct it so a dual certificate proves optimality — it's unital, highly symmetric, and it insists the logical input be maximally mixed. There's no criterion telling you which physically motivated noise favours a randomizing encoder, and the figure of merit is fidelity at that one fixed input rather than worst case. So: existence result, beautifully certified, no map of the territory yet.
+
+Maya: This sits nicely against the approximate-correction theory papers from yesterday's episode — those were about decoders not needing to know the noise. This is about the encoder needing to be a stranger thing than we assumed.
+
+[BREAK]
+
+Maya: Last one, and it's the most philosophical. Wallick and Wilming — a nonabelian anyon violates Haag duality.
+
+Sam: Let me start with a fact from ordinary quantum mechanics that everyone finds reassuring. Two parties share a global pure state. If the state looks identical from one party's side, then the other party alone can rotate one into the other. Same marginal, one-sided unitary, done.
+
+Maya: The uniqueness of purifications. That's a homework problem.
+
+Sam: It is — in finite dimensions. In an infinite lattice it becomes an axiom you have to assume, and in algebraic quantum field theory that axiom is called Haag duality for a region: everything commuting with what's inside is generated by what's outside. This paper shows a single nonabelian anyon breaks it.
+
+Maya: A single quasiparticle, in an otherwise perfectly nice gapped system.
+
+Sam: And the physical argument fits in a paragraph. You take the nonabelian anyon and split a charge off it — that's the thing nonabelian anyons let you do, fusion has multiple outcomes. Transport the extra charge into region A. Region B sees nothing change at all. But the two global states now carry different total topological charge in A, and any unitary that acts only in A commutes with the charge measurement, so it cannot convert one into the other. Zero overlap. Duality dead.
+
+Maya: Is that a special-case curiosity, or is it a theorem?
+
+Sam: It's a full dichotomy, and that's the contribution. For a superselection sector localized in a cone, the resulting algebras satisfy Haag duality if and only if the sector is abelian. Model-independent, adapting the classical Doplicher–Haag–Roberts machinery to spin systems, and then instantiated concretely in Levin–Wen string-net models using the recent classification of anyon sectors in infinite volume.
+
+Maya: Does this break the existing derivations of anyon theory from ground states? Because those all lean on Haag duality.
+
+Sam: No, and that's the right question. Those arguments assume duality for the vacuum, which still holds. What dies is a conjecture that all gapped ground states satisfy an approximate version of it. Since a nonabelian anyon state is itself a gapped ground state of a commuting-projector Hamiltonian, that conjecture is now false — and because the approximate condition is a phase invariant, there are entire gapped phases where it fails at every point.
+
+Maya: So the useful reading is: this axiom is a filter, not a fact.
+
+Sam: Precisely — it selects the genuine vacuum phases. Charged sectors are pure and gapped, and still algebraically distinguishable from a vacuum, which I find quietly beautiful. They also show steering fails in the same regime: you can't remotely prepare the pure states you'd expect to.
+
+Maya: Caveats?
+
+Sam: The clean physical argument assumes fixed-point models with strictly localizable anyons and clean adiabatic transport. The theorem assumes vacuum Haag duality to begin with. And whether the approximate version is strictly weaker than the exact one is still open. This one's for mathematical physicists — but if you work on entanglement bootstrap or non-invertible symmetries, the boundary just moved.
+
+[BREAK]
+
+Maya: One result each. Mine is the calibration paper — the idea that your routine memory experiments already contain the error model, and you just have to differentiate through the decoder to get it out. If that survives contact with raw hardware shots, it deletes a whole class of experiments.
+
+Sam: For me it's the depth-one expander, and specifically the moment where a group theorist's generating set turns out to be a layer of CNOT gates. Someone had that dictionary sitting on a shelf for two decades. It makes me wonder what else is on that shelf.
+
+Maya: Links to all five papers are in the show notes.
+
+Sam: And the show notes also have a link for sending in questions — the mailbag was empty today and I take that personally. See you tomorrow.

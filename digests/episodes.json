@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-09-02",
+    "title": "SciRate Digest \u2014 2026-09-02",
+    "summary": "Today's 5 papers: Depth-1 expanders on the unitary group and applications; Verifiable quantum advantage in extremely low depth; Exact learning of quantum noise with tensor networks; High-Rank Encoding Can Improve Approximate Quantum Error Correction; A nonabelian anyon violates Haag duality.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-09-02/digest.mp3",
+    "mp3_bytes": 18645549,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2609.01605",
+        "title": "Depth-1 expanders on the unitary group and applications",
+        "abs_url": "https://arxiv.org/abs/2609.01605",
+        "scirate_url": "https://scirate.com/arxiv/2609.01605",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2609.01448",
+        "title": "Verifiable quantum advantage in extremely low depth",
+        "abs_url": "https://arxiv.org/abs/2609.01448",
+        "scirate_url": "https://scirate.com/arxiv/2609.01448",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2609.00169",
+        "title": "Exact learning of quantum noise with tensor networks",
+        "abs_url": "https://arxiv.org/abs/2609.00169",
+        "scirate_url": "https://scirate.com/arxiv/2609.00169",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2609.00778",
+        "title": "High-Rank Encoding Can Improve Approximate Quantum Error Correction",
+        "abs_url": "https://arxiv.org/abs/2609.00778",
+        "scirate_url": "https://scirate.com/arxiv/2609.00778",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2609.01267",
+        "title": "A nonabelian anyon violates Haag duality",
+        "abs_url": "https://arxiv.org/abs/2609.01267",
+        "scirate_url": "https://scirate.com/arxiv/2609.01267",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-09-01",
     "title": "SciRate Digest \u2014 2026-09-01",
     "summary": "Today's 5 papers: Neutral atom quantum computing; Unconditional Certified Randomness without Structure; Universal recovery in approximate quantum error correction; Theory of approximate quantum error correction and the error-set model; Bosonic codes from compact phase spaces.",
