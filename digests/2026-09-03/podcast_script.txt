@@ -1,0 +1,169 @@
+Maya: Sam, a confession to open with. I have never once managed to explain to a non-physicist why two pieces of evidence prepared in separate rooms should be more convincing than one long piece of evidence.
+
+Sam: Hold that thought, because that exact question has been open for about twenty years, and today somebody moved it.
+
+Maya: Welcome to The SciRate Daily Digest for Thursday, September third, twenty twenty-six. I'm Maya.
+
+Sam: And I'm Sam. Today: an oracle separation that finally pries apart the one-proof and two-proof versions of quantum Merlin-Arthur. Then a run of photonics — a clean rule for when a logical fusion survives, and a way to purify entanglement using nothing but beam splitters and detectors. After that, spin qubits riding a shuttling bus, and finally a bake-off between two fault-tolerant codes that overturns a piece of folk wisdom.
+
+Maya: Four architecture papers and one theorem. Let's take the theorem first.
+
+[BREAK]
+
+Maya: Okay. Set the stage for me. What is the two-proof model and why has it bothered people for two decades?
+
+Sam: In the standard model, an all-powerful but untrustworthy prover hands your quantum verifier a single quantum state as a proof. The two-proof version says: I'll give you two proofs, and I promise they're unentangled with each other. That promise sounds almost cosmetic. But it's a promise you can't check, and it's genuinely useful — people have built protocols on it that nobody knows how to build with one proof.
+
+Maya: And nobody could show the promise actually buys you anything.
+
+Sam: Right, in either direction. No proof that two proofs are more powerful, no proof that you can simulate them with one. What Bostanci, Grewal, Haferkamp and their coauthors do is build a black box — a unitary that both verifiers get to query — and relative to that box, the two-proof model strictly wins. The two-proof verifier solves the problem with a single query and a short proof. The single-proof verifier needs either exponentially many queries or an exponentially long proof.
+
+Maya: What's the problem itself?
+
+Sam: A version of testing whether a subspace hidden inside the oracle contains a product state. The yes-instances are built from symmetric projectors, the no-instances from antisymmetric ones on four copies. And here's the move I found delightful. Once you average over local unitaries — which you can do for free, because the problem doesn't care about local bases — every quantity the verifier can compute collapses into one single-variable polynomial in the dimension. One polynomial covers both cases. The antisymmetric instances sit at positive dimension, and the symmetric ones sit at negative dimension.
+
+Maya: Negative dimension. There's no such thing as a space with minus five dimensions.
+
+Sam: There isn't. It's a formal point where the polynomial happens to evaluate to the answer for the other case, because of a sign that flips when you swap symmetric for antisymmetric. Once you have that, the whole lower bound reduces to something extremely well understood: how well a low-degree polynomial can approximate the OR function. That's the same mathematics behind Grover's square-root barrier, and it hands you the exponential separation.
+
+Maya: I want to push on the oracle, though. Oracle separations have a mixed reputation — there are famous cases where the black-box world says one thing and the real world says the opposite. And this is a quantum oracle, which is weaker evidence still, isn't it?
+
+Sam: It is, and the authors say so. A classical oracle separation is still open, and a unitary oracle is a coarser instrument. What I'd argue the result really does is close a door. Any proof that the two models coincide would have to be non-relativizing — it can't just treat the verifier as a black box.
+
+Maya: Is there a consequence that bites outside complexity theory?
+
+Sam: There's one that I think will get cited more than the main theorem. Watrous conjectured years ago that you can't build a disentangler — a device that takes a short arbitrary quantum input and outputs something essentially separable, while still being able to reach any separable state you want. If a small one existed, the two models would collapse. This paper proves it needs exponentially many input qubits, over the full parameter range, matching a recent upper bound up to a logarithm.
+
+Maya: So the natural engineering route to collapsing them is dead.
+
+Sam: Dead. If you work on separability testing or product-state optimization, that's the paragraph to read.
+
+[BREAK]
+
+Maya: Now to photons, and to a number that governs the whole field: the entangling measurement that stitches photonic resource states together only works about half the time.
+
+Sam: Right, and that's not a fixable engineering number — with plain linear optics it's a hard ceiling. What people do instead is encode each logical qubit in an error-correcting code, then fuse whole code blocks. Enough individual fusions fail, but the logical fusion still goes through. The awkward part is that when a fusion fails it isn't harmless: it collapses both photons in a single-qubit basis you had to commit to in advance.
+
+Maya: So the design question is which basis you pick for each photon, ahead of time, hoping to survive whichever ones fail.
+
+Sam: Exactly, and until now that was guesswork plus numerical search. Goodenough, Landahl and colleagues give an exact answer for codes carrying one logical qubit. The number of failures you can tolerate equals the weight of the largest minimal logical operator — meaning a logical operator whose support doesn't contain any stabilizer sitting inside it.
+
+Maya: Unpack "minimal" for me, because that's doing real work.
+
+Sam: Think of it as a logical operator you can't shrink. If a stabilizer hides inside its support, you could multiply it away and get a lighter operator, and that lighter operator is the thing that kills you. So you want a logical operator that touches every single qubit and has no shortcut inside it. If your code has one of those, you get what they call a perfect strategy: only one physical fusion in the whole block needs to succeed.
+
+Maya: One out of however many. That's the best conceivable outcome.
+
+Sam: And the lovely part is the translation. Graph codes let you rewrite that condition as a purely graph-theoretic quantity — the maximum degree the encoding vertex can reach as you apply local complementations to the graph. The minimum over that orbit already had meaning for state-preparation cost. The maximum never had an operational reading before. Now it does.
+
+Maya: Does anything actually satisfy it, or is this a criterion nothing passes?
+
+Sam: Two answers. They give explicit perfect strategies for the whole quantum parity-check family, which settles an open question from Schmidt and coauthors. And then the genericity result: draw a random graph code and it almost certainly admits a perfect strategy, with the failure probability falling off exponentially in the number of qubits. Perfection is the rule, not the exception.
+
+Maya: Here's my objection. This is a noiseless, lossless model. In photonics, loss is the entire problem — a photon that never arrives is a different failure mode than a fusion that fires wrong.
+
+Sam: That's the honest limitation, and they flag it. No loss, no Pauli errors, one logical qubit only, no adaptivity — you fix all your bases up front. In fact they find a five-qubit example where no perfect non-adaptive strategy exists but an adaptive one does, which quietly kills a natural conjecture about connectivity.
+
+Maya: So how should an architect use this?
+
+Sam: As a cheap filter. You're already searching over resource states for loss tolerance; this gives you a constraint you can check almost instantly and impose during that search, instead of discovering afterward that your logical fusion was never going to be optimal.
+
+[BREAK]
+
+Sam: Here's a puzzle that should have blocked the next paper entirely. Entanglement purification — trade several noisy copies for one clean copy — has been known since the nineties, and every recipe for it needs deterministic controlled-NOT gates between the copies.
+
+Maya: And photons famously don't have those.
+
+Sam: Which is why nobody had a purification protocol for photonic graph states. Löbl, Capatos, Lodahl, Sørensen, Paesani and colleagues noticed that the thing photonics does have — the fusion measurement we just spent a segment on — is, when it succeeds, exactly a controlled-NOT followed by a measurement of the target qubit, up to a Pauli correction you're told about.
+
+Maya: Wait. Purification circuits measure the second copy anyway.
+
+Sam: They do! That's the whole point. The destructive part of the fusion, the thing that makes it useless as a general gate, is precisely what the purification circuit was going to do next. So the gate you thought you were missing was never missing. You lay the two noisy copies side by side, fuse them qubit by qubit, and the pattern of detector outcomes is your error syndrome.
+
+Maya: How well does it work, and what does it cost?
+
+Sam: For a noisy three-party GHZ state they take a fidelity of about eighty-six percent up to roughly ninety-nine percent in two cascaded rounds. The cost is that the whole thing goes through one time in eight, so you need multiplexing — banks of sources and switches — to make it deterministic in practice.
+
+Maya: One in eight for one purified copy. Does that overhead grow badly with the size of the state?
+
+Sam: It does, and that's the sharpest limitation. Success probability falls off with the number of transversal fusions per round, so bigger resource states cost you exponentially more attempts. The architecture people already assume switch networks and delay lines for other reasons, so it's not alien hardware, but it isn't free either.
+
+Maya: What about coverage — is this only GHZ states?
+
+Sam: No, and that's the substance beyond the headline. They handle any CSS-type graph state, they give a version of the DEJMPS protocol for self-dual codes — which happens to include the eight-qubit cube state that fusion-based architectures actually use — and then they cover all graph states, hence all stabilizer states, by attaching ancillary two-colorable subgraphs.
+
+Maya: With the caveat that those ancillas have to be clean themselves.
+
+Sam: Which means purified themselves, yes. Plus the analysis assumes lossless photons, ideal number-resolving detectors, and noise that's already diagonal in the graph basis — otherwise you twirl first and the quoted fidelities become lower bounds.
+
+Maya: Who does this matter to right now?
+
+Sam: Quantum-dot people. Their emitters make resource states deterministically, but the fidelity ceiling is intrinsic — it doesn't yield to better fabrication. This gives them a route to push under fault-tolerance thresholds without waiting for a photonic controlled-NOT that may never come.
+
+[BREAK]
+
+Maya: Different platform. Semiconductor spin qubits, where you can physically move the electron.
+
+Sam: And the surprise I want to lead with is a policy choice, not a physics result. When you do a transversal gate between two logical qubits on a shared shuttling track, you drive one block over to the other, do the gate, and then you have to decide: do you send it home, or do you just leave the two logical qubits with their positions swapped?
+
+Maya: Leaving them swapped saves a trip.
+
+Sam: It saves every future trip too, and Escofet and coauthors measure the effect. At code distance thirteen, that swap policy cuts the transversal gate's logical error rate by roughly sixty percent. That's a compiler decision costing nothing in hardware.
+
+Maya: Back up — what's the broader project?
+
+Sam: They've been developing a co-design method where you don't design the chip and then map the code onto it. You take the surface code's syndrome-extraction schedule and synthesize the one-dimensional bus layout directly from it. That existed for a single logical qubit. This paper scales it to a whole processor, where every logical qubit can do a direct pairwise gate with every other one.
+
+Maya: All-to-all logical connectivity. On a superconducting chip that would be an enormous overhead — lattice surgery, patches, extra rounds.
+
+Sam: That's the argument for mobility. If electrons travel, you don't stitch code patches together, you just bring the qubits to each other. But there's a tension the paper quantifies nicely: moving costs coherence, so packing logical qubits densely helps distant gates and hurts routine error correction. They find a shuttling velocity threshold around nine meters per second — go slower than that and the electron spends so long in transit that you lose more than you gain.
+
+Maya: Is there a message for the people actually fabricating these devices?
+
+Sam: The best one in the paper. Dephasing along the bus itself turns out to be nearly irrelevant. What dominates is dephasing in the operation zones, where the micromagnets sit. So the fabrication effort should go there, not into making the track pristine.
+
+Maya: Now the pushback. This is all simulation, and simulation of an architecture that doesn't exist yet. How much of the model is load-bearing versus placeholder?
+
+Sam: Some of it is openly placeholder — the fifty-nanosecond penalty for turning a corner in their two-dimensional junction grid is admitted to be a guess. Leakage, crosstalk, valley physics, correlated charge noise: all absent. And the noise is strongly biased, so they report worst-case numbers in one basis. There's also no decoder latency anywhere, which for a system where qubits are physically in motion feels like it will matter.
+
+Maya: They do get as far as magic state distillation, though.
+
+Sam: They place a fifteen-to-one distillation circuit using the same synthesis method at the logical level, which is the first time I've seen this style of layout co-design taken all the way to a non-Clifford resource factory. Architects will read it for the hop-count crossovers — the point where a bigger code stops paying for itself on long-range gates.
+
+[BREAK]
+
+Maya: Last one, and it picks a fight with something the field has half-believed for years.
+
+Sam: The belief goes like this. In photonics, every entangling operation is another chance to lose a photon. So codes where each qubit participates in fewer operations — low-degree codes, the Floquet and honeycomb family — ought to tolerate more loss than the old high-degree surface-code foliation. That intuition has driven real architectural choices.
+
+Maya: And Ben Porath and colleagues tested it properly.
+
+Sam: On a specific platform: atoms in cavities exchanging flying photons, where the entangling gate is near-deterministic light-matter interaction rather than a coin-flip fusion. They build explicit generation schedules for three codes — the standard foliated toric cluster state, the foliated Floquet color code, and a reduced variant — and run circuit-level loss simulations. The old surface-code foliation wins. Loss threshold of about two point eight percent per operation, versus one point nine for the best Floquet variant.
+
+Maya: Despite having more operations per qubit.
+
+Sam: Despite that. And the flip only happens under one condition: if you're in a modular machine and the links between modules carry roughly three times the loss of the local ones, the ordering reverses. So the ranking isn't a property of the codes. It's a property of the code plus the native entangling primitive plus where the lossy links physically sit.
+
+Maya: What's the honest strength of the evidence? Because there's a decoder question lurking here.
+
+Sam: There is, and it's the caveat I'd lead with. They model loss carefully — heralding only happens at detection, so they sample when the photon was actually lost with the correct conditional probabilities, and a missing bond becomes one correlated dephasing channel across the surviving neighbors rather than independent noise on each. That's more faithful than earlier erasure-qubit treatments. Then they decode with minimum-weight perfect matching, which decomposes all that correlation away.
+
+Maya: So the careful modeling gets thrown out at the last step, and both codes are being judged by a decoder that can't see the structure.
+
+Sam: Correct, and their thresholds are therefore underestimates. Whether a correlated decoder would preserve the ordering is exactly the open question. The other big restriction: loss is the only error channel. No Pauli noise, no atomic dephasing, no photon distinguishability. And the boundaries are periodic, so this is memory only — no logical operations.
+
+Maya: One number that stuck with me from this one: how far the circuit-level numbers sit from the idealized ones.
+
+Sam: Nearly a factor of ten below the independent-loss benchmarks people usually quote. That gap is the real headline for anyone budgeting a photonic machine — and it's a useful counterweight to the two fusion papers we did earlier, where the primitive is probabilistic and the arithmetic comes out completely differently.
+
+[BREAK]
+
+Maya: One result each. Mine is the negative dimension trick. The idea that the yes-case and the no-case of a problem are the same polynomial evaluated on opposite sides of zero — I'll be chewing on that for a while, independent of what it says about proof systems.
+
+Sam: Mine is the maximum local-complementation degree suddenly having a job. That number has sat in the graph-state literature for years as a curiosity, and now it tells a photonics engineer whether their logical fusion is optimal. That kind of migration from pure combinatorics to a checkable design rule is my favorite thing in this field.
+
+Maya: Links to all five papers are in the show notes.
+
+Sam: And there's a link there for sending us questions — we work through the backlog on air, so if yours hasn't come up yet, it's still in the queue.
+
+Maya: We'll see you tomorrow.

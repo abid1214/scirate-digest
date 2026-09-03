@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-09-03",
+    "title": "SciRate Digest \u2014 2026-09-03",
+    "summary": "Today's 5 papers: A quantum oracle separation between QMA(2) and QMA; Optimal Fusion Strategies for Quantum Computation; Purification of photonic graph states; Transversal Gates and Magic State Distillation in an Optimally Synthesized Spin-Qubit Shuttling Bus; Circuit-Level Loss Performance of FFCC and RHG Codes in a Compound Photon-Atom Quantum Architecture.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-09-03/digest.mp3",
+    "mp3_bytes": 18054189,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2609.02865",
+        "title": "A quantum oracle separation between QMA(2) and QMA",
+        "abs_url": "https://arxiv.org/abs/2609.02865",
+        "scirate_url": "https://scirate.com/arxiv/2609.02865",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2609.02559",
+        "title": "Optimal Fusion Strategies for Quantum Computation",
+        "abs_url": "https://arxiv.org/abs/2609.02559",
+        "scirate_url": "https://scirate.com/arxiv/2609.02559",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2609.01710",
+        "title": "Purification of photonic graph states",
+        "abs_url": "https://arxiv.org/abs/2609.01710",
+        "scirate_url": "https://scirate.com/arxiv/2609.01710",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2609.02641",
+        "title": "Transversal Gates and Magic State Distillation in an Optimally Synthesized Spin-Qubit Shuttling Bus",
+        "abs_url": "https://arxiv.org/abs/2609.02641",
+        "scirate_url": "https://scirate.com/arxiv/2609.02641",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2609.02428",
+        "title": "Circuit-Level Loss Performance of FFCC and RHG Codes in a Compound Photon-Atom Quantum Architecture",
+        "abs_url": "https://arxiv.org/abs/2609.02428",
+        "scirate_url": "https://scirate.com/arxiv/2609.02428",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-09-02",
     "title": "SciRate Digest \u2014 2026-09-02",
     "summary": "Today's 5 papers: Depth-1 expanders on the unitary group and applications; Verifiable quantum advantage in extremely low depth; Exact learning of quantum noise with tensor networks; High-Rank Encoding Can Improve Approximate Quantum Error Correction; A nonabelian anyon violates Haag duality.",
