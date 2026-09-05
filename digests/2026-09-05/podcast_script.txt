@@ -1,0 +1,201 @@
+Maya: Sam, quick confession. Yesterday I tried to hold a twenty-qubit error-correcting code in my head, and about ninety seconds in I just sort of… lost the thread.
+
+Sam: That's the honest reaction, and weirdly it's the theme of today's stack. Almost every paper on the list says the same thing in a different accent: if you know the shape of the problem — the code, the graph, the dimension — the price is already decided before you start paying it.
+
+Maya: So: structure as a pricing sheet.
+
+Sam: Structure as a pricing sheet. And in one case, structure telling you the price is infinity.
+
+[BREAK]
+
+Maya: This is the SciRate Daily Digest for Friday, September fifth, twenty twenty-six. I'm Maya.
+
+Sam: And I'm Sam. On the table today: a trapped-ion machine running a compact fault-tolerant architecture end to end, a nasty optimization in magic theory that collapses into a one-line answer, graph widths that tell you how many copies of a state you need to learn it, training a quantum model with no classical optimizer at all, and a hard wall in dimension four.
+
+Maya: And before any of that — listener mail.
+
+[BREAK]
+
+Maya: This one's from abid1214, and it's been waiting a bit, so let's do it properly. The question: how do people who classify the hardness of classically simulating quantum systems actually use magic as a metric?
+
+Sam: Great question, and the starting point is a theorem from the nineties. If your circuit is built only from a restricted family — the so-called stabilizer or Clifford operations — you can simulate the whole thing efficiently on a laptop, no matter how many qubits or how entangled they get. Entanglement alone doesn't buy you hardness.
+
+Maya: Which is already the counterintuitive bit. Everyone assumes entanglement is the expensive ingredient.
+
+Sam: Right, and it isn't sufficient. Magic — sometimes called non-stabilizerness — measures how far your state sits from that easy family. And the reason it's a hardness metric rather than just a vibe is that the actual simulation algorithms have runtimes that key off it. You write your state as a combination of easy stabilizer states, and the number of terms you need is what kills you. Add magic, add terms, cost climbs.
+
+Maya: So the metric is literally "how many easy pieces do I need to glue together."
+
+Sam: Essentially. And that's why magic gets measured in units of a particular non-Clifford gate — the count of those gates is a proxy for the simulation bill, and it's the same count that a fault-tolerant machine has to pay for by distilling special states. Same resource, two invoices.
+
+Maya: What's the catch? Because I sense a catch.
+
+Sam: The catch is that magic on its own also isn't sufficient. Take a bunch of qubits, each individually rotated off the stabilizer axes, no correlations at all. Enormous total magic, completely trivial to simulate — you just handle each qubit separately. So the community has been trying to isolate the part of the magic that's genuinely locked into the correlations.
+
+Maya: Which is exactly the "non-local magic" business we covered a few days back.
+
+Sam: It is, and today's second paper pushes that same programme forward — so, abid, stick around fifteen minutes and you get a bonus answer.
+
+[BREAK]
+
+Maya: Top of the list. Trapped ions, and this one is not a proposal — it ran on a machine.
+
+Sam: It ran on Quantinuum's Helios, ninety-eight ions, all-to-all connectivity. The team introduces a code they call the C-four Helix: twenty physical qubits carrying two logical qubits at distance six. The design premise is what I'd flag first. Most demonstrations to date have optimized a code for keeping one logical qubit alive, and then asked later how logical qubits talk to each other.
+
+Maya: And "later" tends to be where the overhead hides.
+
+Sam: Exactly. Here they built the thing backwards on purpose: choose a code where the logical Clifford gates — the workhorse operations — are almost free. Nearly the entire two-qubit logical Clifford group comes from permuting physical qubits around and single-qubit rotations, plus one genuinely nontrivial circuit they had to find by search and then armour with flag gadgets to keep it fault-tolerant.
+
+Maya: Okay, and the headline number?
+
+Sam: They benchmarked the complete two-qubit logical Clifford group inside a single code block — first time anyone's done that — at roughly three errors per ten thousand operations, against about one per thousand for the underlying physical gates. So logical beats physical by a factor of several, with no postselection, no throwing away runs.
+
+Maya: That last clause is doing a lot of work. Postselection has been the polite fiction of this field for years.
+
+Sam: It has, and I don't want to undersell how nice it is to see the unfiltered number. The other result I liked: they entangled this code with a completely different one — a distance-five surface code sitting elsewhere on the machine — using what's called a chain-map CNOT, and made a three-way logical GHZ state across the two code families.
+
+Maya: Chain maps. We were talking about those yesterday, in the qLDPC computation paper.
+
+Sam: Same language, and that's the pleasing part — yesterday it was the homological framework for organizing logical gates, today somebody runs one on ions. And the purpose is very practical: the compact code is efficient but can't make the non-Clifford resources you need for universality, so you import them from a code that can. That interface is the whole ballgame for early fault tolerance.
+
+Maya: Where do you push back?
+
+Sam: Statistics, mainly. The distance-six memory result has error bars so wide that its upper edge overlaps the distance-three result's lower edge — so "we got better by going to a bigger code" is not yet established at the level I'd want. Memory was only sampled in one measurement basis, so the full logical error channel isn't characterized. Decoding was done offline, not in real time. And no non-Clifford gate was actually run — the injection interface is demonstrated, the injection isn't.
+
+Maya: So who should read it?
+
+Sam: Anyone architecting an early fault-tolerant machine, and anyone designing magic-state factories. What I'd watch for next: the same code at distance twelve — they sketch a sixty-qubit version — with real-time decoding and an actual imported non-Clifford state.
+
+[BREAK]
+
+Maya: Paper two, and this is the one that answers abid's question twice over. Non-local magic.
+
+Sam: Here's the history. Magic depends on which axes you call your local basis — rotate a single qubit and the number changes, even though nothing about the correlations moved. So people defined non-local magic: minimize the magic over all local basis changes on both parties, and whatever's left is irreducible.
+
+Maya: Which sounds like an optimization over two exponentially large groups of rotations. Nobody computes that.
+
+Sam: Nobody computed that. And the result here is that for one standard measure — the log stabilizer fidelity — the whole double optimization collapses to a closed-form expression that depends on nothing except the entanglement spectrum. The Schmidt coefficients. That's it.
+
+Maya: Just the spectrum. So two states with the same entanglement spectrum have identical non-local magic, no matter what else is different about them.
+
+Sam: Correct, and that's a real structural statement, not just a computational convenience. Though the convenience is substantial: given the spectrum, evaluating it is dramatically cheaper than evaluating ordinary stabilizer fidelity, and entanglement spectra are something experimentalists already extract. So this becomes measurable in the lab and computable in many-body simulations.
+
+Maya: Why does the spectrum control it? That feels like it should be a coincidence.
+
+Sam: It isn't, and the reason is charming. Stabilizer states have very rigid entanglement — their Schmidt spectra are perfectly flat, with a number of terms that's a power of two. So the closest you can get to the stabilizer world is governed entirely by how badly your spectrum fails to look flat-and-power-of-two. The formula is essentially reading off that mismatch.
+
+Maya: We covered a paper on exact quantification of non-local magic at the end of August. Is this a contradiction or a continuation?
+
+Sam: Continuation, and the authors are candid that a concurrent independent group reached the same closed form — which, honestly, is reassuring. The second half is more novel to me: they define what they call the magic of purification. Take your mixed state, consider every way of purifying it with extra ancillas, and take the least magical purification. That turns out to be a well-behaved resource measure whose free states are exactly the stabilizer code projectors.
+
+Maya: And the punchline connecting the two halves?
+
+Sam: Non-local magic of a pure entangled state equals the purification magic of its reduced state, minimized over local rotations. So an entanglement quantity and a mixed-state resource quantity are the same object seen from two sides. There's a nice corollary too — if you apply a filter that grades outcomes softly instead of projecting sharply, that unsharpness necessarily costs non-local magic. Softness is a magical resource.
+
+Maya: Caveats?
+
+Sam: The closed form is specific to this one measure — the Rényi versions of magic, which is what most many-body papers actually compute, are still open. And "cheap given the Schmidt spectrum" is doing quiet work, because getting the spectrum is still exponential in general. Theorists in holography and many-body magic should read it today.
+
+[BREAK]
+
+Maya: Third paper, and I want to start from a tension. We've known for a long time that how hard a tensor network is to contract classically depends on the graph you wired it on. Narrow graph, easy; fat graph, hopeless.
+
+Sam: Right, treewidth and friends.
+
+Maya: But this paper is about learning the state from copies in the lab, which is a totally different question. Why should the same graph properties show up?
+
+Sam: That's exactly the gap they close, and the tool is almost embarrassingly simple. They call it entanglement rerouting: take an edge in your network you don't like, delete it, and push its weight along a detour through a neighbouring vertex, padding the tensor there so the state is exactly unchanged. Not approximately — exactly.
+
+Maya: So you can rewire the network into a shape you know how to handle.
+
+Sam: And the shape everyone knows how to handle is a chain — a matrix product state. If you reroute every long-range edge along the intervening path, the bonds on that path thicken by however many edges cross that cut. Which is a graph quantity called cutwidth. So any tensor network on a known graph is a chain, at a price that's your bond dimension raised to the cutwidth.
+
+Maya: And then the learning part.
+
+Sam: Then they take the classic disentangling tomography algorithm — the one that walks along a chain peeling off one site at a time — and generalize it, first to trees, then to arbitrary known graphs. The copy cost grows about cubically with the number of sites, times a factor that is exponential in a new width they define, called learning complexity.
+
+Maya: Which is bounded by degree and treewidth, presumably.
+
+Sam: Bounded by degree times treewidth, and here's the part I found genuinely satisfying: that learning exponent is tied to the same contraction complexity that governs whether you can simulate the thing classically. That's a real bridge between learnability and simulability, which has been a fuzzy folk connection for years.
+
+Maya: Is there a payoff outside of theory?
+
+Sam: One that surprised me. Quantum chemists running DMRG have long fiddled with the ordering of molecular orbitals along the chain — pure heuristic, everyone has their favourite recipe. This paper says those heuristics are approximately minimizing cutwidth, and there are known algorithms that do it properly.
+
+Maya: Now the cost side. What's excluded?
+
+Sam: A lot. Everything is upper bounds — no lower bounds on copy complexity at all, so we don't know how loose this is, and they show it's provably loose for cliques. You must know the graph in advance; there's no structure learning. And "efficient" here means constant or logarithmic width, which throws out two-dimensional grids, cliques, and stars — so not the states most condensed-matter people care about.
+
+Maya: The agnostic version is the part I'd want, though. Real states never sit exactly in your class.
+
+Sam: Agreed, and they do handle it: if the true state is merely close to something in your class, you learn something nearly as good. The price is you must be told in advance how close, and the output is described by a circuit rather than a tensor network. Learning theorists should read this one; numerics people should read the orbital-ordering section and stop there.
+
+[BREAK]
+
+Maya: Paper four is the one I'm most suspicious of, and I say that with affection.
+
+Sam: Fair, and I'll match you halfway. The premise: essentially all quantum machine learning today trains with a classical loop. Try a parameter setting, measure, estimate a gradient, nudge, repeat. Which means the quantum computer is being used as a calculator inside a classical optimizer.
+
+Maya: So superposition never touches the learning itself.
+
+Sam: Never. This paper asks what happens if you put the parameters themselves into a quantum register, in superposition over every candidate setting at once, and then evolve the whole thing under a Hamiltonian whose potential energy is the loss function. Low loss becomes low energy, and amplitude physically flows downhill through interference. No gradients, no classical feedback.
+
+Maya: That's a lovely picture. Training as a ball rolling in a landscape, except the ball is a wave that's everywhere at once.
+
+Sam: And the technical meat is making the landscape. They give an explicit recipe for turning a circuit that evaluates your model on data into a block encoding of the corresponding loss Hamiltonian — that's the piece a fault-tolerant machine could actually run. They also handle batches of data as a sequence of evolutions, with a nice wrinkle: the usual condition that makes this dynamics concentrate sharply has to be deliberately relaxed, otherwise each new batch bulldozes what the previous ones learned.
+
+Maya: Okay. Now the suspicion. Do they show it's faster than the classical loop?
+
+Sam: No, and to their credit they say so outright — no complexity analysis, no claimed advantage. That's left open.
+
+Maya: Then what's the honest status?
+
+Sam: A reframing with one concrete construction and two toy demonstrations, both classically simulated: a two-parameter classifier, and estimating an unknown phase in an interferometer. Five qubits per parameter. And there's a scaling problem sitting right in the middle — the kinetic part of the Hamiltonian, the part that lets the wave move, has a block encoding whose cost blows up exponentially with the resolution of the parameter grid, unless you restrict to slow-varying states. They flag it and set it aside.
+
+Maya: So the thing that makes it a wave is the thing that's expensive.
+
+Sam: That's a fair summary, and it's the first thing I'd want fixed. I'll say what I did like: the phase-estimation example hints that learning from data and estimating a physical parameter are the same process in this framework, which is a genuinely unifying thought. But barren plateaus are cited as motivation and are not shown to be avoided, and you still have to sample the final distribution to read out an answer. Read it for the idea; don't cite it for a speedup.
+
+[BREAK]
+
+Maya: Last one, and it's the hard wall you promised.
+
+Sam: Here's the setup, and it's an old intuition. A quantum system of fixed size can be prepared in a continuum of different states, but you can only read a bounded amount of classical information out of it. So people suspected that anything you could observe from preparing and measuring such a system could be faked classically — send a bounded message, plus as much shared randomness as you like, and reproduce the statistics exactly.
+
+Maya: And that was proven for qubits, right? Toner and Bacon.
+
+Sam: Two classical bits, exactly simulate any qubit prepare-and-measure experiment, and the correlations of a maximally entangled pair too. That result is over twenty years old and it's been the anchor of everyone's intuition. This paper shows that intuition dies at dimension four.
+
+Maya: Dies how? Slowly, or —
+
+Sam: Abruptly. For any system of dimension four or more, no finite classical alphabet suffices. Not a big one, not an astronomically big one — none. And this isn't for exotic states or weird measurements: pure states, ordinary two-outcome projective measurements. It also transfers to Bell scenarios, so the full two-outcome measurement statistics of a maximally entangled pair of four-dimensional systems require unbounded classical communication to reproduce.
+
+Maya: Which is a sharp contrast with what we thought we knew, because there's a famous result saying two bits suffice for those correlations.
+
+Sam: For the correlators — the pairwise averages — yes, in any dimension. This says the full outcome statistics are a different animal. And they also close the other side: three-dimensional systems are still finitely simulable. They construct an explicit protocol. It's finite and it is absurd — a message count with more than a hundred digits, where the best known lower bound is five.
+
+Maya: I'll take absurd over unknown. Do we get any feel for why four?
+
+Sam: We do, and this is the part I keep thinking about. They restrict to pairs of states with a fixed overlap, average over all the ways to place them, and ask how fast the outcome probability rises as that overlap turns on. Quantum mechanics gives a clean, definite slope. Every classical branch of the simulation, it turns out, has slope exactly zero — because the way these averages decay across the harmonics of the state space precisely cancels the growth on the other side. Finitely many branches, each with zero slope, cannot sum to a nonzero slope. And below dimension four the decay is too slow for that argument to bite.
+
+Maya: So the threshold isn't an artifact of the proof technique, it's where the geometry actually changes.
+
+Sam: That's the claim, and they argue it fairly convincingly.
+
+Maya: Here's my objection, though. This is exact simulation, over a continuum of possible inputs. In any real lab you have finitely many settings and noise everywhere. Does infinity survive contact with reality?
+
+Sam: Honestly? Unknown, and the authors are upfront about it. Approximate simulation, finite measurement sets, noise robustness — all untouched. There's also no task yet where you can point at a growing, quantifiable classical cost. What makes it matter anyway is the direction it points: constructions of unconditional quantum advantage in communication currently need the quantum system to grow. This suggests unbounded classical cost might be available at fixed, small quantum dimension. That would be a different kind of statement.
+
+[BREAK]
+
+Maya: Sam, one result that stuck.
+
+Sam: The trapped-ion demonstration, and specifically the un-postselected logical Clifford number. We've spent years watching error correction be a memory experiment. Seeing the complete two-qubit logical gate set benchmarked below the physical gates, in a code chosen for computing rather than remembering, feels like the field turning a corner. Wide error bars and all.
+
+Maya: For me it's the non-local magic formula. A double optimization over two enormous groups collapsing to a function of the entanglement spectrum — and then that spectrum-only quantity turning out to be a mixed-state resource measure in disguise. That's the kind of tidy that usually means something deeper is going on underneath.
+
+Sam: And if abid1214 is still with us — that's the sharpest tool yet for separating the magic that costs you from the magic that's just a choice of axes.
+
+Maya: Links to all five papers are in the show notes, along with a link to send us your questions — which we do work through, slowly but in order.
+
+Sam: We'll see you Monday.

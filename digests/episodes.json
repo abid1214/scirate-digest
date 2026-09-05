@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-09-05",
+    "title": "SciRate Digest \u2014 2026-09-05",
+    "summary": "Today's 5 papers: Experimental validation of a compact fault-tolerant architecture for trapped ions; Non-local Magic: closed-form solution and equivalence with magic of purification; Parameterised graph theory for tensor networks: entanglement rerouting, structural simplification, and agnostic tomography; Quantum Hamiltonian Evolution for Coherent Quantum Learning; Quantum communication and Bell nonlocality require infinite classical communication to simulate.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-09-05/digest.mp3",
+    "mp3_bytes": 20706093,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2609.03194",
+        "title": "Experimental validation of a compact fault-tolerant architecture for trapped ions",
+        "abs_url": "https://arxiv.org/abs/2609.03194",
+        "scirate_url": "https://scirate.com/arxiv/2609.03194",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2609.04119",
+        "title": "Non-local Magic: closed-form solution and equivalence with magic of purification",
+        "abs_url": "https://arxiv.org/abs/2609.04119",
+        "scirate_url": "https://scirate.com/arxiv/2609.04119",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2609.04165",
+        "title": "Parameterised graph theory for tensor networks: entanglement rerouting, structural simplification, and agnostic tomography",
+        "abs_url": "https://arxiv.org/abs/2609.04165",
+        "scirate_url": "https://scirate.com/arxiv/2609.04165",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2609.03640",
+        "title": "Quantum Hamiltonian Evolution for Coherent Quantum Learning",
+        "abs_url": "https://arxiv.org/abs/2609.03640",
+        "scirate_url": "https://scirate.com/arxiv/2609.03640",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2609.04182",
+        "title": "Quantum communication and Bell nonlocality require infinite classical communication to simulate",
+        "abs_url": "https://arxiv.org/abs/2609.04182",
+        "scirate_url": "https://scirate.com/arxiv/2609.04182",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-09-04",
     "title": "SciRate Digest \u2014 2026-09-04",
     "summary": "Today's 5 papers: Quantum thermalization achieves optimal approximate quantum error correction; On the geometry and typicality of quantum magic; Quantum low-density lattice codes; Distinctness threshold for pseudorandom unitaries; Computing with qLDPC Codes by Climbing the Chain Map Hierarchy.",
