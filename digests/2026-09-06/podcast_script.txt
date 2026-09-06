@@ -1,0 +1,193 @@
+Maya: Sam, I made a list of what today's papers are billing us for. Noisy links between chips. Erased bits of syndrome. Wasted rounds of syndrome extraction. Pulses that don't quite do what you asked.
+
+Sam: So the theme is invoices.
+
+Maya: The theme is invoices. Every one of these is somebody itemising a cost that people usually wave away.
+
+Sam: And in one case, a cost nobody has ever paid attention to because it's measured in units of heat.
+
+[BREAK]
+
+Maya: Welcome to the SciRate Daily Digest for Sunday, September sixth, twenty twenty-six. I'm Maya.
+
+Sam: And I'm Sam. Today: a code that freezes errors in time as well as space, a much cheaper recipe for stitching chips together over bad entanglement links, the thermodynamic bill for erasing your syndrome record, what you can build when you can only address groups of atoms rather than individual ones, and a dissertation that tries to rederive quantum theory from betting. Plus listener mail first.
+
+[BREAK]
+
+Maya: So, mail. This one's from abid twelve-fourteen, and it is the question we've been dancing around for a week: what actually is magic state distillation, and what's a magic state factory?
+
+Sam: Right. Error-corrected quantum computers get one family of operations almost for free — the ones you can do by acting on each physical qubit separately, or by shuffling the code around. Those are the Clifford operations, and by themselves they're famously simulable on a laptop. To get actual computational power you need one more ingredient, and the standard way to get it is not to perform a hard gate directly but to prepare a special resource state — a magic state — and consume it.
+
+Maya: And the catch is that preparing that state isn't protected the way everything else is.
+
+Sam: Exactly. You prepare it by some raw, noisy, unprotected process, so it comes out roughly as good as your hardware, which is nowhere near good enough. Distillation is the fix: take many mediocre copies, run a purely Clifford circuit on them, measure some of them, and if the answers are consistent you keep one output copy that is much cleaner than any input. Repeat in layers.
+
+Maya: And the factory is just... that, industrialised?
+
+Sam: It's a dedicated region of the chip doing nothing but running those rounds, continuously, feeding clean states to the part of the machine doing the actual algorithm. In classic estimates the factory dominated the footprint — most of your qubits are the refinery, not the computer. That's why we keep seeing work aimed straight at it: the trapped-ion architecture paper we covered yesterday was about importing those non-Clifford resources cheaply, and the spin-qubit shuttling bus paper on Thursday put distillation into the hardware layout directly.
+
+Maya: And the geometry-of-magic result earlier this week — that's the same resource seen from the theory side, mapping out which states have none of it.
+
+Sam: Same currency, different question. Thanks, abid — good one.
+
+[BREAK]
+
+Maya: Top paper today, and it starts from something that sounds like a contradiction. Floquet codes are called dynamical codes. Their whole identity is that the checks change every round. And yet?
+
+Sam: And yet, as spacetime phases, every one we know is equivalent to an ordinary static code with the rounds smeared out. The dynamics is bookkeeping, not new physics. Juliette Soule and Dominic Williamson set out to build one that genuinely has no static counterpart, and the tool they reach for is fractalization.
+
+Maya: Which is the trick behind fracton models.
+
+Sam: Right. Take the toric code, and instead of letting an excitation hop one step sideways, redefine the geometry so that any attempt to move it splits it into several excitations, in a self-similar branching pattern — Sierpinski-triangle shaped. The upshot is that a single defect is stuck. It can't wander, because wandering costs you extra defects. That's Haah-style type-two fracton behaviour, and it's been a spatial story for over a decade.
+
+Maya: And their move is to do it to time.
+
+Sam: To time. They take the cluster state that encodes the entire history of a two-dimensional surface code — the Raussendorf-style construction where measuring one layer teleports the logical information one step forward — and they fractalize along the layer direction. So now the branching rule applies going forward through the circuit. A fault in the middle of your computation cannot quietly drift forward and reappear later as a plain, undetected error. It either sits there or it multiplies into things your detectors see.
+
+Maya: Okay, but hold on. Fractons are also famous for being miserable to decode. Haah's code has notoriously delicate decoders, and you're telling me one fault now spawns a branching family of defects. Why is that a gift rather than a mess?
+
+Sam: That's the right worry, and it's the paper's weakest flank. The optimistic reading is that no-strings-in-time attacks the thing that sets how many syndrome rounds you need. Normally your timelike distance grows in lockstep with rounds, so you repeat measurement a number of times comparable to the code distance just to beat measurement faults. If timelike fault paths have to branch, that could grow faster than linearly, meaning fewer rounds for the same protection.
+
+Maya: Could. Is that shown?
+
+Sam: It's asserted. There's no decoder, no simulation, no distance scaling law computed. Even the specific example — three branching rules, one per direction, chosen to be algebraically independent so nothing can move in any spacetime direction — is stated to be independent under periodic boundaries without a proof in the text. So this is a construction paper, not a performance paper.
+
+Maya: What did they actually build, then, concretely?
+
+Sam: Two things I'd point to. One, a constant-depth adaptive circuit — a ladder of controlled-NOTs plus a measurement gadget and classical feed-forward — that implements the branching update, which done naively would need depth growing with the system size. Two, a fault-tolerant version applied across a stack of surface-code blocks, with a schedule that alternates ordinary surface-code checks with the fractalizing step.
+
+Maya: And the time-crystal claim I saw in the abstract?
+
+Sam: Falls out for free: the logical response only repeats after a number of cycles growing exponentially with system size, because the self-similar patterns take that long to come back around. Though the authors are honest that this may not correspond to any physical periodically driven Hamiltonian.
+
+Maya: So who reads this?
+
+Sam: Anyone designing dynamical codes or fretting about measurement-fault propagation — it connects directly to the low-degree Floquet-like code work we looked at on Thursday, where the argument for those codes was about photon loss per operation. This is the other axis: not fewer chances to fail, but faults that can't travel. I'd watch for someone building a decoder and getting a number.
+
+[BREAK]
+
+Maya: Next one is about the fact that nobody is going to build a million-qubit chip as a single chip.
+
+Sam: Nobody credible, no. So you build modules and link them with shared entanglement — Bell pairs generated across a photonic or microwave link. And those links are the problem: they're slower and much dirtier than anything inside a chip. Moritz Schmidt and colleagues use a rule of thumb that the link error rate is about the cube root of your on-chip rate, so a chip at one error in a thousand gets links at roughly one in ten.
+
+Maya: One in ten is catastrophic.
+
+Sam: Which is why the standard recipe is: purify first, then do error correction on top of clean links. Entanglement distillation as a separate pre-processing stage. And their objection is that the purification is designed blind — it doesn't know what the surrounding code actually needs from that link.
+
+Maya: So they fold it in.
+
+Sam: They treat the link as just another edge in the circuit, inside their ZX-calculus fault-tolerance-by-construction framework, and ask: how much protection does this specific edge, in this specific code, actually require? Sometimes the answer is standard distillation — it drops out as a special case. Often the answer is much less.
+
+Maya: Give me the one number that matters.
+
+Sam: If you decode the whole thing jointly — one decoder that sees both modules and the link together, rather than a distillation decoder and then a code decoder — you need only half the distillation code distance. Half. That's a direct, multiplicative cut in Bell pairs consumed, which for these architectures is the scarce resource.
+
+Maya: Why does joint decoding buy that?
+
+Sam: Because separate decoding forces the link to be clean on its own terms, with no help from the surrounding syndrome information. Jointly, a residual link error is just another fault the outer decoder already has evidence about. There's a lovely refinement, too: in the surface code, some link errors propagate in a direction parallel to the seam between modules, and those turn out to be benign — they're already equivalent to errors the code handles. So you can under-protect against those on purpose. Although in lattice surgery, the constraint comes back for the plaquettes on the seam.
+
+Maya: This is all simulated?
+
+Sam: Stim, a realistic superconducting-style noise model, ten million shots per point, surface code and colour code memory plus lattice surgery. It's careful work. Two honest wrinkles: their distributed circuits stop being matchable, so they can't use a fast matching decoder — they run a search-based decoder, and at reduced accuracy, and its scalability at larger distances is untested.
+
+Maya: And the second?
+
+Sam: Most of the runs assume you can wire anything to anything near the module boundary. When they impose a realistic constraint — one Bell channel and two ancillas per module per plaquette on a square grid — the threshold degrades visibly, landing near one in a thousand even with a gentler link noise assumption. Also, Bell pair generation rate and latency aren't modelled dynamically, and in a real machine, waiting is itself a source of error.
+
+Maya: Still — this is the paper the modular-architecture people should read.
+
+Sam: It replaces one-size-fits-all distillation overhead with a per-link, code-aware budget. That's an engineering document as much as a physics one.
+
+[BREAK]
+
+Maya: Now, the oldest idea on the show today. Maxwell's demon, eighteen sixties. The demon sorts molecules and seems to beat the second law, and the resolution — Landauer, a century later — is that the demon has a memory, and wiping that memory costs heat.
+
+Sam: And Jakub Czartowski and Felix Binder point out that an error-corrected quantum computer is, structurally, exactly that demon. Every round you measure the stabilisers, which pulls disorder out of the protected data and writes it into a classical register. That register can't grow forever. You reset it. And that reset is the one genuinely irreversible step in the whole business.
+
+Maya: I'll ask the obvious thing. At the temperatures these machines run at, that erasure cost is tiny. Vanishingly small next to a rack of room-temperature control electronics and a dilution fridge. Why should anyone care?
+
+Sam: You're right about the absolute magnitude, and they don't oversell it — it's thermal energy per bit, per round, and it is not what's stressing your fridge today. What I found worth the time is the structure of the answer. The cost isn't set by the usual code parameters. It's set by the joint structure of the code, the noise, and how you choose to store the record.
+
+Maya: Unpack "how you choose to store it".
+
+Sam: They lay out a hierarchy. At the bottom is a coherent bound from the entropy of an effective syndrome state built out of the code's defining conditions and the actual noise — that's the least you could ever pay. Above that, the entropy of the decoded diagnosis: just the label of which error you think happened. Above that, the raw parity bits from every check. And most expensive, erasing those bits one at a time in separate registers.
+
+Maya: So the compressed diagnosis is cheaper than the raw measurement record.
+
+Sam: Substantially, and the gap has consequences. At the label level, degeneracy helps: if two different physical errors act identically on the code, you never need to distinguish them, and you pay less. At the bit level, the cost per check grows with the check's weight — the number of qubits it touches. So there's now a thermodynamic argument, independent of all the usual ones, for low-weight qLDPC-style checks.
+
+Maya: Does the ranking match intuition on real codes?
+
+Sam: Here's the part that surprised me. Shor-type codes get a huge degeneracy discount per round, better than linear in qubit number, while the rotated surface code gets only a modest one from its boundary checks. So Shor looks great. But when you plot total erasure work against actual logical failure probability — cost for protection delivered — the surface code wins. The per-round discount is swamped by how much better the surface code is at its job.
+
+Maya: What are you not getting from this paper?
+
+Sam: It's a single round, at leading order in the error rate, assuming independent local noise and an idealised reversible erasure. And it counts only the memory sitting next to the device — not the decoder hardware, not the gates, not the control stack. So this is a lower bound on one ingredient, offered as a new axis for comparing code families, not a design constraint you'd optimise today.
+
+[BREAK]
+
+Maya: Fourth paper, and it opens with a result that made me laugh: they prove the thing you want to do is NP-hard, and then do it anyway.
+
+Sam: Wenjie Gong, Matteo Votto and Soonwon Choi, on Hamiltonian engineering. Set the scene: lots of platforms can't touch individual particles. An ensemble of nitrogen-vacancy centres in diamond, a cavity full of atoms — you shine light on everything at once. At the other extreme, tweezers give you full site-by-site control. This paper is about the middle, which is where a lot of real hardware actually lives.
+
+Maya: Meaning what, physically?
+
+Sam: Meaning you can address a handful of distinguishable groups independently. Defects with different crystal orientations respond to different pulses. Two atomic species in the same trap. A mask that detunes one region. So you have, say, three knobs, not one, and not ten thousand.
+
+Maya: And the question is what interactions you can synthesise by pulsing those groups.
+
+Sam: Right — you apply pulses, the native couplings get rotated around, and the time-averaged Hamiltonian is some combination of rotated versions of what nature gave you. The obstruction is beautifully clean: the pulses that reshape couplings between groups unavoidably also reshape couplings inside them. You can't separate the two.
+
+Maya: Which is where hardness comes in.
+
+Sam: Deciding whether a target is reachable, with two groups, contains the two-party separability problem — NP-hard as the local dimension grows. Which would be a dead end, except they then give a constructive sufficient condition that covers most cases people care about: if the within-group interactions have no isotropic Heisenberg component, you can reach any target with that same property — up to an overall slowdown.
+
+Maya: That slowdown is the catch, isn't it? What's it cost?
+
+Sam: In their headline application, a factor of three. They take one-axis twisting — the standard squeezing interaction in cavity and Rydberg systems — and engineer two-axis, two-spin twisting out of it, running at one third the native coupling strength. And they prove that a third is optimal; it saturates their necessary condition. So you know exactly what you're giving up and that you can't do better.
+
+Maya: What does two-mode squeezing buy someone?
+
+Sam: Entanglement across two subensembles, which lets you sense two parameters at once below the standard quantum limit — magnetic field and gradient, say. Global driving alone can't make those states. And they don't stop at the ideal sequence: they build symmetrised pulse constructions that suppress amplitude and frequency errors quadratically, and show squeezing surviving roughly three percent control errors in systems of a few dozen spins, with about four decibels in a small dipolar array.
+
+Maya: My pushback: this is all average-Hamiltonian theory at leading order, isn't it? Which means the pulse cycle has to be fast compared to the interaction, and everything you gain, you gain in that limit.
+
+Sam: Leading-order Floquet–Magnus, yes, plus an assumption that the coupling matrices don't depend on position and the native interactions are two-body. And they're candid that even with the robust sequences, control errors kill ideal Heisenberg scaling — the squeezing keeps growing with system size, just not at the optimal rate. But for an NV-ensemble or dual-species group with a pulse generator and a target interaction in mind, this is a genuine toolbox: a test for whether it's possible, a recipe if it is, and a number for the price.
+
+[BREAK]
+
+Maya: Last one, and it's a dissertation, which is unusual for us. Matthew Weiss, on QBism — and Sam, I want you to justify this to a listener who thinks interpretation is where physics goes to argue.
+
+Sam: Fair. Let me set the stake. QBism says quantum mechanics isn't a new physics of waves and particles; it's ordinary personal probability theory plus exactly one extra consistency rule. Pick a reference measurement — some fixed, informationally complete experiment. Then your bets on any other experiment are related to your bets on that reference experiment by a rule that looks almost like the classical law of total probability, but slightly deformed.
+
+Maya: Almost being the whole content.
+
+Sam: The whole content. And the usual complaint is that the deformation is imported from quantum theory — you already knew the answer and dressed it up. What this thesis attempts is to derive it. Start from the demand that the deformation be as gentle as possible: it should be commutative, treat outcomes even-handedly, and be the simplest thing that can play the role of multiplying random variables. He proves that pins down the form uniquely, and then requiring that higher moments of an observable behave consistently forces a specific algebraic identity — and from there the classification theorems take over and you land in a Euclidean Jordan algebra, which is essentially quantum state space.
+
+Maya: How much of that is derived and how much is smuggled in? Because "simplest" is doing a lot of work.
+
+Sam: Quite a lot is smuggled, and he says so. The reference matrix is assumed symmetric with a constant diagonal, there's a specific ansatz for how the deformation looks, and "fewest terms" is an aesthetic choice. And even after landing in Jordan algebra land you get a menu — real, complex, quaternionic, octonionic, and the spin factors — and ruling out everything but complex quantum mechanics needs further postulates. The author calls the reconstruction modest, and I'd take him at his word.
+
+Maya: So what's the part with teeth?
+
+Sam: A self-testing protocol, and this is why I'd flag it to experimentalists. It certifies, from observed statistics alone, that your reference measurement's table of conditional probabilities comes from a complex projective three-design — a highly symmetric measurement of the kind used in tomography and benchmarking. And the important word is theory-agnostic: it doesn't assume you're in quantum mechanics to start with.
+
+Maya: How is that different from what people already do?
+
+Sam: The usual arguments go through frame potentials — you compute a quantity, it hits the minimum, you conclude design-ness. That certifies a number. This certifies that a Hilbert space representation exists at all. That's a stronger statement about your device, and it lands in the same neighbourhood as the pseudorandomness work we discussed earlier this week, where the whole game was ensembles mimicking random dynamics to a fixed number of copies.
+
+Maya: And the gap before anyone runs it?
+
+Sam: Noise. The visible material doesn't address robustness at all, and self-testing claims live or die on how gracefully they degrade when your statistics are imperfect. So: read it if you're in foundations or if you build design-based tomography. Don't expect to run it Tuesday.
+
+[BREAK]
+
+Maya: Okay. One result each. Mine is the halving. Joint decoding across a module boundary cuts the required distillation distance in half, and that's the kind of result that changes a procurement decision, not just a paper.
+
+Sam: Mine is errors that can't move forward in time. I don't know yet whether the fault-distance claim survives contact with a decoder, and that's a real if. But the idea that you'd fractalize the time direction of a circuit, and get a phase with no static counterpart out of it — I hadn't seen anyone try that, and I'll be watching for the numbers.
+
+Maya: Links to all five papers are in the show notes.
+
+Sam: And the show notes have a link for sending in questions — abid's got answered today because he sent one. Yours will too.
+
+Maya: See you tomorrow.

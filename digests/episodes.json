@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-09-06",
+    "title": "SciRate Digest \u2014 2026-09-06",
+    "summary": "Today's 5 papers: Fractalizing spacetime: Floquet codes with fractonic excitations that are immobile in space and time; Resource-adaptive distributed fault tolerance with very noisy Bell pairs; Energetic Costs of Subspace Quantum Error Correction; Robust Hamiltonian engineering with subensemble control; Redesigning quantum theory.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-09-06/digest.mp3",
+    "mp3_bytes": 21366573,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2609.03703",
+        "title": "Fractalizing spacetime: Floquet codes with fractonic excitations that are immobile in space and time",
+        "abs_url": "https://arxiv.org/abs/2609.03703",
+        "scirate_url": "https://scirate.com/arxiv/2609.03703",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2609.03048",
+        "title": "Resource-adaptive distributed fault tolerance with very noisy Bell pairs",
+        "abs_url": "https://arxiv.org/abs/2609.03048",
+        "scirate_url": "https://scirate.com/arxiv/2609.03048",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2609.03825",
+        "title": "Energetic Costs of Subspace Quantum Error Correction",
+        "abs_url": "https://arxiv.org/abs/2609.03825",
+        "scirate_url": "https://scirate.com/arxiv/2609.03825",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2609.03045",
+        "title": "Robust Hamiltonian engineering with subensemble control",
+        "abs_url": "https://arxiv.org/abs/2609.03045",
+        "scirate_url": "https://scirate.com/arxiv/2609.03045",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2609.03333",
+        "title": "Redesigning quantum theory",
+        "abs_url": "https://arxiv.org/abs/2609.03333",
+        "scirate_url": "https://scirate.com/arxiv/2609.03333",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-09-05",
     "title": "SciRate Digest \u2014 2026-09-05",
     "summary": "Today's 5 papers: Experimental validation of a compact fault-tolerant architecture for trapped ions; Non-local Magic: closed-form solution and equivalence with magic of purification; Parameterised graph theory for tensor networks: entanglement rerouting, structural simplification, and agnostic tomography; Quantum Hamiltonian Evolution for Coherent Quantum Learning; Quantum communication and Bell nonlocality require infinite classical communication to simulate.",
