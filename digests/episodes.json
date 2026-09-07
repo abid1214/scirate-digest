@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-09-07",
+    "title": "SciRate Digest \u2014 2026-09-07",
+    "summary": "Today's 5 papers: Optimal inequalities for completely bounded polynomials and the limitations of quantum query algorithms; Compiling the 2D Fermi-Hubbard ground-state energy estimation algorithm for active volume quantum architectures; The marginal is pretty good; Learning unknown stabilizer codes using product measurements; Fundamental Limits of Quantum Metrology Beyond Fixed Causal Order.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-09-07/digest.mp3",
+    "mp3_bytes": 17833773,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2609.05201",
+        "title": "Optimal inequalities for completely bounded polynomials and the limitations of quantum query algorithms",
+        "abs_url": "https://arxiv.org/abs/2609.05201",
+        "scirate_url": "https://scirate.com/arxiv/2609.05201",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2609.05316",
+        "title": "Compiling the 2D Fermi-Hubbard ground-state energy estimation algorithm for active volume quantum architectures",
+        "abs_url": "https://arxiv.org/abs/2609.05316",
+        "scirate_url": "https://scirate.com/arxiv/2609.05316",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2609.05225",
+        "title": "The marginal is pretty good",
+        "abs_url": "https://arxiv.org/abs/2609.05225",
+        "scirate_url": "https://scirate.com/arxiv/2609.05225",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2609.04997",
+        "title": "Learning unknown stabilizer codes using product measurements",
+        "abs_url": "https://arxiv.org/abs/2609.04997",
+        "scirate_url": "https://scirate.com/arxiv/2609.04997",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2609.05355",
+        "title": "Fundamental Limits of Quantum Metrology Beyond Fixed Causal Order",
+        "abs_url": "https://arxiv.org/abs/2609.05355",
+        "scirate_url": "https://scirate.com/arxiv/2609.05355",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-09-06",
     "title": "SciRate Digest \u2014 2026-09-06",
     "summary": "Today's 5 papers: Fractalizing spacetime: Floquet codes with fractonic excitations that are immobile in space and time; Resource-adaptive distributed fault tolerance with very noisy Bell pairs; Energetic Costs of Subspace Quantum Error Correction; Robust Hamiltonian engineering with subensemble control; Redesigning quantum theory.",
