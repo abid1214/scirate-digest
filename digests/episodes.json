@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-09-08",
+    "title": "SciRate Digest \u2014 2026-09-08",
+    "summary": "Today's 5 papers: Fanout Complexity of Symmetric Boolean Functions in $\\mathsf{QAC}^0$; Efficient Quantum Error Correction from Three Dimensional Qubit Control; Lindblad Multiproduct Formulas; Exact quantum spin liquids with topological order on maple-leaf and trellis lattices; SIC dimension towers via cyclotomic polynomials.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-09-08/digest.mp3",
+    "mp3_bytes": 19763757,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2609.05153",
+        "title": "Fanout Complexity of Symmetric Boolean Functions in $\\mathsf{QAC}^0$",
+        "abs_url": "https://arxiv.org/abs/2609.05153",
+        "scirate_url": "https://scirate.com/arxiv/2609.05153",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2609.04459",
+        "title": "Efficient Quantum Error Correction from Three Dimensional Qubit Control",
+        "abs_url": "https://arxiv.org/abs/2609.04459",
+        "scirate_url": "https://scirate.com/arxiv/2609.04459",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2609.05024",
+        "title": "Lindblad Multiproduct Formulas",
+        "abs_url": "https://arxiv.org/abs/2609.05024",
+        "scirate_url": "https://scirate.com/arxiv/2609.05024",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2609.04319",
+        "title": "Exact quantum spin liquids with topological order on maple-leaf and trellis lattices",
+        "abs_url": "https://arxiv.org/abs/2609.04319",
+        "scirate_url": "https://scirate.com/arxiv/2609.04319",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2609.04431",
+        "title": "SIC dimension towers via cyclotomic polynomials",
+        "abs_url": "https://arxiv.org/abs/2609.04431",
+        "scirate_url": "https://scirate.com/arxiv/2609.04431",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-09-07",
     "title": "SciRate Digest \u2014 2026-09-07",
     "summary": "Today's 5 papers: Optimal inequalities for completely bounded polynomials and the limitations of quantum query algorithms; Compiling the 2D Fermi-Hubbard ground-state energy estimation algorithm for active volume quantum architectures; The marginal is pretty good; Learning unknown stabilizer codes using product measurements; Fundamental Limits of Quantum Metrology Beyond Fixed Causal Order.",

@@ -1,0 +1,11 @@
+{
+  "date": "2026-09-08",
+  "rendered_with": "edge-two-voice",
+  "model": null,
+  "voices": {
+    "Maya": "en-US-AvaMultilingualNeural",
+    "Sam": "en-US-AndrewMultilingualNeural"
+  },
+  "turns": 86,
+  "mp3_bytes": 19763757
+}
