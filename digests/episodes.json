@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-09-09",
+    "title": "SciRate Digest \u2014 2026-09-09",
+    "summary": "Today's 5 papers: Quantum lower bounds for convex optimization and real matrix-vector query problems; Computing 256-bit elliptic curve discrete logarithms in 26 days on a fault-tolerant trapped-ion quantum computer with 20,000 qubits; No information transmission through quantum channels above capacity; Low-Depth Random Unitaries without Ancillae; From Bits to Qubits: The Theory and Practice of Quantum Data Encoding.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-09-09/digest.mp3",
+    "mp3_bytes": 17005101,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2609.05679",
+        "title": "Quantum lower bounds for convex optimization and real matrix-vector query problems",
+        "abs_url": "https://arxiv.org/abs/2609.05679",
+        "scirate_url": "https://scirate.com/arxiv/2609.05679",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2609.05625",
+        "title": "Computing 256-bit elliptic curve discrete logarithms in 26 days on a fault-tolerant trapped-ion quantum computer with 20,000 qubits",
+        "abs_url": "https://arxiv.org/abs/2609.05625",
+        "scirate_url": "https://scirate.com/arxiv/2609.05625",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2609.08998",
+        "title": "No information transmission through quantum channels above capacity",
+        "abs_url": "https://arxiv.org/abs/2609.08998",
+        "scirate_url": "https://scirate.com/arxiv/2609.08998",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2609.06528",
+        "title": "Low-Depth Random Unitaries without Ancillae",
+        "abs_url": "https://arxiv.org/abs/2609.06528",
+        "scirate_url": "https://scirate.com/arxiv/2609.06528",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2609.08058",
+        "title": "From Bits to Qubits: The Theory and Practice of Quantum Data Encoding",
+        "abs_url": "https://arxiv.org/abs/2609.08058",
+        "scirate_url": "https://scirate.com/arxiv/2609.08058",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-09-08",
     "title": "SciRate Digest \u2014 2026-09-08",
     "summary": "Today's 5 papers: Fanout Complexity of Symmetric Boolean Functions in $\\mathsf{QAC}^0$; Efficient Quantum Error Correction from Three Dimensional Qubit Control; Lindblad Multiproduct Formulas; Exact quantum spin liquids with topological order on maple-leaf and trellis lattices; SIC dimension towers via cyclotomic polynomials.",

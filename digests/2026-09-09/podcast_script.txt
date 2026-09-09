@@ -1,0 +1,153 @@
+Maya: Sam, I made a list this morning of every sentence in today's five papers that begins, essentially, with the words "you cannot."
+
+Sam: And how long was the list?
+
+Maya: Long. And the odd thing is, none of them read as bad news. They all read like someone finally put a price tag on something that had been floating around unpriced.
+
+Sam: That's the whole day, honestly. Ceilings and invoices. Four papers about what things actually cost, and a fifth about what it costs to even carry your data through the front door.
+
+[BREAK]
+
+Maya: This is The SciRate Daily Digest for Wednesday, September ninth, twenty twenty-six. I'm Maya.
+
+Sam: And I'm Sam. Today: a new lower bound technique that caps the quantum speedup for convex optimization, a very concrete estimate for breaking elliptic-curve crypto on trapped ions, a long-open problem in quantum Shannon theory finally closed, random circuits that stop borrowing helper qubits, and a big review that tries to make everyone honest about data loading.
+
+[BREAK]
+
+Maya: Let's start with the lower bound, because it involves a genuinely new tool, and those are rare. Set the stage for me — why has this problem been stuck?
+
+Sam: Because the workhorse of quantum lower bounds, the polynomial method, is built for bits. You take a query algorithm, you show its acceptance probability is a low-degree polynomial in the input bits, and then you argue no low-degree polynomial can compute the function you want. That machinery has been running since the late nineties. But convex optimization doesn't hand you bits. You've got a real-valued object, and the queries are continuous.
+
+Maya: So what are the queries here, concretely?
+
+Sam: In the model Childs works in, there's a big unknown real matrix you cannot see. All you're allowed to do is hand it a vector and get back the matrix times that vector — and quantumly, you can do that in superposition. That's the matrix-vector query model, and it's become a standard abstraction for randomized numerical linear algebra.
+
+Maya: Okay. So degree is off the table. What replaces it?
+
+Sam: Rank. That's the move, and it's lovely. He shows that after some number of queries, every measurement probability of your algorithm is the Fourier transform of a fixed measure that lives entirely on matrices of low rank — rank capped at roughly twice the number of queries you've made. So "few queries" now literally means "only sees low-rank structure." And then, to prove hardness, you need a witness whose transform dies on low-rank matrices but still lines up with the function you care about.
+
+Maya: And the natural thing that vanishes when the rank drops is the determinant.
+
+Sam: Exactly, which is why he calls it the determinantal witness method. He builds the witnesses by applying a determinant-shaped differential operator to nice smooth bumps, leaning on an old identity of Cayley. The payoff: computing the trace of the matrix, or the sign of its determinant, or a single column of its inverse — all of them need a number of matrix-vector queries comparable to the size of the matrix.
+
+Maya: And the headline application?
+
+Sam: General convex optimization, where all you have is an oracle that evaluates the function and one that tells you if a point is in the set. There was already a quantum algorithm using roughly as many queries as there are dimensions, while classically you need about the square of that. Nobody could rule out something dramatically better. Now it's settled — the quantum algorithm is essentially optimal, and the speedup is capped at quadratic. Even if gradients were free.
+
+Maya: I want to push on the framing, though. Query complexity isn't runtime. A bound like this says nothing about how many gates you burn between queries, and real optimization problems are never this featureless.
+
+Sam: Both true, and I'd add a third from the paper itself: the optimization hardness is only established when you demand extremely fine accuracy — precision shrinking like a very high power of the dimension. So a bigger speedup at coarse accuracy isn't excluded. And a couple of the bounds shed a logarithmic factor to a boosting argument.
+
+Maya: This is the other end of the street from the completely bounded polynomials paper we did on Monday — both asking how much a query algorithm can possibly wring out of few questions.
+
+Sam: Same street, opposite direction. That one was about simulating quantum query algorithms classically; this one gives the continuous-input toolbox that the polynomial method never had. If you work in query complexity, read the structural lemma even if you skip everything else.
+
+[BREAK]
+
+Maya: Paper two is the one people will forward to their manager. IonQ and collaborators: breaking a two-hundred-fifty-six-bit elliptic curve discrete logarithm — Bitcoin's curve, specifically — in twenty-six days on a machine with about twenty thousand physical qubits.
+
+Sam: And the reflex is to argue about the number. I'd rather talk about what they did to earn it, because the number itself is downstream of a hardware model that doesn't exist yet.
+
+Maya: Fair. What's actually new?
+
+Sam: Two things. First, they didn't stop at logical gate counts. They compiled Shor's algorithm — an optimized version of Schrottenloher's point-addition circuits — all the way down to hardware-legal measurement schedules on their trapped-ion architecture, with the layout done by hand and routing folded in. Prior estimates for superconducting surface codes tended to say "here are the logical operations, assume the rest." Here the shuttling and the measurement parallelism are in the accounting.
+
+Maya: And second?
+
+Sam: They proved the arithmetic works. This is the part I found genuinely refreshing. To make Shor cheap you approximate ferociously — you truncate carries, you replace full comparisons with looking at a single top bit, you exploit the fact that this particular curve's prime is just a power of two minus something small. Everyone does this. Almost nobody bounds the resulting failure probability rigorously. These authors count the failing inputs exactly for addition, subtraction, negation, and they carry a confidence bound through the whole stack.
+
+Maya: Almost. Which part isn't proved?
+
+Sam: The in-place multiplier built on binary greatest-common-divisor. That one they bound empirically — a handful of failures out of a million random trials, wrapped in a proper statistical confidence interval. It's honest, but it's Monte Carlo, not a theorem. They also caught a missing exceptional case in an earlier well-known estimate, which tells you how easy it is to get this wrong.
+
+Maya: Here's my problem. The whole thing rests on assumed error rates, transport times, and cat-state measurement parameters from a companion paper describing a machine nobody has built. And the runtime assumes it just runs, continuously, for twenty-six days, with no recalibration.
+
+Sam: Yes. And the success probability is roughly two chances in three on a single run. So the honest reading isn't "crypto falls in twenty-six days." It's "here is what the hardware bar looks like if you take compilation seriously" — and it's a lower bar than the million-qubit figures people quote. That's the useful contribution to migration planning.
+
+Maya: It also rhymes with the active-volume Fermi-Hubbard compilation we covered Monday — same shift, from counting expensive gates to compiling for one specific architecture.
+
+Sam: It's becoming the norm, and it should. What I'd watch for: whether the walking-cat measurement parameters survive contact with real ions, and whether that gcd bound can be turned into a proof.
+
+[BREAK]
+
+Maya: Now a puzzle. For a classical noisy channel, we've known since the fifties that capacity is a cliff. Below it, errors vanish. Above it, your success probability doesn't just stall — it's driven to zero. Why has that been open for quantum channels for decades?
+
+Sam: Because quantum capacity is defined by a limit. You can't compute it from one use of the channel; you have to look at longer and longer blocks and take a regularized limit. And every clean converse argument wants a single-shot quantity to lean on. So people proved the sharp cliff for special families — degradable channels, entanglement-breaking channels, dephasing — and the general case sat there.
+
+Maya: And Cheng and Tomamichel close it.
+
+Sam: For arbitrary finite-dimensional memoryless channels, both for sending classical messages and for generating entanglement. Try to communicate above the capacity, and your fidelity decays exponentially in the number of channel uses. They also pin down the exact exponent of that decay, including an achievability half for entanglement generation that had been missing.
+
+Maya: How do you get around the regularization?
+
+Sam: You use a one-parameter family — Rényi versions of the capacity, which sit above the real one and shrink toward it as the parameter approaches one. The converse works if you can find one fixed parameter strictly above one whose Rényi capacity is below the rate you're attempting. The trap is that as the block length grows, the parameter you need might slide toward one and the whole argument evaporates.
+
+Maya: So you need uniformity, not just convergence.
+
+Sam: Right, and that's the technical heart. They write the Rényi quantity as an average over "tilted" states of ordinary entropy differences. Those tilted states misbehave — they don't quite live where a physical channel output should live — so the authors repair them one channel use at a time, replacing the rejected weight and paying a small continuity cost at each step. The costs add up linearly, but the cost per channel use vanishes as the parameter comes down. That's what buys uniformity.
+
+Maya: Let me be the skeptic. Nobody deliberately transmits above capacity. What does this change?
+
+Sam: It tells you that tolerating error doesn't buy you rate. There's no sloppy regime where you accept, say, ten percent infidelity and squeeze out more throughput. Capacity isn't a boundary of the vanishing-error regime, it's a genuine phase transition. And practically, converse statements with error going to one are exactly what security proofs and impossibility arguments need.
+
+Maya: Caveats?
+
+Sam: The exponent formulas are still regularized, so for a channel that isn't additive you can't actually evaluate them. Finite dimensions, memoryless, no assistance. And nothing is claimed exactly at capacity. But the integral-representation-plus-local-repair combination looks reusable, and I'd expect it to show up in other regularized Rényi problems within the year.
+
+[BREAK]
+
+Maya: Paper four surprised me on a detail I'd stopped noticing. Random circuits that mimic truly random dynamics up to some number of statistical moments — the recent breakthroughs made those extremely shallow. But there was a footnote.
+
+Sam: The footnote is that they borrow helper qubits. Sometimes more helper qubits than the system itself. On paper that's a constant-ish nuisance; on a real device it's fatal, and theoretically it's just ugly accounting. Du, Cheng and Ma get rid of them entirely, with no loss of shallowness.
+
+Maya: How do you build randomness out of nothing?
+
+Sam: Catalytic computation. The circuit uses its own idle registers as scratch space — whatever junk state those qubits happen to be in, entangled with whatever — does its arithmetic, and then restores them exactly. It's borrowing a colleague's cluttered desk, working on it, and putting every paper back in its original pile. The catalyst is unchanged, so it costs you nothing.
+
+Maya: And the depth?
+
+Sam: On a lattice, the depth grows like a power of the logarithm of the number of qubits, set by the dimension of the lattice. With all-to-all connectivity, it grows like the logarithm of a logarithm. That's optimal in system size and near-optimal in the number of moments you're matching. The other ingredient is a sharper bound on a Hadamard-plus-random-phase ensemble, which lets them replace exponentially many ideal random phases with a small hashed set.
+
+Maya: You mentioned there's a second result.
+
+Sam: Yes, and it's cheeky. They prove that if your ensemble is merely very good — accurate past a specific threshold — you can make it exactly Haar-matching to that many moments purely by reweighting the classical probabilities of which circuit you draw. Same hardware, same gates. You just change the dice.
+
+Maya: Okay, but sampling that reweighted distribution takes exponential classical time. In what sense is that a construction? I can't run it.
+
+Sam: You can't, and they say so plainly. It's a statement about what's quantumly achievable — the quantum circuit is short, the classical bookkeeping is not. Where it does bite is against prior exact designs, which needed exponentially more gates. So the gate count improves enormously even though the sampling doesn't.
+
+Maya: Other limits?
+
+Sam: The guarantees are for multiplicative error, which is the strong notion, and the dependence on system size and moment number stays multiplicatively coupled — a recent one-dimensional result had them decoupled, so that's not fully subsumed. And nothing here addresses the non-Clifford cost or what natural brickwork circuits do. If you do classical shadows or randomized benchmarking and you've been quietly ignoring the ancilla column in the resource table, this is your paper.
+
+[BREAK]
+
+Maya: Last one connects back to the crypto estimate. Sam, that Shor compilation used masked lookup tables to do windowed arithmetic — which is exactly the thing our fifth paper is a review of.
+
+Sam: It is. Zhang and a long list of co-authors have written what's essentially a Reviews of Modern Physics treatment of getting classical data into a quantum computer. Four access models — preparing a state, synthesizing a unitary, quantum RAM, and block encoding — with their circuit size, depth, ancilla and non-Clifford costs laid side by side.
+
+Maya: Reviews are useful, but a review isn't a result. What's the opinionated part?
+
+Sam: The currency. They argue that the right way to price quantum memory is not runtime per query but opportunity cost per query — the total physical resources tied up, control electronics, classical co-processing, error correction — because those same resources could have been running a classical algorithm on the same problem. And they refine the usual active-versus-passive memory split into a ladder, including a category they call practically passive: asymptotically it's active, but the constants are comparable to ordinary DRAM, so who cares.
+
+Maya: That accounting worries me. If I charge every quantum proposal for the classical computer I could have bought instead, I can kill any advantage claim I like. It risks being unfalsifiable.
+
+Sam: That's a fair objection, and the review half-concedes it — one of their open problems is that a rigorous no-go theorem here would have to formally penalize absurd one-time precomputation, otherwise you "win" by unrolling an astronomically large correction table in advance. But the discipline is real. Take bucket-brigade quantum RAM: the router entanglement decays nicely, so error per query looks benign, and yet for search-type algorithms you still need physical error rates below one over the square root of the table size. That's a brutal requirement nobody quotes.
+
+Maya: And the constructive side?
+
+Sam: Structure. Sparse vectors, Boolean functions with compact descriptions, low-entanglement states you can compile from a tensor network — those load cheaply. And the select-swap lookup trick pushes the non-Clifford cost down to roughly the square root of the table size, which is precisely why it shows up in chemistry and in the cryptanalysis estimate we discussed earlier.
+
+Maya: Who should read it?
+
+Sam: Anyone about to write "assume oracle access to the data" in an abstract. Read the memory taxonomy first. The caveats are what you'd expect for a synthesis: the central lower bounds are imported from prior work, and the near-linear gate bound doesn't cover circuits with mid-circuit measurement and feedback — that's conjectured, not proved.
+
+[BREAK]
+
+Maya: One result each. Mine is the rank-for-degree swap. Twenty-five years of lower bounds built on polynomial degree, and it turns out that for continuous linear-algebraic queries the analogue was sitting in the determinant the whole time. I suspect we'll see that technique three more times this year.
+
+Sam: Mine is the catalytic trick in the random-unitary paper. Not because the depth improved — it didn't, really — but because a whole column of the resource table just went to zero by having the circuit tidy up after itself. That's the kind of result that makes you re-read your own old estimates.
+
+Maya: Links to all five papers are in the show notes, along with a link to send us questions — we read everything, and we work through the backlog in order.
+
+Sam: We'll see you tomorrow.
