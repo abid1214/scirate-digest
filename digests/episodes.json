@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-09-10",
+    "title": "SciRate Digest \u2014 2026-09-10",
+    "summary": "Today's 5 papers: Loss-correcting fault-tolerant quantum computing architecture for neutral atoms; Minimax games for quantum channel discrimination; Non-Multiplicativity of the Holevo Barycenter of Quantum Channels; Information Causality Characterizes the Set of Quantum Correlations in the Simplest Bell Scenario; Constant-depth global shadow estimation.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-09-10/digest.mp3",
+    "mp3_bytes": 19702317,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2609.10079",
+        "title": "Loss-correcting fault-tolerant quantum computing architecture for neutral atoms",
+        "abs_url": "https://arxiv.org/abs/2609.10079",
+        "scirate_url": "https://scirate.com/arxiv/2609.10079",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2609.09839",
+        "title": "Minimax games for quantum channel discrimination",
+        "abs_url": "https://arxiv.org/abs/2609.09839",
+        "scirate_url": "https://scirate.com/arxiv/2609.09839",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2609.09373",
+        "title": "Non-Multiplicativity of the Holevo Barycenter of Quantum Channels",
+        "abs_url": "https://arxiv.org/abs/2609.09373",
+        "scirate_url": "https://scirate.com/arxiv/2609.09373",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2609.10508",
+        "title": "Information Causality Characterizes the Set of Quantum Correlations in the Simplest Bell Scenario",
+        "abs_url": "https://arxiv.org/abs/2609.10508",
+        "scirate_url": "https://scirate.com/arxiv/2609.10508",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2609.10408",
+        "title": "Constant-depth global shadow estimation",
+        "abs_url": "https://arxiv.org/abs/2609.10408",
+        "scirate_url": "https://scirate.com/arxiv/2609.10408",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-09-09",
     "title": "SciRate Digest \u2014 2026-09-09",
     "summary": "Today's 5 papers: Quantum lower bounds for convex optimization and real matrix-vector query problems; Computing 256-bit elliptic curve discrete logarithms in 26 days on a fault-tolerant trapped-ion quantum computer with 20,000 qubits; No information transmission through quantum channels above capacity; Low-Depth Random Unitaries without Ancillae; From Bits to Qubits: The Theory and Practice of Quantum Data Encoding.",
