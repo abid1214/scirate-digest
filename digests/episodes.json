@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-09-11",
+    "title": "SciRate Digest \u2014 2026-09-11",
+    "summary": "Today's 5 papers: Lifted surgery: Fast processing with QLDPC codes; Sample-optimal learning of stabilizer states; Local decoders for fault-tolerant quantum computation and translation-invariant stabilizer codes; Strong Converse for Quantum Capacity via a Fully Quantum Blowing-Up Lemma; A Near-Quartic Separation Between Certificate Complexity and Quantum Query Complexity.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-09-11/digest.mp3",
+    "mp3_bytes": 17823021,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2609.11723",
+        "title": "Lifted surgery: Fast processing with QLDPC codes",
+        "abs_url": "https://arxiv.org/abs/2609.11723",
+        "scirate_url": "https://scirate.com/arxiv/2609.11723",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2609.10974",
+        "title": "Sample-optimal learning of stabilizer states",
+        "abs_url": "https://arxiv.org/abs/2609.10974",
+        "scirate_url": "https://scirate.com/arxiv/2609.10974",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2609.11457",
+        "title": "Local decoders for fault-tolerant quantum computation and translation-invariant stabilizer codes",
+        "abs_url": "https://arxiv.org/abs/2609.11457",
+        "scirate_url": "https://scirate.com/arxiv/2609.11457",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2609.11771",
+        "title": "Strong Converse for Quantum Capacity via a Fully Quantum Blowing-Up Lemma",
+        "abs_url": "https://arxiv.org/abs/2609.11771",
+        "scirate_url": "https://scirate.com/arxiv/2609.11771",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2609.11664",
+        "title": "A Near-Quartic Separation Between Certificate Complexity and Quantum Query Complexity",
+        "abs_url": "https://arxiv.org/abs/2609.11664",
+        "scirate_url": "https://scirate.com/arxiv/2609.11664",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-09-10",
     "title": "SciRate Digest \u2014 2026-09-10",
     "summary": "Today's 5 papers: Loss-correcting fault-tolerant quantum computing architecture for neutral atoms; Minimax games for quantum channel discrimination; Non-Multiplicativity of the Holevo Barycenter of Quantum Channels; Information Causality Characterizes the Set of Quantum Correlations in the Simplest Bell Scenario; Constant-depth global shadow estimation.",

@@ -1,0 +1,167 @@
+Maya: I asked you at lunch yesterday what the slowest part of an error-corrected quantum computer is, and you said, with total confidence, "the waiting."
+
+Sam: I stand by it. Most of the runtime of a fault-tolerant machine is the machine holding still, measuring the same thing over and over, just to be sure it measured right the first time.
+
+Maya: Well, two of today's papers are picking a fight with that waiting — and with the mountain of ordinary classical hardware standing next to it doing the listening.
+
+Sam: And the other three are about knowing: how few copies of a state you need to identify it, how badly you fail when you shove too much through a channel, and how far a quantum algorithm can outrun a proof.
+
+Maya: This is the SciRate Daily Digest for Friday, September eleventh, twenty twenty-six. I'm Maya.
+
+Sam: I'm Sam. On the slate: fast surgery on high-rate codes, the exact price of learning a stabilizer state, a fault-tolerant architecture whose decoder is a carpet of tiny local chips, a strong converse for quantum capacity, and a near-quartic separation in query complexity.
+
+[BREAK]
+
+Maya: Top of the list is "Lifted surgery: Fast processing with QLDPC codes," from Berent, Cohen and Quintavalle. Sam, set the stake for me — why does anyone lose sleep over this?
+
+Sam: Because the high-rate codes everyone's betting on — bivariate bicycle codes, radial codes, lifted products — are wonderful at storing logical qubits cheaply, and slow at doing anything to them. To measure a logical operator you cut the code open, glue in an ancilla patch, and repeat the measurement a number of times proportional to the code distance, because the measurements themselves can lie.
+
+Maya: And on a neutral-atom or trapped-ion machine, where a single round of syndrome extraction is already slow, that repetition is the whole clock.
+
+Sam: Exactly. There's theory saying you could collapse that to a constant number of rounds if you attach a cleverly built helper system — one that carries extra consistency checks so a single bad round is catchable. But nobody knew how to actually construct that helper without inflating your qubit count into absurdity.
+
+Maya: So what's the move here?
+
+Sam: They notice the base codes all have a built-in group symmetry — they're built over a group algebra. So: take a second copy of the code itself as the helper, and insist that the map connecting the two copies respects that same symmetry. That one restriction is the whole trick. The space of legal couplings shatters into small independent blocks, and searching for a good one becomes a tractable little computation instead of a hopeless one.
+
+Maya: Concretely, what did they find?
+
+Sam: For a code with ninety physical qubits carrying eight logicals, they found distance-preserving couplings, with checks no heavier than about eleven qubits, for every single and every pairwise logical measurement. Then circuit-level simulation: logical performance comparable to standard surgery with roughly ten times fewer syndrome rounds. And essentially no space cost, because the ancilla is just another copy of a code you already know how to build.
+
+Maya: Here's my objection. Insisting the map respects the symmetry sounds elegant, but it must forbid things. Which logical measurements can't you do?
+
+Sam: That's the real price, and they're upfront about it. The logical subspaces you can address have to be invariant under the group and aligned with those blocks — the construction fundamentally cannot split a symmetry orbit or mix blocks. So there are measurements a compiler might want that this simply won't give you.
+
+Maya: And the guarantees?
+
+Sam: Case-by-case, not asymptotic. They verify sparsity and distance preservation numerically for specific codes, and the fault-tolerance argument leans on an earlier compacted-distance result rather than a fresh proof. Also, the merged code's checks can come out dense enough that off-the-shelf decoding chokes — they had to build a pipeline that sparsifies the detector structure and decodes correlations.
+
+Maya: So who should read it?
+
+Sam: Anyone writing a compiler for these codes, and anyone designing an atom or ion architecture. What I'd watch for is whether the rank-two search scales — they only optimized that for the smaller code — and whether someone can prove sparsity holds in a family rather than checking it one code at a time.
+
+[BREAK]
+
+Maya: Number two takes us out of hardware and into learning theory: "Sample-optimal learning of stabilizer states," by Chang, Caro, Larocca and West. And this one has a long history, right?
+
+Sam: A satisfying one. Stabilizer states are the bread and butter of error correction and classical simulation, and it's been known for years that identifying an unknown one takes a number of copies growing linearly with the qubit count. What nobody knew was the constant out front. Bell sampling — the standard workhorse — spends about three copies per qubit, two if you're clever about reading out signs.
+
+Maya: And nobody had a lower bound that said you couldn't do better.
+
+Sam: Right, so the honest answer to "how many copies does this cost" was "somewhere between one and three per qubit." This paper pins it: just over one copy per qubit is both necessary and sufficient. The upper and lower bounds now agree to within an additive constant of about seven copies total, independent of system size.
+
+Maya: One per qubit feels almost like a counting coincidence — a stabilizer state is specified by roughly that much information.
+
+Sam: It is a counting statement at heart, and what's nice is the optimum is reachable by an efficient algorithm, not just an existence proof. They apply a random Clifford, non-destructively test whether the measurement outcomes across copies span enough directions, and crucially, if the test fails it fails cleanly — you can undo it and retry. Once it passes, the state sits in a very structured family, and they compute a label using Fourier analysis over an abelian group, then invert a transform to read out the answer.
+
+Maya: Plus a bonus about Clifford circuits.
+
+Sam: Yes — the same machinery identifies an unknown Clifford unitary from about two queries per qubit, forward queries only. Previous methods needed inverse calls too, or twice as many forward ones. That's directly relevant to benchmarking.
+
+Maya: Now, here's what bothers me. On Monday we covered a paper on learning unknown stabilizer codes using only product measurements — deliberately cheap, hardware-friendly readout. This sounds like the opposite extreme.
+
+Sam: It is, and that's the honest caveat. Their algorithm needs a fully coherent collective measurement across all the copies at once — you're holding on the order of a hundred qubits' worth of copies in one entangled register and running a compression circuit on them. Bell sampling needs coherence across two copies. So this is optimal in the currency of copies, and expensive in the currency nobody wants to spend right now.
+
+Maya: Which leaves the interesting open question.
+
+Sam: Exactly the one I'd chase: can you hit one copy per qubit with bounded coherence? If the answer is no, then there's a genuine trade-off curve between how many copies you use and how much coherence you need, and that curve is what experimentalists actually care about. Theory-side, the proof template — abelian Fourier analysis on a uniform orbit — looks reusable for other learning problems.
+
+[BREAK]
+
+Maya: Segment one was about squeezing time out of error correction. This next paper goes after a different overhead entirely — and I think it's the one people quietly don't put on their roadmap slides.
+
+Sam: "Local decoders for fault-tolerant quantum computation and translation-invariant stabilizer codes," from Selub, Bhardwaj and Lake. And yes — every surface-code architecture assumes a big conventional computer off to the side, fed by an ever-thickening bundle of wires, doing the decoding math fast enough to keep up. As the chip grows, that classical side grows faster than the chip does, in bandwidth, in speed, and in physical footprint.
+
+Maya: So what do they replace it with?
+
+Sam: A uniform sheet of tiny fixed-size classical processors sitting right next to the qubits, each one talking only to its neighbours, each holding a constant number of bits. No global view of the syndrome at all, ever. And the whole thing runs continuously while the machine does real computation — state injection, lattice surgery, transversal gates, readout.
+
+Maya: How can a strictly local rule fix errors? Matching algorithms work precisely because they see the whole pattern of defects at once.
+
+Sam: That's the part I found genuinely clever. Each defect broadcasts three messages that flood quadrants of the plane. The effect is that every defect starts marching toward the bottom-left corner of the bounding box of its own error cluster — and provably never leaves that box. Clusters resolve in parallel, locally, and defects annihilate at the corner because charge has to balance. No global information is needed because the geometry does the bookkeeping.
+
+Maya: And they can prove it works?
+
+Sam: They prove thresholds using cluster-decomposition arguments in the Gács–Harrington tradition — errors organize into well-separated clumps at every length scale, and the corner rule handles each clump inside its own box. Numerically, the streaming version hits a threshold a bit above one percent under bit-flip plus measurement noise. And the logical information survives for a time that grows stretched-exponentially with the code distance.
+
+Maya: "Stretched-exponential" is doing some work there, and one percent is worse than a global matching decoder.
+
+Sam: Both true, and both admitted. Global matching does better on threshold, and stretched-exponential memory time is weaker than the plain exponential you'd want. There's also a bigger assumption: the classical hardware is treated as noiseless throughout. Real cryogenic logic is not noiseless.
+
+Maya: What's the payoff if it holds up?
+
+Sam: A logical qubit needs one modest input-output wire instead of a growing bundle, and error correction could live on-chip, cold, next to the qubits. That's a direct attack on wiring and latency for superconducting and quantum-dot platforms. There's also a lovely side theorem: every translation-invariant topological Pauli stabilizer code admits a local decoder — including fracton codes, where the excitations can't even move.
+
+Maya: Which is a nice bookend to the fractonic Floquet code work we've seen lately.
+
+Sam: It is. The caveat I'd flag for the architecture people: the versions with truly constant bits per site give up translation invariance, and circuit-level noise is handled by appeal to standard reductions rather than simulated head-on. That's the next thing I'd want to see.
+
+[BREAK]
+
+Maya: Change of register. There's a question that sounds almost philosophical: if you try to send quantum information faster than a channel allows, do you fail gradually or do you fall off a cliff?
+
+Sam: And the answer matters more than it sounds. On Wednesday we looked at a paper arguing that above capacity, classical information transmission is forced to fail outright. Today's is the quantum-data version: "Strong Converse for Quantum Capacity via a Fully Quantum Blowing-Up Lemma," from Beigi and Tomamichel.
+
+Maya: Spell out the distinction between what was known and what they added.
+
+Sam: Capacity is the highest rate at which you can send qubits reliably through many independent uses of a channel. The old result — the weak converse — says above that rate your fidelity can't approach one. Which leaves open a slightly embarrassing possibility: maybe above capacity you still do pretty well. Fidelity stuck at, say, ninety percent forever. Nobody believed it, but nobody had ruled it out for general channels.
+
+Maya: And now?
+
+Sam: Now it's a cliff. For every finite-dimensional memoryless channel, at any fixed rate above capacity, the fidelity of every possible code decays exponentially in the number of channel uses. So capacity is a genuine sharp threshold for quantum data, exactly as it is classically.
+
+Maya: What's the machinery? The title advertises a "blowing-up lemma," which sounds alarming.
+
+Sam: It's a classical idea, made quantum. Classically, blowing up says: take any set of codewords with non-negligible probability, fatten it slightly — allow a few flipped bits — and its probability shoots up to nearly one. So a mediocre code can be inflated into a good code at small cost. They build the fully quantum analogue: a low-fidelity code becomes a high-fidelity code, and the price you pay in transmitted qubits is controlled by a geometric quantity measuring how the channel's output splits between the receiver and the environment.
+
+Maya: And the second ingredient?
+
+Sam: They approximate many parallel copies of that geometric projection by a low-degree polynomial, accurate to exponential precision, while keeping that norm under control. That's what makes the blowing-up argument bite across many channel uses rather than just one.
+
+Maya: What would you push on?
+
+Sam: They establish that the decay is exponential, not that they've found the optimal exponent — so the exact shape of the cliff edge is still open. And it's memoryless, finite-dimensional channels; bosonic and correlated-noise settings are another matter. But this closes one of the last basic gaps in quantum Shannon theory, and the blowing-up tool itself is the thing I expect people to reuse — one-shot converses, cryptographic security proofs.
+
+Maya: So: information theorists, and anyone who cares that "capacity" means something operationally hard.
+
+[BREAK]
+
+Maya: Last one. Sam, there's a table in query complexity with a missing entry, and today someone filled it in.
+
+Sam: There is. The measure in question is certificate complexity — how many positions of the input you have to reveal to convince a skeptic the answer is what you say it is. It's about as basic a combinatorial handle on a Boolean function as exists, and it controls how deterministic, randomized and quantum query costs relate.
+
+Maya: And the known relation?
+
+Sam: For any total function, certificate complexity is at most the fourth power of the bounded-error quantum query cost. That's decades old. The question is whether that fourth power is achievable, or just an artifact of a lossy proof. The best example anyone had was the OR function, where the certificate is only the square of the quantum cost.
+
+Maya: So the exponent was pinned between two and four, and nobody could move either end.
+
+Sam: Until this paper — Ambainis, Iraids and Kokainis — which builds a total function where the fourth power is essentially achieved, up to logarithmic factors. Quantum queries scale like the fourth root of the certificate size. The exponent is four. Table entry filled.
+
+Maya: How does the function work?
+
+Sam: The input is a grid of blocks of bits. Comparing any two blocks — which one hits its first one-bit earlier — orients an arrow between them, so the blocks form a tournament, and there's a unique source: the block everyone points away from. That block designates where the answer lives. So evaluating the function means finding the source of a tournament that's defined by the input itself.
+
+Maya: And the quantum advantage comes from finding that source fast.
+
+Sam: Yes, via variable-time search — a search where different candidates cost different amounts to check, and you don't want to pay the worst case everywhere. That's the new ingredient, and it's worth dwelling on: earlier near-quartic separations were about approximate polynomial degree, a proxy. This one exhibits an honest quantum algorithm. Then a cheat-sheet construction turns the partial function into a total one, which is what makes the separation count.
+
+Maya: Let me be the skeptic. This is a heavily engineered gadget with no independent interest, and the position lists inside it are chosen by a probabilistic argument, so the function isn't even explicit. Why should anyone outside the subfield care?
+
+Sam: Because it kills a proof strategy. If you hoped to show quantum query complexity can't be much smaller than certificate complexity — and then leverage that into stronger relations between deterministic and quantum cost — you now know the best you can ever get through that route. The barrier is real, not a gap in someone's technique. That saves people years.
+
+Maya: And what it doesn't say?
+
+Sam: Nothing about randomized versus certificate complexity, which is still open. There's polylogarithmic slack left. And I'd like to see the variable-time-search-on-a-tournament pattern show up somewhere that isn't a separation gadget — that's when I'd believe it's a technique rather than a one-off.
+
+[BREAK]
+
+Maya: One result each. Mine's the local decoder. I've heard "the classical side won't scale" muttered at conferences for years, always as someone else's problem. Someone finally did the work, and the answer is a carpet of dumb chips playing follow-the-corner.
+
+Sam: Mine's the stabilizer learning constant. Just over one copy per qubit, necessary and sufficient, with the bounds seven copies apart. That's the kind of number you can put in a textbook — though the coherence it demands means nobody's running it this decade.
+
+Maya: Links to all five papers are in the show notes.
+
+Sam: And the show notes have a link for sending us questions — we work through the backlog oldest first, so if yours hasn't come up yet, it's still in the queue.
+
+Maya: Thanks for listening. We'll see you Monday.
