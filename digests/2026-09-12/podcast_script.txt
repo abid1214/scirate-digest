@@ -1,0 +1,155 @@
+Maya: I've got a new rule for reading abstracts. Any time someone writes "at zero cost," I check my wallet.
+
+Sam: Which is a good instinct, because four of today's five papers are basically arguments about hidden bills — who pays, when, and in what currency.
+
+Maya: Welcome to The SciRate Daily Digest for Saturday, September twelfth, twenty twenty-six. Coming up: a syndrome-extraction circuit that flushes leaked qubits for free, a theorem about how much memory a quantum hash-collision attack really needs, a fifteen-year-old conjecture about fault-tolerant gate sets knocked over with an explicit counterexample, a paper arguing you should sometimes run the quantum circuit even when a classical algorithm provably works, and finally, what those replica-trick error thresholds everyone quotes actually mean.
+
+Sam: Five papers, one theme, and I promise we get to a genuinely weird five-qubit gate.
+
+[BREAK]
+
+Maya: Let's start with a failure mode that most textbook error models quietly ignore. A qubit is supposed to be two levels, but real hardware has more — an atom has a whole ladder of states, a transmon has higher rungs. When a qubit wanders out of the computational space, the code's parity checks essentially go blind.
+
+Sam: And blind is the optimistic reading. A leaked qubit keeps participating in gates, so it silently poisons everything it touches, round after round, until something resets it. One leak event becomes a smeared, correlated blob of errors in space and time, which is exactly what decoders are worst at. The standard remedy is a leakage reduction unit: periodically swap a data qubit's state into a fresh qubit so every physical qubit gets reset on a schedule. For the surface code, people worked that out years ago with so-called walking circuits.
+
+Maya: And today's paper — Westerheim, Sahay and Puri — does it for Floquet codes.
+
+Sam: The honeycomb Floquet code specifically, where every check touches only two qubits at a time. They build two walking schedules. One they call swirling, for reconfigurable hardware where you can physically pick atoms up and move them. The other is sliding, which lives on a plain fixed square grid with nearest-neighbour connectivity, and just translates the whole lattice diagonally every couple of sub-rounds. Average qubit lifetime drops from eight entangling gates in the walking surface code to four.
+
+Maya: Okay, but "free" is doing a lot of work in that abstract. What's the actual invoice?
+
+Sam: The trick is that the swaps never get executed as swaps. One variant inserts the swap right after the first two-qubit gate, where it's trivial to absorb. The other inserts it just before a measurement, and then the swap gets decomposed into gates that are already in the circuit, with the leftover piece becoming a classical Pauli-frame update that the decoder just bookkeeps. So no extra qubits, no extra gates, no extra depth — but you do pay in classical accounting, because the detectors have to be rebuilt with modified spacetime support.
+
+Maya: And they prove the code distance survives that surgery?
+
+Sam: Yes, using fault-equivalence rewrites, which matters because earlier dynamic Floquet circuits bought their leakage flushing by giving up distance. The part that surprised me, though, is the head-to-head against the surface code. Under some leakage models the Floquet code wins at equal distance — and not because of the worst-case argument. Their adversarial fault-weight bounds say the surface code should be comparable or better. The observed scaling exponents in simulation are larger than those bounds and grow with distance.
+
+Maya: So it's not the single nastiest failure pattern that decides it, it's how many mediocre ones there are.
+
+Sam: Exactly — entropy, not distance. Which is a good reminder that at realistic error rates you're sitting in the waterfall region, not the asymptotic one.
+
+Maya: What would make me nervous? They only work on the toric geometry — no planar boundaries, which is what anyone actually builds. The crossover points are extrapolated below the error rates they simulated. And the honeycomb code uses somewhere between one and a half and two and a half times the qubits per unit distance, though it does carry two logical qubits and they only report one.
+
+Sam: All fair. And they deliberately don't use leakage detection at all — no erasure conversion, no heralding. That's on the table for neutral atoms, and it connects to Thursday's loss-correcting architecture, where knowing the atom is gone is the whole resource. Here they assume you learn nothing. So if anything these are pessimistic numbers.
+
+Maya: Who should read it — circuit designers picking a syndrome schedule for transmons or atom arrays. And what I'd watch for next is someone repeating the comparison with boundaries and with leakage heralding turned on.
+
+[BREAK]
+
+Sam: Next one goes back to a question Scott Aaronson has been poking at for years. Classically, finding a collision in a hash function — two inputs with the same output — takes about the square root of the number of possible outputs. That's the birthday attack. Quantumly, there's a famous algorithm that gets it down to roughly the cube root.
+
+Maya: But with a catch, right? That algorithm builds a big lookup table first.
+
+Sam: A big, quantumly addressable lookup table, yes — memory the same size as its runtime. And nobody knew whether that was essential. Maybe there's a clever low-memory quantum attack that still beats the birthday bound comfortably. That gap matters, because it's exactly what you'd want to know when picking hash output lengths for post-quantum standards.
+
+Maya: And Magniez and Zur close it?
+
+Sam: For a restricted but very natural class of algorithms, yes. They prove two things together: you can never beat cube-root runtime no matter how much memory you have, and beyond that, the runtime squared times the memory has to be at least about the number of possible outputs. So halving your memory budget costs you in time, predictably, all the way down. And they show that tradeoff is achieved — there's a memory-frugal version of the standard algorithm that sits right on the line.
+
+Maya: What's the restriction?
+
+Sam: They call it label symmetry. The algorithm has to treat the hash outputs as anonymous tokens — it can check whether two outputs are equal, but it never looks inside the bits of a value. They prove the two canonical algorithms here, the collision one and Ambainis's element-distinctness walk, are both label-symmetric, and so is anything built purely from equality tests.
+
+Maya: That's the part I'd push on. A real attacker absolutely looks at the bits. Sorting by the top sixteen bits is the oldest trick there is. So does this tell us anything about actual security margins?
+
+Sam: Honest answer: it tells us the algorithms we know are optimal, not that better ones can't exist. The authors are upfront — the obvious way to force symmetry is to have the algorithm store a random relabelling itself, and that costs about as much memory as you were trying to save. So lifting the assumption is genuinely open.
+
+Maya: What's the machinery? Because "algorithms can't remember much" sounds like it should be easy and never is.
+
+Sam: It's the compressed-oracle technique, which lets you track what a quantum algorithm has "learned" as a database, made space-sensitive for the first time. The core is a counting argument from representation theory of the permutation group: the states describing collision-free databases with many entries break into pieces that are all enormously higher-dimensional than anything a small memory can span. So the overlap is forced to zero — an algorithm with a given number of qubits can effectively hold only about that many entries divided by the bits per label.
+
+Maya: I like that the physics intuition and the theorem agree for once. You can't compress a collision-free table below its information content.
+
+Sam: One technical caveat worth flagging — "space" here means the dimension of the algorithm's Hilbert space, which papers over the difference between true quantum RAM and quantum-accessible classical memory. Those have wildly different engineering costs.
+
+[BREAK]
+
+Maya: Okay, conjecture-falsification time. Set it up for me — the Clifford hierarchy.
+
+Sam: It's the scaffolding of fault-tolerant gate design. Level one is the Pauli gates, level two is the Clifford group, level three has the T gate and the Toffoli — and the pattern is that each level can be implemented by teleporting in a magic state and correcting with gates from the level below. In two thousand seven, Zeng, Chen and Chuang conjectured that every gate anywhere in this hierarchy has a simple normal form: a Clifford gate, then a permutation of basis states, then something that only applies phases, then another Clifford.
+
+Maya: And that was proven somewhere?
+
+Sam: Proven at level three, checked in lots of cases, and widely believed in general. De Silva and Lautsch have now built an explicit five-qubit gate at level five that has no such decomposition. So there's no simple normal form for these things.
+
+Maya: How do you find a counterexample to a structural conjecture? You can't exactly search five-qubit unitaries.
+
+Sam: That's the part I enjoyed — the paper reads as a derivation rather than a discovery. They restrict to gates that pick a Clifford operation on some target qubits depending on the state of a few control qubits. For that family they show membership in the hierarchy reduces to conditions on Pauli commutators, and the old conjecture holds exactly when all the branch operations share a common invariant structure — a common frame, if you like: one maximal set of commuting observables that every branch preserves.
+
+Maya: So a counterexample is a gate whose branches refuse to agree on a frame.
+
+Sam: Right. And they prove that with a single control you always get agreement, and at level four in their family you always get agreement. That's what forces the hunt to two controls and level five. Then they solve the equations: one branch is a Clifford, the second is the commutator of that Clifford with a Pauli rotation, and they tune things so the only candidate frame gets moved by the second branch. Three target qubits, two controls, five total.
+
+Maya: And there's a bonus result that I think is the more quotable one.
+
+Sam: The inverse of that gate is in no level of the hierarchy at all. Not level five, not level ten. So the hierarchy isn't closed under inversion — which undercuts using "what level is this gate" as a clean resource-accounting device.
+
+Maya: Does anything practical break? Should distillation people panic?
+
+Sam: No. Nobody's protocol stops working. What breaks is intuition and classification strategy — you can't classify hierarchy gates by pushing them into a normal form, so people will have to work with the symplectic and commutator invariants this paper develops instead. And notably, they don't claim minimality: nobody knows whether there's a level-four counterexample, or one on fewer qubits. It's also qubit-specific and leans on the Cliffords involved being real, so qudits and continuous variables are wide open.
+
+Maya: That last bit is a decent thesis project sitting right there.
+
+[BREAK]
+
+Sam: Here's a contradiction I want you to resolve. Suppose I hand you a circuit family with a theorem attached: provably classically simulable in polynomial time. Which do you run — the classical simulator, or the quantum computer?
+
+Maya: The simulator, obviously. Why would you pay for hardware?
+
+Sam: That's the reflex this paper goes after. Chang, Thanasilp, Holmes and Cerezo put classical surrogates and direct quantum execution on the same footing, tracking three separate budgets: how many shots you need on hardware, how much quantum circuit depth, and how many classical operations. And the decisive structural difference isn't polynomial versus exponential. It's one-time versus per-instance.
+
+Maya: Meaning the classical route front-loads its cost.
+
+Sam: Precisely. Most of these simulability theorems assume you know the input state. If you don't — if it came out of an experiment — the surrogate has to be fed measurement data first, and characterizing an unknown state is the expensive part. But you pay it once, and then every additional circuit you evaluate is cheap. Running on hardware, you pay shots again for every single circuit. So there's a crossover in the number of circuits you need.
+
+Maya: And below the crossover, hardware wins despite the theorem.
+
+Sam: In wall-clock and, they argue, in dollars at current cloud prices. My favourite two data points sit at the extremes. Clifford circuits: the classical surrogate needs exactly the same number of shots as just running the thing, because you still have to measure Pauli observables on the unknown input — all you save is circuit depth, which drops to constant. Versus a variational chemistry ansatz started from a Hartree–Fock state, where the input is known on paper, so the surrogate needs zero quantum resources at all.
+
+Maya: That's a nice framing, but I want to register two objections. One, the pricing. Cloud quantum pricing is a marketing decision, not a physical constant, and any conclusion resting on it has a shelf life of about a quarter.
+
+Sam: Agreed, and they say so. The wall-clock analysis is sturdier than the dollar analysis.
+
+Maya: Two — they assume single-copy access. No quantum memory, no multi-copy protocols. But characterization is exactly where those help most, and we covered constant-depth shadow estimation on this show earlier in the week. If the characterization step gets cheaper, the crossover moves against hardware.
+
+Sam: That's the right pressure point, and it's the paper's own listed caveat. There's also no noise anywhere in the model, which flatters the quantum side. Still, the reframing is useful: dequantization proofs, wall-clock advantage, and cost advantage are three different claims, and people routinely collapse them into one. It's the mirror image of the data-encoding survey we did Wednesday — that was the cost of getting classical data in, this is the cost of getting a classical description out.
+
+Maya: Anyone writing a "we have simulated this classically, therefore no advantage" press release should read it.
+
+[BREAK]
+
+Maya: Our last paper connects straight back to the Floquet circuits. We said their comparison turned on entropy rather than distance — on what the threshold actually is, not what the asymptotics say. This one asks whether the threshold numbers the field quotes mean what people think.
+
+Sam: And this is a practice almost nobody outside the field knows about. To find out whether a noisy quantum memory still holds information, you want the coherent information — how much quantum information survives the noise. Computing the true one is intractable, so people compute a replica version: make several copies, compute a Rényi entropy, and that maps onto a nice statistical-mechanics model, typically a random-bond Ising model you can actually solve or sample.
+
+Maya: And the answer you get depends on how many replicas you used.
+
+Sam: It does, and there's a folklore observation going back years: as you increase the replica index, the apparent threshold drifts upward. Everybody saw it numerically. Nobody proved it. Vijay, Colmenarez and Lee prove it — for any finite stabilizer code, under Pauli noise built from independent random fault events, the Rényi coherent information is nondecreasing in the integer index.
+
+Maya: So the true threshold is the one at index one, and everything else is an overestimate.
+
+Sam: Right, which is the reassuring reading: the replica thresholds people report are rigorous upper bounds, at least in the stated direction. No CSS structure needed, no locality, any number of logical qubits. And it covers circuit-level detector error models, so it applies to the noise models people actually simulate, not just toy independent bit flips.
+
+Maya: Where does it break? Because "independent fault events" is a hypothesis I'd want stress-tested.
+
+Sam: They stress-test it themselves, which I appreciated — they build small explicit counterexamples with correlated Pauli noise where the ordering fails, one at the first step of the ladder and one at the second. And they give a clean criterion for which single-qubit noise channels belong to the good class. Standard depolarizing noise qualifies over essentially the whole useful range.
+
+Maya: Is there anything operational here, or is the replica quantity purely a calculational crutch?
+
+Sam: That's the second half, and it's the piece I hadn't seen before. They show the Rényi quantity does govern a real recovery task: you take your data block plus several maximally mixed ancilla blocks, postselect on all of them producing matching syndromes, and then decode. The Rényi coherent information bounds how well that works. In effect it's decoding an ensemble where the more likely syndromes have been over-weighted — which is a precise statement of how the replica quantity distorts the problem.
+
+Maya: Postselecting on matching syndromes across several blocks sounds astronomically unlikely.
+
+Sam: Exponentially unlikely in the system size, yes — they're explicit that the acceptance probability is tiny. It's a thought experiment that gives the quantity meaning, not a protocol anyone runs. Other limits: integer replica index only, and qubits only. The proof leans on plus-and-minus-one characters in an Ising argument, which simply doesn't carry over to qudits.
+
+Maya: Verdict: if you've ever quoted a threshold from a statistical-mechanics mapping, you now know in which direction you were wrong, and by what assumption you're protected.
+
+[BREAK]
+
+Sam: One result that stuck with me: the Floquet leakage schedule. Not because the swaps are free — because the head-to-head against the surface code flipped for entropic reasons that the worst-case analysis completely missed. That should make everyone a little humbler about ranking codes by distance.
+
+Maya: Mine's the collision bound. "Your quantum attack needs a huge quantum memory" went from something everyone said at workshops to a theorem with a matching algorithm, at least for the algorithms we know how to write down. And the honest caveat — that a bit-aware attacker is still unaccounted for — is exactly the kind of open problem I want to see stated that clearly.
+
+Sam: Links to all five papers are in the show notes.
+
+Maya: And there's a link there to send us questions too — we read them, we answer them on air, and the backlog is shorter than it was. Thanks for listening.

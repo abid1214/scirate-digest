@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-09-12",
+    "title": "SciRate Digest \u2014 2026-09-12",
+    "summary": "Today's 5 papers: Walking Floquet code circuits for zero-overhead leakage reduction; Tight Time-Space Lower Bounds for Collision Finding and Element Distinctness under Label Symmetry; The generalised semi-Clifford conjecture is false; The cost of simulating classically tractable quantum circuits and dynamics; Hierarchy of R\u00e9nyi Coherent Information in Stabilizer Codes.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-09-12/digest.mp3",
+    "mp3_bytes": 18565293,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2609.10666",
+        "title": "Walking Floquet code circuits for zero-overhead leakage reduction",
+        "abs_url": "https://arxiv.org/abs/2609.10666",
+        "scirate_url": "https://scirate.com/arxiv/2609.10666",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2609.10808",
+        "title": "Tight Time-Space Lower Bounds for Collision Finding and Element Distinctness under Label Symmetry",
+        "abs_url": "https://arxiv.org/abs/2609.10808",
+        "scirate_url": "https://scirate.com/arxiv/2609.10808",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2609.11903",
+        "title": "The generalised semi-Clifford conjecture is false",
+        "abs_url": "https://arxiv.org/abs/2609.11903",
+        "scirate_url": "https://scirate.com/arxiv/2609.11903",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2609.11847",
+        "title": "The cost of simulating classically tractable quantum circuits and dynamics",
+        "abs_url": "https://arxiv.org/abs/2609.11847",
+        "scirate_url": "https://scirate.com/arxiv/2609.11847",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2609.11930",
+        "title": "Hierarchy of R\u00e9nyi Coherent Information in Stabilizer Codes",
+        "abs_url": "https://arxiv.org/abs/2609.11930",
+        "scirate_url": "https://scirate.com/arxiv/2609.11930",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-09-11",
     "title": "SciRate Digest \u2014 2026-09-11",
     "summary": "Today's 5 papers: Lifted surgery: Fast processing with QLDPC codes; Sample-optimal learning of stabilizer states; Local decoders for fault-tolerant quantum computation and translation-invariant stabilizer codes; Strong Converse for Quantum Capacity via a Fully Quantum Blowing-Up Lemma; A Near-Quartic Separation Between Certificate Complexity and Quantum Query Complexity.",
