@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-09-13",
+    "title": "SciRate Digest \u2014 2026-09-13",
+    "summary": "Today's 5 papers: 2609.11830; 2609.11849; 2609.11926; 2609.10965; 2609.11854.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-09-13/digest.mp3",
+    "mp3_bytes": 17777709,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2609.11830",
+        "title": "2609.11830",
+        "abs_url": "https://arxiv.org/abs/2609.11830",
+        "scirate_url": "https://scirate.com/arxiv/2609.11830",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2609.11849",
+        "title": "2609.11849",
+        "abs_url": "https://arxiv.org/abs/2609.11849",
+        "scirate_url": "https://scirate.com/arxiv/2609.11849",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2609.11926",
+        "title": "2609.11926",
+        "abs_url": "https://arxiv.org/abs/2609.11926",
+        "scirate_url": "https://scirate.com/arxiv/2609.11926",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2609.10965",
+        "title": "2609.10965",
+        "abs_url": "https://arxiv.org/abs/2609.10965",
+        "scirate_url": "https://scirate.com/arxiv/2609.10965",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2609.11854",
+        "title": "2609.11854",
+        "abs_url": "https://arxiv.org/abs/2609.11854",
+        "scirate_url": "https://scirate.com/arxiv/2609.11854",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-09-12",
     "title": "SciRate Digest \u2014 2026-09-12",
     "summary": "Today's 5 papers: Walking Floquet code circuits for zero-overhead leakage reduction; Tight Time-Space Lower Bounds for Collision Finding and Element Distinctness under Label Symmetry; The generalised semi-Clifford conjecture is false; The cost of simulating classically tractable quantum circuits and dynamics; Hierarchy of R\u00e9nyi Coherent Information in Stabilizer Codes.",

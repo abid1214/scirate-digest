@@ -1,0 +1,169 @@
+Maya: Sam, quick one before we start. If somebody hands you a quantum computer and promises the input state is perfectly pure — no noise, no mixture — how much is that promise worth?
+
+Sam: Instinctively? A lot. Purity is exactly the kind of thing that's hard to check and easy to exploit. And one of today's papers proves it's worth precisely nothing.
+
+Maya: Which is a decent summary of the whole show, actually. Today we've got promises and structural assumptions, and how much each one actually buys you.
+
+Sam: Some buy everything. One buys nothing. One buys more than anyone expected.
+
+Maya: Welcome to The SciRate Daily Digest for Sunday, September thirteenth, two thousand twenty-six. Five papers: a two-decade-old question about how many rounds of interference a quantum circuit really needs, bound entanglement turning out to be much richer than we thought, a complete answer for how much symmetry-breaking a noisy state contains, a resource estimate that says two circuits of the same size can differ by five orders of magnitude in hardware cost, and a complexity collapse that kills a conjecture from earlier this year.
+
+Sam: No mailbag today, so straight into it.
+
+[BREAK]
+
+Maya: Start with the oldest question of the bunch. Sam, set it up.
+
+Sam: So there's a way of grading quantum circuits that goes back to Yaoyun Shi, about twenty years ago. You look at how many times the circuit actually creates superposition — the layers of Hadamard-type gates — and everything in between those layers is restricted to permutations and phases. One round of that gives you roughly the power of a classical randomized computer. Two rounds is already enough for Simon's problem, and for factoring.
+
+Maya: Two rounds gets you Shor's algorithm? That's a striking amount of mileage from very little interference.
+
+Sam: It really is. And that's why the obvious next question — does a third round buy you anything a second can't do — has been sitting there unanswered since. This paper answers it in a black-box setting: for every level of that hierarchy, there's an oracle where one extra round of interference strictly beats everything below it.
+
+Maya: How do you even get a handle on "rounds of superposition"? That sounds like a circuit-depth question, and those are notoriously brutal.
+
+Sam: That's the move I liked. They convert it into a question about adaptivity. The observation is that inside one of those in-between blocks, the addresses you query don't depend on what the oracle says — they're fixed by the circuit. So all the queries in a block can be fired off in parallel, in one batch. A circuit with a given number of interference rounds is exactly reproduced — same acceptance probability, every oracle — by an algorithm that makes its queries in one fewer batch.
+
+Maya: And limited batches means limited adaptivity, which people know how to bound.
+
+Sam: Exactly. There's a whole machinery for bounding how much a few-round algorithm can correlate with structured functions, and once you're there you can import it. The separating problem is built from Forrelation — the "are these two random-looking functions secretly Fourier transforms of each other" test, which is the canonical hardest thing for this kind of argument. They use a many-fold version, chop it into two halves plus a middle query, and the shallower class needs polynomially many queries to do what the deeper class does with a handful.
+
+Maya: Here's my pushback. Oracle separations have an uneven track record as predictions. There are famous cases where the relativized world says one thing and the real world says the opposite.
+
+Sam: Completely fair, and the authors don't oversell it. The unrelativized conjecture is untouched. I'd also flag that the simulation only runs one way — few-round algorithms aren't shown to be inside the circuit class — so this isn't a characterization, it's a bound. And the query exponent they get is small; it's an artifact of the Fourier-growth route, not the construction.
+
+Maya: So who should read it?
+
+Sam: Anyone working on depth-limited quantum classes. The real deliverable isn't the separation, it's the dictionary — interference depth translating into query adaptivity. That should be reusable well beyond this hierarchy.
+
+[BREAK]
+
+Maya: Next one starts from an intuition that's been in the field for twenty-odd years, and turns out to be wrong.
+
+Sam: Bound entanglement. These are states that are genuinely entangled, but survive the partial-transpose test, and you cannot distill any pure entanglement out of them, no matter how many copies you have. The folklore is that they're feeble — entangled in a technical sense, useless in practice.
+
+Maya: And one way to make "feeble" precise is entanglement dimensionality — how many dimensions of entanglement the state actually needs.
+
+Sam: Right, the Schmidt number. For two qutrits it's known that bound entangled states max out at the lowest nontrivial value, which fed the intuition. Every construction people had managed topped out around half the local dimension. This paper builds explicit undistillable states whose entanglement dimensionality is the maximum possible minus about a square root.
+
+Maya: So essentially maximal, asymptotically.
+
+Sam: The ratio goes to one. Bound entanglement can carry almost all the entanglement dimensionality there is. And the proof is about four pages.
+
+Maya: Four pages? What's the trick?
+
+Sam: Two ingredients. First they need a low-rank state whose partial transpose is strictly positive — strictly, with room to spare. They get it from spin physics: take two spins and project onto the maximum total-spin sector. That projector has exactly the right rank and its partial transpose has a small but positive floor. Then they add a tiny rank-one bump on top — a single pure state, weighted just small enough that the strict positivity survives, so the whole thing is still bound entangled.
+
+Maya: And the bump is what carries the high dimensionality.
+
+Sam: Yes, and here's the part I enjoyed. States of low Schmidt rank form an algebraic variety — a thin, curved subset of the space. So if your bump vector is generic enough, it simply cannot lie in that thin set. They make "generic enough" rigorous by choosing entries that are transcendental and algebraically independent, using classical transcendence theorems. It's a dimension count plus a very deliberate choice of irrational numbers.
+
+Maya: Okay, I want to be the skeptic. How small is "tiny bump"?
+
+Sam: Exponentially small. The weight goes like one over a central binomial coefficient, so it shrinks like four to the dimension. Which means this high-dimensional entanglement is riding on a vanishingly thin perturbation, and robustness to noise is not addressed at all. I'd be surprised if any of it survived a realistic channel.
+
+Maya: So it's a statement about the geometry of the state space, not about something you'd witness in a lab.
+
+Sam: That's how I'd read it. It also gives a big new family of positive maps that are positive on nearly all low-rank inputs but not decomposable, which matters for entanglement witnesses. And they're honest about the wall: any state with a strictly positive partial transpose has to have rank at least the sum of the dimensions minus one, and that barrier is exactly what stops them closing the remaining square-root gap. Whether the true maximum is one less than the dimension is still open.
+
+[BREAK]
+
+Maya: Third paper, and I want to lead with the weird bit, because it made me stop and re-read. Two quantum states. Alone, the first one converts into a target at rate one quarter. The second converts at rate zero — it's useless for that target. Put them together and process them jointly, and you get rate one half.
+
+Sam: Better than the sum of the parts, from an ingredient that was worth nothing on its own. They call it asymmetry activation, and it falls out of the main theorem.
+
+Maya: Set up the resource. What's being counted?
+
+Sam: Symmetry breaking. Suppose the only operations you're allowed are ones that respect some symmetry — they commute with rotations, or with time translation. Then a state that's symmetric is free, and a state that isn't is a resource: it's a reference frame, it's a clock, it tells you which way is up. The question is how much of that you have, and how efficiently many copies of one state convert into copies of another.
+
+Maya: And for pure states this was settled recently by one geometric quantity, if I remember.
+
+Sam: One number, basically. Everyone expected mixed states to be messier, and only bounds existed. This paper gives the complete answer for any compact symmetry group, and the answer is that no single measure works. There's a continuous one-parameter family of quantum Fisher informations — different ways of asking how sensitive your state is to the symmetry transformation, running from the most optimistic estimate to the most pessimistic one — and the conversion rate is the largest number that satisfies all of them simultaneously.
+
+Maya: A continuum of constraints. Is that a proof artifact, or is it real?
+
+Sam: They prove it's real. No fixed finite set of these measures works universally — not even for the simplest case, a single phase rotation. That's a qualitative break from every pure-state law we had. And the activation example is the physical fingerprint of it: with one number you could never have two resources combining like that.
+
+Maya: Practical question. If the criterion involves infinitely many conditions, can you actually compute a rate?
+
+Sam: Yes, and that surprised me — it reduces to a finite semidefinite program. And these Fisher informations are measurable via linear response, so they're not abstract. There's also a clean special case: if your target is pure, the whole continuum collapses back to a single measure, which is why the pure-state story looked so simple.
+
+Maya: What's the machinery?
+
+Sam: Quantum local asymptotic normality, extended to models with arbitrary rank and degenerate spectra. You use a sublinear number of copies to localize the unknown group element, and then the remaining problem looks Gaussian, where convertibility is exactly the family of inequalities.
+
+Maya: Limits?
+
+Sam: Finite dimensions, compact groups, clean independent copies, and vanishing error in the limit — no finite-copy rates, no error exponents. And they're upfront that how often activation happens, or whether a clock-builder could exploit it, is wide open. But symmetry breaking now sits alongside entanglement and athermality as a properly quantified resource, with no regularization needed.
+
+[BREAK]
+
+Maya: Now something much more concrete. Thursday we covered a resource estimate that put breaking a two-hundred-fifty-six-bit elliptic curve key at twenty-six days on a trapped-ion machine with twenty thousand qubits. Today's paper does the same target on a surface-code machine and lands at about four million physical qubits and roughly fifteen days.
+
+Sam: And the interesting thing isn't the number, it's how they got it. The standard method is: count logical qubits, count gates, assume a generic slab of hardware, multiply. This paper says the hardware layout should be derived from the algorithm, not assumed.
+
+Maya: Derived how?
+
+Sam: They keep three things that normally get thrown away when you collapse a circuit to totals. Which logical qubits actually talk to each other, and how often — a weighted interaction graph. How much runs in parallel at each layer. And when in time the expensive non-Clifford operations are demanded. Then they use those descriptors to pick the patch layout, the magic-state supply strategy, and the code distance together.
+
+Maya: And the payoff claim is that this matters a lot.
+
+Sam: Across twenty benchmark circuits whose logical widths span only eight to sixteen qubits — almost nothing, they're all the same size on paper — the physical cost varies by four to five orders of magnitude. Same nominal size, wildly different real footprints, because the shape of the interaction graph and the timing of the non-Clifford demand dominate.
+
+Maya: Let me push on the headline. They report a median twenty-four-fold space-time saving from handling rotations in a hybrid way, with a maximum over two hundred-fold. That maximum is doing a lot of PR work. Is it a measured thing?
+
+Sam: It's model-based, and it hinges on the calibration they chose for direct rotation synthesis versus decomposing everything. So I'd treat the median as the headline and the maximum as a best case. There are other soft spots I'd want to see hardened. The layout search optimizes a static cost proxy — it doesn't schedule lattice surgery in time. The magic state factories are counted but never actually placed in a closed two-dimensional floor plan, which is exactly where real architectures get painful.
+
+Maya: And the circuit-specific layout doesn't always win, right?
+
+Sam: Thirteen of twenty circuits beat the standard block layout, and the savings there are small — under a couple of percent in most cases. The other seven are slightly worse. So the custom layout is not the win; the win is realizing that circuits of equal size are not equal customers.
+
+Maya: There's also a scheduling trick in here I liked — seeding lots of magic-state cultivation attempts before you commit to where the logical patch boundary sits, so you pick the growth direction after you see which attempts survived postselection.
+
+Sam: Right, buy optionality early, commit late. Though the latency model assumes those attempts fail independently, and ignores contention when you graft them in. For high-fidelity settings you'd need hundreds of seeds per batch, which is real area.
+
+Maya: Verdict?
+
+Sam: If you do fault-tolerant resource estimation, read it for the abstraction, not for the elliptic curve number. The benchmarks are small enough that I wouldn't extrapolate the layout conclusions to a thousand logical qubits.
+
+[BREAK]
+
+Maya: Last one. Yesterday we had a fifteen-year-old structural conjecture about gate hierarchies proven false. Today, a conjecture from this year gets refuted.
+
+Sam: Fast turnaround. The setting is quantum proof verification. The standard model: a prover sends you a quantum state, you run a test, you accept or reject. There's a long-standing question about whether two provers who can't communicate give you more power, and nobody can resolve it.
+
+Maya: And the conjecture was about an intermediate model.
+
+Sam: Right. Instead of two independent provers, you promise the verifier something weaker — that the proof is a pure state, or that several registers all hold identical copies of one state. Kamminga and Rudolph conjectured these purity-promise classes sit strictly between the one-prover and two-prover models. This paper proves they collapse all the way down. The promise is worth nothing.
+
+Maya: Why did anyone think it was worth something?
+
+Sam: Because natural physics problems live there. Take a molecule: you're given the two-body marginals and asked whether they come from a single pure global wavefunction. That's the pure N-representability problem. It sits comfortably in the promise model, and it was not known to sit in the standard one. Now it does — it's complete for the standard class, exactly as hard as the ordinary local Hamiltonian problem, no harder.
+
+Maya: So the geometry of the pure-state feasible set, which is much nastier than the mixed one, doesn't cost you anything computationally.
+
+Sam: That's the chemistry consequence, and I think it's the part that'll get cited. The mechanism is a verifier that asks for many copies, then either runs a random swap test between a pair of them or runs a symmetrized version of the original check.
+
+Maya: That sounds like the usual de Finetti argument, and those have a well-known problem — the error grows with the dimension of the Hilbert space, which for a chemistry problem is astronomically large.
+
+Sam: That's exactly the obstacle, and it's why this was open. Their workaround is to stop trying to approximate the state at all. They prove a stability estimate for symmetric tensors that compares optimal test values directly — how close the best symmetric vector's score is to that of a clean tensor power — and the bound has no dependence on the dimension whatsoever, only on the number of copies. The overlap factor that would normally be exponentially small appears on both sides and cancels.
+
+Maya: What does this do to the two-prover question?
+
+Sam: It closes a door. People hoped purity was a route in. It isn't. What's left as the only candidate source of extra power in the two-prover model is genuinely non-identical witnesses that get measured jointly. That's a sharper target than before.
+
+Maya: Caveats?
+
+Sam: The witness blowup is polynomial but the constants are big — hundreds of blocks in the concrete bounds. And the version with exponentially many checks needs the margins to stay inverse-polynomial; push those down and the argument stops.
+
+[BREAK]
+
+Maya: Sam, one result that stayed with you.
+
+Sam: The bound entanglement one. I've said "bound entanglement is weak" out loud in talks, and that's now wrong in a specific, quantitative way. Undistillable states can be nearly maximally entangled in dimension. I need to rewrite a slide.
+
+Maya: Mine's the continuum of Fisher informations. The idea that a resource might not be captured by any finite list of numbers, and that the proof of that comes with a concrete example of two states helping each other — that reframes how I think about resource theories generally.
+
+Sam: All five papers are linked in the show notes.
+
+Maya: And the show notes also have a link to send us questions — we read them, and we answer them on air. Thanks for listening.
