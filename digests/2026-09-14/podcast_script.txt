@@ -1,0 +1,163 @@
+Maya: Sam, word association. I say "with high probability."
+
+Sam: I say "and now we amplify." It's practically a reflex in this field — you never get certainty, you get ninety-nine point something and then you repeat until nobody cares.
+
+Maya: Right. Which is why today's lineup made me sit up. Three of the five papers are, in one way or another, about deleting that hedge and replacing it with the word "exactly."
+
+Sam: Exact acceptance, exact decoder output, exact composition of noise models. And then, as a kind of cold shower, a benchmark paper whose whole job is to tell you exactly how far away everything still is.
+
+[BREAK]
+
+Maya: Welcome to the SciRate Daily Digest for Monday, September fourteenth, twenty twenty-six. I'm Maya.
+
+Sam: And I'm Sam. On the board today: a twenty-year-old complexity question falls, a cross-platform hardware benchmark with some uncomfortable arithmetic in it, tomography that finally pays only for the part of the state that's actually there, and two papers about the plumbing of error correction — one making a matching decoder parallel, one making noise models snap together like Lego.
+
+Maya: No mail in the queue today, so let's go straight in, starting with the complexity result.
+
+[BREAK]
+
+Maya: So this one has real history. The class QMA — a quantum proof, checked by a quantum verifier — has been around since the late nineties, and from early on people asked a very natural question: if the answer is yes, can the honest prover always convince you with certainty? Not high probability. Certainty.
+
+Sam: And the reason it stayed open for two decades is almost embarrassing. Quantum gates have irrational matrix entries. The probability your verifier accepts is some algebraic number that generically isn't exactly one, and no amount of repetition turns "point nine nine nine" into "one." Meanwhile there were explicit black-box results saying: any proof of this has to reach inside the verifier and use its arithmetic. You cannot do it by treating the verifier as a box you feed inputs to.
+
+Maya: And this paper reaches inside.
+
+Sam: It does, and the move is lovely. First you recompile the verifier into a tiny gate set whose matrix entries are fractions with powers of two in the denominator — the controlled-NOT, Toffoli, and a pair of Hadamards used together. That's an old trick of Aharonov's, and it costs you nothing in the gap between yes and no. Now the whole acceptance operator is, up to a scaling, an integer matrix.
+
+Maya: Integers you can write down exactly.
+
+Sam: Exactly. And here's the key insight. The natural thing for a prover to certify is the largest eigenvalue of that operator — but that's an algebraic number with no finite description. Instead, the prover certifies one diagonal entry of a high power of the matrix. That's a rational number with a manageable number of bits, and in a yes-instance at least one such entry has to be large, just by trace counting.
+
+Maya: Okay, but what does a single diagonal entry buy you?
+
+Sam: It lets you close a loop. You build a history state — the usual Feynman thing where you superpose the computation over all time steps — and normally that chain has two loose ends. Knowing that one number exactly lets you glue the end back to the beginning, so the state is an exact fixed point of a cyclic operator. The verifier checks that fixed-point condition, and an honest prover passes with probability one. A cheating prover is provably off by a constant amount, no matter what number they claim.
+
+Maya: What actually changes downstream? Because from where I sit this sounds like it could be aesthetics.
+
+Sam: Two things that aren't aesthetics. One: there's a decade of hardness results — quantum three-SAT, a version of clique homology from the topological data analysis world — that were only ever proved hard for the perfect-completeness flavor of the class. Those all upgrade today to plain QMA-complete. Two, and this is the one that surprised me: nobody knew the perfect-completeness class even had a universal gate set. Its definition was gate-set dependent, which is a bizarre property for a complexity class to have. That's fixed now too.
+
+Maya: And the soundness?
+
+Sam: Raw soundness is weak — a cheating prover slips through most of the time on a single run — but it amplifies by parallel repetition, and repetition preserves the perfect yes-side. The honest caveats: it necessarily fails against quantum oracles, the prover has to send a classical certificate alongside the quantum state, and the analogous questions for polynomial-time quantum computation and for two unentangled provers stay open — the argument visibly breaks in both. It's a short, self-contained proof, which is a compliment and also a reason to want independent eyes on it.
+
+[BREAK]
+
+Maya: Next one is about as different as you can get. The stake here is a question people ask at dinner parties: who's ahead, and how far is anyone from a quantum computer that does something useful?
+
+Sam: And the honest answer has been "you can't compare them." Trapped ions, superconducting chips, logical qubits versus physical — different connectivity, different clock speeds, different error structures. Quantum volume tried to be the yardstick but it measures square circuits only, and verifying it gets classically hard exactly where you'd want it.
+
+Maya: So what's the new yardstick?
+
+Sam: Random circuits alternating all-to-all pairings of controlled-NOTs with random single-qubit rotations. Crucially, they vary width and size independently, so you get a two-dimensional capability region instead of one number. Verification is by mirror circuits — you run the circuit and its inverse and estimate fidelity — which stays classically cheap at any scale. The headline score is the largest circuit you can still run correctly, restricted to shapes where the depth is neither trivially shallow nor absurdly deep.
+
+Maya: Why restrict the shapes at all? That feels like the place where a benchmark gets political.
+
+Sam: It is the place. Their argument is that very shallow or very narrow circuits are classically easy, so letting a machine score on those is gaming; and the band they choose is meant to bracket where the first genuinely useful circuits plausibly live. You can disagree — I'd want to see how sensitive the rankings are to that choice.
+
+Maya: And the results?
+
+Sam: Quantinuum's Helios comes out on top, roughly seven times the score of Google's Willow or IBM's newest chip. But throughput flips it completely: the superconducting machines run their circuits tens of thousands of times faster per second. That's the real story of the field in one table — ions are accurate and slow, superconductors are fast and noisy.
+
+Maya: And the logical-qubit run?
+
+Sam: They ran eight logical qubits in a distance-three Steane code on Helios, and it scored worse than the bare physical qubits on the same machine. Which is not a failure — it's the honest starting point. They frame it as an operational version of Gottesman's criterion: the moment a logical architecture beats every physical-qubit score, fault tolerance has paid for itself.
+
+Maya: Now the uncomfortable arithmetic.
+
+Sam: They translate published resource estimates — breaking RSA, simulating the nitrogenase cofactor — into the same units. The gap is about five orders of magnitude. And extrapolating historical improvement rates, you land somewhere between twenty-fifty and twenty-seventy, not the early twenty-thirties on the roadmaps. Getting to the roadmap dates needs about a fourfold acceleration in the doubling rate.
+
+Maya: We covered that trapped-ion elliptic-curve estimate a few days back — twenty-six days, twenty thousand qubits. Does this contradict it?
+
+Sam: No, it contextualizes it. That paper asks what a machine would need to be; this one measures what machines are. And the translation between them is the weakest link here, honestly — rotation-heavy random circuits are only an indirect proxy for Toffoli-dominated algorithms, and the all-to-all pairings probably overstate routing cost relative to real code. If you're writing a roadmap, read this. If you're quoting the five-orders-of-magnitude number at a conference, read the caveats section first.
+
+[BREAK]
+
+Maya: Here's something that's bugged me for a while, and this paper names it. In classical statistics, if a distribution only puts weight on a handful of outcomes, learning it is cheap — you pay for the support, not for the size of the alphabet.
+
+Sam: And quantum tomography never had that. Every algorithm charged you for the full dimension of the Hilbert space, even if the state you're holding is a superposition of, say, twenty basis vectors out of an astronomically large number. Which is silly, because lots of physically interesting states are exactly that — chemistry states at fixed particle number, GHZ and W and Dicke states, subset-phase states in the pseudorandomness literature.
+
+Maya: So the claim is sparsity finally becomes the parameter.
+
+Sam: Both in copies and in running time, which is the part I didn't expect. The number of copies you consume scales with the number of nonzero amplitudes divided by your target error — nothing else. And the classical-plus-quantum running time scales with that times the number of qubits. Both optimal up to logarithmic factors. Single-copy measurements only, shallow circuits.
+
+Maya: Walk me through how you'd even get the phases. Finding the support I can imagine — you just measure and collect coupons.
+
+Sam: Right, that part's easy. Phases are the hard part, and the trick is gorgeous. You apply a random linear hash function that squashes the basis labels down into a register of only about the logarithm of the sparsity many bits, and you measure that register. Sometimes an outcome has exactly two preimages — and then your state collapses onto a superposition of just two basis vectors, with their relative phase intact.
+
+Maya: And two-term superpositions you know how to handle.
+
+Sam: You XOR the coordinates where they differ onto one qubit, and now measuring that single qubit in two bases gives you the relative phase directly. Each random hash gives you a random partial pairing of the support — think of it as drawing random edges on a graph whose vertices are your basis states. Do that a logarithmic number of times, and the graph becomes connected with small diameter. Then you just pick one reference vertex, breadth-first search outward, and chain the relative phases together. Small diameter is what keeps the errors from piling up.
+
+Maya: The obvious objection: you have to already know which basis the state is sparse in.
+
+Sam: You do, and you have to be able to rotate into it efficiently. That's a real restriction — though for the applications they name, particle-number-conserving physics, certification of entangled states you meant to prepare, that's given. The mixed-state extension is the softer part: they get the sample count optimal, using a purification trick that turns a sparse mixed state into a sparser pure one, but the running time there goes through a Schur transform and is nowhere near tight.
+
+Maya: Who should read it?
+
+Sam: Anyone doing state certification on hardware, and anyone in pseudorandom-state cryptography — because it pins down how sparse a subset-phase state can be before it stops looking random. Open question I'd watch: they use two-qubit gates in the measurement, and whether you can hit the same running time with Pauli measurements alone is unresolved.
+
+[BREAK]
+
+Maya: Okay, this next one has a number in it that I had to read twice. In their simulations, as the code got bigger, the amount of decoding work per syndrome round went down.
+
+Sam: Down. Which is not what anyone's intuition says. Let me set it up. Minimum-weight perfect matching is the decoder with the strongest rigorous guarantees — sparse blossom, the algorithm inside PyMatching, is the workhorse. But its runtime grows with code size, and if you're doing adaptive logical operations, you're waiting on that decoder before you can apply the next gate. Latency is the killer.
+
+Maya: And the intuition for parallelizing is that errors are sparse and clustered, so most of the work is local.
+
+Sam: Yes, but proving it is nasty, because blossom's dynamics are global by nature. Regions grow, they freeze, they shrink, you form blossoms and alternating trees — so how do you know that two distant parts of the syndrome are genuinely independent and won't end up in the same alternating tree three steps later? The contribution is a hierarchical clustering scheme, borrowed from the Gács-style machinery people used to prove union-find thresholds, extended to weighted graphs.
+
+Maya: And the guarantee is what, exactly?
+
+Sam: Two things. First, the parallel algorithm returns bit-for-bit the same correction as the serial one — not approximately as good, identical. Second, a stopping theorem: any cluster at a given level of the hierarchy finishes and stabilizes before it can ever collide with a cluster of the same or higher level. That's what licenses running them concurrently. The payoff is that the average runtime grows almost not at all with code distance — slower than any power of the logarithm — which means the decoding time per round goes to zero as the code grows.
+
+Maya: We talked last week about local decoders — pushing the whole computation into the hardware next to the qubits. This feels like the opposite bet.
+
+Sam: It's the other horn of the same problem, and I think both will survive. The local-decoder line says: give up global optimality to kill the wiring bottleneck. This says: keep the best decoder we have and shatter it into independent pieces. Different tradeoffs, same enemy.
+
+Maya: Now tell me what's soft here, because "quasi-polylogarithmic average runtime" in an idealized model is doing a lot of work.
+
+Sam: It is, and they're upfront. The model counts circuit depth with unbounded processors and no geometric locality — no communication cost, no synchronization, no memory access, no scheduling. The numerics report parallel event counts as a proxy, not wall-clock time, at distances up to forty-nine with a couple hundred shots per point. And here's the one that bothers me most: the parameter schedule for which they prove the theorem is too conservative to show any benefit at accessible sizes, so the simulations use a different, heuristic schedule. Also the clear advantage shows up at a physical error rate around one in a hundred thousand — well below today's hardware.
+
+Maya: So the theorem and the experiment aren't quite touching.
+
+Sam: Not yet. But it does close a gap Fowler flagged informally years ago, and it's the first correctness-guaranteed foundation for real-time matching. What I'd watch for is somebody implementing it on an actual field-programmable gate array and telling us what the communication costs do to the picture.
+
+[BREAK]
+
+Maya: And that's the natural bridge to the last paper, because a fast decoder is only half the problem. The other half is where the decoder's noise model comes from.
+
+Sam: Right — the detector error model. It's the list of which faults flip which parity checks, with what probability, and today you produce it by simulating the entire fault-tolerant circuit in one go. Which is expensive, and worse, it throws away all the structure. Your computation is the same handful of logical gadgets repeated thousands of times, and you re-derive the model from scratch every time.
+
+Maya: So the pitch is modularity.
+
+Sam: The pitch is a contract. Each logical gadget gets a self-contained noise model with extra ports on it — ports carrying Pauli errors that cross the code-block boundary, and virtual syndrome flips, which are basically inferred stabilizer sign information handed from one gadget to the next. The theorem is that if you wire these contracts together along the logical circuit, contracting the diagram, you get exactly the noise model of the whole computation. No approximation.
+
+Maya: Where did earlier attempts break?
+
+Sam: Detectors that straddle a boundary. An earlier per-operation scheme could only handle one virtual syndrome bit per detector, so in something as basic as a transversal controlled-NOT there are detectors it simply can't express. This paper introduces detector cutting — you split a straddling detector into per-gadget pieces — and that's what makes the composition exact rather than nearly exact.
+
+Maya: I'll be the skeptic: is this a genuine capability, or is it good software engineering with a proof attached?
+
+Sam: Fair, and partly the latter — but there's one thing that's a real capability. Because the pieces compose by linear algebra, you can do it symbolically. Treat the blocks as polynomials in the component gadgets and you get a closed-form noise model for a whole parameterized family — a memory experiment of arbitrary length, say — by induction, instead of simulating each length separately. And it feeds straight into sliding-window decoders, which is how any real machine will decode anyway.
+
+Maya: Limits?
+
+Sam: Stabilizer circuits with stochastic Pauli faults only. So no leakage, no coherent errors — and leakage in particular is exactly the failure mode that motivated a paper we covered on Friday, so this framework can't yet see it. Gadgets only compose if their code presentations match, not merely their codes, which is a fussier condition than it sounds. Each contract has to be verified by Clifford simulation. And the merging assumes fault independence. The implementation and performance numbers are thin in this version.
+
+Maya: Verdict?
+
+Sam: If you maintain a decoder or a logical gadget library, this is a tool you'll end up using. It turns noise-model construction into something auditable per gadget, which matters when the alternative is one enormous simulation nobody can check.
+
+[BREAK]
+
+Maya: Alright. One result each. Sam?
+
+Sam: The perfect completeness proof. Twenty years, an explicit barrier saying you must exploit the verifier's arithmetic, and the answer is: recompile into gates with fractions over powers of two, and have the prover hand you one exactly-writable number. Elegant, and it quietly upgrades a decade of hardness results while it's at it.
+
+Maya: For me it's the benchmark. Not because I love benchmarks — because of that Steane-code result. Eight logical qubits, and they lost to the bare physical qubits on the same machine. That's a scoreboard I want to check every six months, and it's the cleanest statement I've seen of what crossing over actually means.
+
+Sam: And it pairs uncomfortably well with the five-orders-of-magnitude gap. Useful for keeping everyone honest.
+
+Maya: Links to all five papers are in the show notes, along with a link to send us questions — we read everything, and today's queue happened to be empty, so this is your moment.
+
+Sam: We'll be back tomorrow. Thanks for listening.
