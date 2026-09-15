@@ -1,0 +1,177 @@
+Maya: There's a whiteboard in my kitchen where I keep a running list of open problems I'd like to see die in my lifetime.
+
+Sam: And?
+
+Maya: I crossed off three of them this morning. Before coffee. It was slightly unsettling.
+
+Sam: That's today in one sentence, honestly. Four of the five papers on the list close a question, and the fifth closes a hope.
+
+[BREAK]
+
+Maya: Welcome to the SciRate Daily Digest for Tuesday, September fifteenth, twenty twenty-six. I'm Maya.
+
+Sam: And I'm Sam. Today: a hard no-go that says free fermion dynamics can never do error correction, a two-decade-old question about whether quantum proofs can be accepted with certainty, a candidate for quantum-only cryptography that turns out to smuggle classical cryptography inside it, a Boolean function built out of a track meet, and an entanglement measure whose optimization has no bottom.
+
+Maya: No mailbag today, so let's go straight in.
+
+[BREAK]
+
+Maya: Start with the hardware one, because the stake is concrete. If you're building a Majorana-based machine, the sales pitch has always been that the easy, natural operations — braiding, free particles moving around — are also the robust ones. This paper says: those operations can never, by themselves, give you an error-correcting code. Not "inefficiently." Never.
+
+Sam: Right, and the proof is almost embarrassingly short, which is what I love about it. A free-fermion state — a Gaussian state — is completely determined by its pairwise correlations. That's the whole content of "free." You measure every two-body correlator and you know the state exactly, nothing left over.
+
+Maya: And error correction wants the opposite.
+
+Sam: Exactly the opposite. The condition for a code to correct any single error says that every low-weight measurement must return the same answer on every codeword — that's what it means for the environment to learn nothing. Put those together: if your code space contained a free-fermion state, all the two-body correlators are pinned, the state is pinned, and every codeword collapses onto the same state. But a code space has to be more than one-dimensional. Contradiction, in about two lines.
+
+Maya: Okay, that's clean, but let me push. Distance three is a real code. What about just detecting errors — the cheap regime people actually run on small devices?
+
+Sam: They cover it, and the answer is more subtle. At the detection level you can have a code space that's entirely free-fermion — they build one, so the no-go is tight. But you still can't encode into it with free operations, and you can't do a non-destructive syndrome measurement with them either, even if you allow classical randomness. So the free layer buys you the room but never the machinery.
+
+Maya: So how much genuine interaction do you need? Is this a "sprinkle in one gate" situation?
+
+Sam: No, and that's the second result. They count how many non-free gates a circuit needs to prepare a codeword exactly, and the count grows with both the distance you want and the number of logical qubits you're storing. It's a lower bound, not a recipe — nobody's shown a matching construction — and it's for unitary circuits with bounded-weight gates, not for full protocols with measurement and feedforward. But the shape is the message: interaction cost scales with protection.
+
+Maya: And the analogy people will reach for is magic states.
+
+Sam: It is, and it's the right one but sharper. For qubits, the free operations — stabilizer circuits — are also exactly what you build codes out of, and you need magic only for computation. Fermionically, you need the expensive resource one layer earlier, at the code itself. There's no free error-correction layer to inherit. We covered the semi-Clifford paper on Friday, which was about the structure of magic gates; this is the fermionic cousin of that whole question, and the answer is less friendly.
+
+Maya: Who should read it?
+
+Sam: Anyone writing an architecture paper that assumes braiding gets you to fault tolerance. And there's a lovely side result I'd flag: with free operations alone you can't purify entanglement from a certain family of fermionic states, but if you allow postselection, you can pull out a perfect entangled pair some fraction of the time. The sign of one matrix update flips relative to the bosonic case, and that's the whole source of the difference. Small, weird, real.
+
+[BREAK]
+
+Sam: Next one is pure complexity theory, and it's the kind of problem that's been sitting there so long people stopped expecting it to move. In a proof system, a prover tries to convince a verifier that some statement is true. Perfect completeness means: when the statement is true, the honest prover convinces the verifier with certainty. Probability one. No slack.
+
+Maya: And classically that's free.
+
+Sam: Classically it's routine. Quantumly it was known once you had three or more rounds of back-and-forth, but the two hardest cases — a single quantum witness handed over, or a two-message exchange — resisted for over twenty years. Worse, people proved that the natural black-box approaches can't work. So it wasn't just hard, it was hard in a way that told you your tools were wrong.
+
+Maya: And this paper does it.
+
+Sam: Both cases. Two-message quantum interactive proofs can be made perfectly complete, and so can the single-witness class, over a fixed exact gate set. Two engines. The first is a trick I'd call folding: if you have a four-message protocol where both the starting state and the ending state are things the verifier can prepare on its own, the verifier can run the first half forwards and the second half backwards, in superposition, and accept if the two branches meet in the middle. Four messages become two.
+
+Maya: That's genuinely cute. Running the end of the conversation backwards to meet the beginning.
+
+Sam: And the second engine is stranger. They build a matrix out of the verification circuit that has a nonzero vector in its null space exactly when the answer is yes — but only if you feed in the right normalization constant. So the prover sends that constant as a classical label alongside the quantum witness. The verifier never computes it, never solves anything; it just checks the label has the right form and applies an exact encoding of the matrix. The number happens to be a clean binary fraction, so it fits in polynomially many bits exactly.
+
+Maya: Here's my objection, though. You said "over a fixed exact gate set." That smells like a theorem about a compiler, not about quantum computation.
+
+Sam: That's the honest caveat and I won't dress it up. The single-witness result lives in a specific exact gate model — Hadamard, bit flip, Toffoli, and the phase gate — because the argument needs entries that are exact fractions, not approximations. It is not a gate-set-independent statement. The two-message interactive result doesn't have that restriction.
+
+Maya: And the soundness?
+
+Sam: Raw soundness is terrible — barely below certainty in one case — and they lean on existing parallel-repetition machinery to amplify it. Which is standard, but worth saying out loud. Also: the two-prover version is still open, because the argument bounds eigenvalues and that's not the right object when the two witnesses have to be unentangled. And there's concurrent independent work reaching the single-witness result with a similar witness structure, so credit is going to be shared.
+
+Maya: What's the practical value of a proof accepted with certainty? Aside from tidiness.
+
+Sam: It's the normal form you want when you're doing hardness of approximation, or proving completeness for quantum constraint-satisfaction-style problems. Having a gap-free yes case removes an annoying epsilon from a dozen downstream arguments. And the folding lemma is reusable — they already note it applies to space-bounded protocols.
+
+[BREAK]
+
+Maya: This next one has a shape I really enjoy: somebody builds a candidate specifically to avoid classical cryptography, and the paper proves the candidate contains classical cryptography.
+
+Sam: That's exactly it. The dream here is called Microcrypt — a world where all classical one-way functions are broken, factoring is easy, everything's dead, and yet quantum cryptography still works because it rests on quantum states being hard to learn rather than functions being hard to invert.
+
+Maya: And you need a concrete assumption to hang that on.
+
+Sam: You do, and the leading candidate was recent: the hardness of learning states produced by shallow commuting circuits — phase states, essentially. It looked structurally quantum. This paper shows that if that assumption holds, then quantum-secure classical one-way functions exist. So it can't be a Microcrypt foundation. It was never in the genuine quantum-only zone.
+
+Maya: How does the proof get from "states are hard to learn" to "there's a classical one-way function"?
+
+Sam: Through certification protocols, which they frame as "measure first, ask later." You take many copies of an unknown state and run a fixed measurement that doesn't depend on which state you're trying to certify. Only afterwards do you name the target and check whether the record is consistent. That ordering matters enormously, because the measurement record is then just a pile of classical data.
+
+Maya: And if that pile can be produced classically...
+
+Sam: Then the whole hardness has leaked out of the quantum part. Their framework turns any such protocol into a one-way puzzle — the measurement record is the puzzle, the key is the answer. And if someone who knows the key can just classically sample what the record would have looked like, the entire puzzle generation becomes a classical procedure, which gives you a one-way function by a chain through distributional one-way functions. For phase states, the existing certification protocol from Huang, Preskill and Soleimanifar is exactly that simulable.
+
+Maya: So is the assumption dead, or did it change jobs?
+
+Sam: Changed jobs, and I think that framing is fair to the authors. It's now a new, inherently quantum route to ordinary classical cryptography — joining a very short list, alongside learning stabilizers with noise. Different from lattices, which is worth something on its own.
+
+Maya: What's the weak point?
+
+Sam: The constructive half is a toolbox with no instantiation. They tell you what a surviving Microcrypt candidate must look like — certification that's computationally efficient but not classically simulable — and they don't exhibit one. Nobody knows if that combination exists. And the one-way function you get out rests on an untested assumption whose strength nobody has really probed.
+
+Maya: So the net effect is a narrower search space rather than an answer.
+
+Sam: Right, which is how this subfield tends to progress. Cryptographers working on quantum-only primitives should read the definitions section carefully — it's now the spec sheet for what a real candidate has to satisfy.
+
+[BREAK]
+
+Maya: Okay, this next one is a direct sequel to something we covered last Thursday — the near-quartic separation between certificate complexity and quantum query complexity. Same landscape, and this paper has that result too, concurrently with another group. But the headline here is a different pair.
+
+Sam: The randomized one, which I'd argue is the bigger deal. Quick grounding: certificate complexity is how many input bits you'd have to reveal to convince a skeptic of the answer. It's the "short proof" measure. And the long-standing question was whether having short proofs for both answers forces a fast randomized algorithm, or whether you could have a function that's cheap to verify but expensive to compute randomly — or the reverse.
+
+Maya: And which way does it go?
+
+Sam: The reverse, maximally. They build a total Boolean function where the randomized algorithm is quadratically faster than the shortest certificate. Since it's a theorem that certificates can never be worse than the square of the randomized cost, that's the ceiling. Optimal up to log factors. And the same function gives the quartic gap against quantum, which is also the ceiling there.
+
+Maya: Tell me the function, because I hear it involves sports.
+
+Sam: It's a track meet. You have a bunch of countries, each fielding a squad of athletes. Every pair of countries runs a race, and you record the top finishers in order — except the results are polluted with spoilers, non-athletes who can finish ahead of real competitors. An athlete is the champion if it beat every genuine athlete in all of its races, and was beaten by fewer than a squad's worth of spoilers overall. Plus it carries a card tallying how many spoilers beat it in each race, and the card has to be well-formatted and consistent with the records.
+
+Maya: And why is the champion unique?
+
+Sam: Because any two athletes are from different countries, so they've raced each other. One of them lost. Beautiful.
+
+Maya: So the yes-certificate is short — the card plus a handful of race prefixes. Where does the hardness live?
+
+Sam: Entirely in certifying that there is no champion. Take the blank input, all spoilers, all zeros. Any certificate that's too small necessarily leaves some athlete whose card is untouched and whose races are barely touched — an averaging argument — and you can then promote that athlete to champion by filling in the gaps. So no-certificates have to be big.
+
+Maya: But a randomized algorithm gets there fast.
+
+Sam: Sample winners per country to cut down to a manageable candidate list, run a knockout tournament among them, then verify a single certificate. Quantumly it's nicer: the candidate list never gets written down, it stays virtual, and the elimination becomes finding the sink of a tournament graph. They use a known king-finding algorithm — when a sink exists it's the unique king — plus Grover search for the final verification, and you get the square-root speedup.
+
+Maya: Caveats?
+
+Sam: Log slack, so exactly tight exponents are still open. The function is deeply asymmetric — one side's certificates are tiny, all the pain is on the other. And the input is much longer than the certificate complexity, cubic-ish in the parameter; they make no attempt to optimize that. They also don't get corresponding separations for the neighboring measures, block sensitivity or degree.
+
+Maya: Who reads it?
+
+Sam: Anyone who teaches query complexity. The construction fits on a page and the sink-finding trick is a template — any subroutine of the form "find the unique winner" can borrow it.
+
+[BREAK]
+
+Sam: Last one, and it's the result that made me stop and reread. Squashed entanglement is one of the best-behaved entanglement measures we have: additive, faithful, continuous. Everything you want.
+
+Maya: There's a but.
+
+Sam: The definition. You imagine handing a side system to a third party who tries to squash the correlations between the two halves, and you minimize the leftover conditional correlation over every possible side system. Every one. No bound on how big it's allowed to be. So the measure is famously uncomputable in practice, and the open question was whether that's fundamental or just ignorance.
+
+Maya: And the answer?
+
+Sam: Fundamental, and demonstrated on a state you'd put on a problem set. Take a Bell pair, partially dephase it so it's somewhere strictly between perfectly coherent and fully classical. They show that for any side system of any size, you can construct a new one only about three times larger that does strictly better. Every candidate optimizer gets beaten. The minimum is never attained in finite dimension.
+
+Maya: That's a strong claim to prove for all dimensions at once. How?
+
+Sam: In two moves. First a symmetrization: they replace the two building blocks of the extension with a direct sum of their two natural positive parts. That leaves the quantity you're minimizing exactly unchanged, but it can only increase the coherence of the induced state. So you can assume a nice form for free.
+
+Maya: And then?
+
+Sam: Then three cases, and the last one is the fun one. If the extension is degenerate in a particular way — the joint state is rank-deficient while all its marginals are full rank — you mix in a tiny whisper of noise. The marginals get worse in proportion to how much you add. But the joint entropy gains something that behaves like a small amount times the logarithm of one over that amount, which for tiny amounts beats a plain proportional term. So you strictly win.
+
+Maya: You add noise to an entanglement optimization and it improves. That's the sentence I'd put on the poster.
+
+Sam: It's an entropy log-singularity, and it's the kind of thing that feels like cheating until you check the algebra twice. Which I did.
+
+Maya: Let me ask the practical question. People do compute bounds on squashed entanglement — key distribution rates, that sort of thing. What changes for them?
+
+Sam: They already knew truncating the side system gives an upper bound. Now they know it can only ever be a strict upper bound, for this state at least, and that no finite-dimensional exact program exists. So stop looking for one.
+
+Maya: What's missing?
+
+Sam: The value. They don't determine what the measure actually equals for this family, and there's no rate — no statement of how fast you approach the infimum as the side system grows. The factor of three is an artifact of their construction, not a claim about optimal growth. And it's one specific one-parameter family; whether non-attainment is typical for mixed states is wide open. The hardness implications are suggestive, not proven.
+
+[BREAK]
+
+Maya: One result each. Mine is the track meet. A total Boolean function you can explain to someone at dinner, settling a question that's been on the books for years, with the whole difficulty hiding in the fact that any two athletes have already raced.
+
+Sam: For me it's the fermionic no-go. Two lines: a free state is fixed by its pairwise correlations, error correction forbids pairwise correlations from distinguishing codewords, done. And it tells Majorana architectures something they need to hear early rather than late — the interaction you were hoping to avoid is required at the code layer, not just the gate layer.
+
+Maya: Links to all five are in the show notes.
+
+Sam: And there's a link there to send us a question — we read all of them, and we work through the backlog oldest first.
+
+Maya: See you tomorrow.

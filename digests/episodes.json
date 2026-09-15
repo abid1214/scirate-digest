@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-09-15",
+    "title": "SciRate Digest \u2014 2026-09-15",
+    "summary": "Today's 5 papers: 2609.15059; 2609.15926; 2609.15842; 2609.15063; 2609.14031.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-09-15/digest.mp3",
+    "mp3_bytes": 18374061,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2609.15059",
+        "title": "2609.15059",
+        "abs_url": "https://arxiv.org/abs/2609.15059",
+        "scirate_url": "https://scirate.com/arxiv/2609.15059",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2609.15926",
+        "title": "2609.15926",
+        "abs_url": "https://arxiv.org/abs/2609.15926",
+        "scirate_url": "https://scirate.com/arxiv/2609.15926",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2609.15842",
+        "title": "2609.15842",
+        "abs_url": "https://arxiv.org/abs/2609.15842",
+        "scirate_url": "https://scirate.com/arxiv/2609.15842",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2609.15063",
+        "title": "2609.15063",
+        "abs_url": "https://arxiv.org/abs/2609.15063",
+        "scirate_url": "https://scirate.com/arxiv/2609.15063",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2609.14031",
+        "title": "2609.14031",
+        "abs_url": "https://arxiv.org/abs/2609.14031",
+        "scirate_url": "https://scirate.com/arxiv/2609.14031",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-09-14",
     "title": "SciRate Digest \u2014 2026-09-14",
     "summary": "Today's 5 papers: 2609.13032; 2609.12146; 2609.12219; 2609.12262; 2609.13087.",
