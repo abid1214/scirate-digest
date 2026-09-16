@@ -1,0 +1,187 @@
+Maya: Yesterday I asked you how well magic state cultivation actually performs at the distances people are planning to build, and you gave me a shrug and a stand-in state.
+
+Sam: It was an educated shrug. As of this morning I can give you an actual number instead, which is genuinely new.
+
+Maya: And that's the thread through the whole episode — the distance between the protocol you can analyze and the protocol you're going to run.
+
+Sam: Or in one case today, the distance between the machine you think you have and the machine you actually have, which turns out to depend on what you write down.
+
+Maya: Welcome to the SciRate Daily Digest for Tuesday, September sixteenth, twenty twenty-six. On the board: an exact classical simulator for noisy magic state preparation, a full-stack map of fault-tolerant compilation, color codes that finally get both constant rate and growing distance, thermal decoherence as a source of universal quantum computation, and a fake laboratory where AI agents get audited on whether they actually took the measurement.
+
+Sam: Five papers, one theme, and at least two places where I had to go back and re-read the claim because I didn't believe it.
+
+[BREAK]
+
+Maya: Let's start with the one that closes a hole people have been living with. Set the stake for me.
+
+Sam: Here's the situation. A universal quantum computer needs magic states — the resource you consume to do the gates error correction can't do for free. The current favorite way to make them cheaply is called cultivation. Now, if you want to know how well cultivation works under realistic noise, you'd like to simulate it. But the whole point of a magic state is that it sits outside the class of states classical computers can track efficiently.
+
+Maya: So what have people been doing instead?
+
+Sam: They swap in a proxy. You replace the target magic state with a nearby state that does live in the easy class, simulate that, and assume the noise behaves comparably. It's a load-bearing assumption with nothing underneath it.
+
+Maya: And Takada, Bartlett and Williamson remove the assumption. How?
+
+Sam: With an observation I found genuinely lovely. A logical magic state is not a stabilizer state — but it is still the unique state fixed by a group of operators. It's just that some of the generators of that group aren't Pauli operators, they're other Clifford operators. Phase gates, controlled-phase gates. Call them Clifford stabilizers.
+
+Maya: And the easy-simulation machinery cares about Pauli generators specifically. Why does it survive the upgrade?
+
+Sam: Because of what noise does to those generators. When a Pauli error happens mid-circuit — including the nasty hook errors that propagate onto the data as phase-type Clifford operators — the effect is to dress the tracked generators with Z-type Paulis and nothing worse. Those dressings commute with the diagonal Clifford factors, so the bookkeeping closes. Every measurement in the protocol still either commutes or anticommutes with everything you're tracking, at every time step.
+
+Maya: So you get tableau updates, the same as ordinary stabilizer simulation.
+
+Sam: Better than that. Each sampled noisy circuit maps to a single equivalent Clifford circuit that reproduces the exact outcome distribution. No decomposition into a huge sum of stabilizer terms, so no exponential blowup hiding in the rank. They cross-check against brute-force state-vector simulation at fault distance three, then produce exact cultivation results at distance five and distance seven — and seven was flatly out of reach before.
+
+Maya: Okay, I want to poke at the word "exact," because there's a difference between exact per shot and useful in aggregate.
+
+Sam: That's the right poke, and they say it themselves. At distance seven the cost per shot is fine, but plain Monte Carlo can't resolve a logical error rate that small — you'd be sampling forever to see a failure. Getting the actual number needs importance sampling, and integrating that with their update rules is left open.
+
+Maya: What else is fenced off?
+
+Sam: Pauli noise only. No coherent errors, no amplitude damping. And the construction needs what they call an admissible structure — roughly, CSS-like Pauli sectors and generators that are transversal or fold-transversal, targeting gates at the third level of the Clifford hierarchy.
+
+Maya: Which is the same third level whose structure got considerably messier on Friday, when we covered the paper killing the generalized semi-Clifford conjecture.
+
+Sam: Same neighborhood, and I think that's a nice coincidence of timing. One paper says the algebra up there is wilder than we assumed; this one says the states up there are more tractable than we assumed. Who should read it: anyone who has ever published a cultivation threshold plot. You can now measure what you were estimating.
+
+[BREAK]
+
+Maya: Next up is a survey, and I'll admit surveys make me suspicious. Sell me on this one.
+
+Sam: Let me start with what changed about the job. In the noisy-intermediate era, a compiler's job was recognizable — map the circuit onto the chip's connectivity, cut gate count, cut depth. Preserve the unitary, minimize the cost. In fault tolerance, you can do all of that correctly and still destroy the machine.
+
+Maya: Destroy it how?
+
+Sam: Because correctness now includes preserving the circuit-level distance and the structure of how faults propagate — and, crucially, the detector information the decoder needs. An optimization that's perfectly sound as linear algebra can quietly merge two fault locations into one and cut your effective distance in half. Zhu and a fairly large collaboration organize the whole literature around that shift, into three layers: compiling logical protocols, realizing them on actual hardware, and the decoder runtime.
+
+Maya: Give me the concrete version of "compiling logical protocols."
+
+Sam: Surface-code lattice surgery, recast as an instruction set with an explicit space-time price. Where you place a patch determines which joint Pauli measurements are geometrically available. How you route determines how much ancilla area you burn. How you schedule determines what runs in parallel. That's a real compiler problem with a cost model, and there are solver-based and heuristic attacks on it.
+
+Maya: And for the high-rate codes everyone's excited about?
+
+Sam: That's where it gets uncomfortable. Take the bivariate bicycle code people call the gross code — a hundred and forty-four physical qubits carrying twelve logical ones. There's no clean patch abstraction there. The compiler has to reason about logical addressing inside a specific code and about how blocks talk to each other. That's the gap they flag hardest: we don't have compiler abstractions for these codes.
+
+Maya: Here's my objection, though. This is a map, not an evaluation. There's no head-to-head comparison of compilers on a shared benchmark.
+
+Sam: Correct, and they list the absence of those benchmarks as an open problem, which is honest but also a little convenient. The scope is narrow in other ways too — photonic and fusion-based platforms are out, spin qubits are out, and some of what's surveyed is unvalidated preprints.
+
+Maya: So who is this for?
+
+Sam: Somebody standing up an integrated stack, and computer architects arriving from the classical side. They show that error-correction papers at the big architecture conferences went from a handful a few years ago to a substantial presence now, with rising acceptance rates — the communities are colliding and they don't share vocabulary yet.
+
+Maya: It also connects to two things we did last Thursday and Friday. The lifted surgery paper was about logical operations being slow, and the local decoder paper was about the assumption that a big classical computer sits off to the side keeping up.
+
+Sam: Right, and this survey's most useful insistence is that the second one is a compilation problem. Your syndrome extraction schedule is what defines the detector error model the decoder consumes. You cannot design the schedule and the decoder in separate rooms.
+
+[BREAK]
+
+Maya: Third paper, and this one has a long backstory. Color codes.
+
+Sam: Color codes have been a fault-tolerance favorite for years, for good reasons — they support rich transversal gate sets, they allow single-shot error correction where one round of syndrome data suffices. The dream was to put them on negatively curved geometry, hyperbolic space, because that's how you get a constant encoding rate. Lots of logical qubits per physical qubit, forever.
+
+Maya: And the catch was?
+
+Sam: Distance. Hyperbolic color codes topped out at distance growing only logarithmically with the number of qubits. That's nearly useless — you add qubits and your error suppression barely budges. Meanwhile, the analogous toric codes on hyperbolic manifolds had been pushed to polynomially growing distance. Color codes were stuck on the wrong side of that line.
+
+Maya: And Hasegawa and Yamasaki unstick them.
+
+Sam: In four dimensions and above, yes — constant rate and polynomially growing distance at the same time, for the first time. Two ingredients I want to name. First, a general recipe: they prove that if you take any triangulation of a closed manifold and barycentrically subdivide it, you always get a valid color-code complex. That sidesteps an ambiguity in the older inflation approach and means you can build color codes on essentially any manifold you like.
+
+Maya: And the distance bound?
+
+Sam: That's the second ingredient. There's a known way to restrict a color code down to toric codes living on sub-lattices. They prove that restriction gives you a genuine lower bound on the color code's distance, and then they bound those toric distances geometrically — by how short the shortest non-contractible loop in the hyperbolic manifold can be.
+
+Maya: Now let me be the spoilsport. What is the actual growth rate in four dimensions?
+
+Sam: The tenth root of the qubit count.
+
+Maya: So to get a distance of ten I need something like ten billion qubits. That's not a code, that's a thought experiment.
+
+Sam: You're right and I won't defend the exponent. Two things in mitigation. These are lower bounds with no matching upper bounds and no numerics, so the truth could be considerably better. And the historical pattern with constant-rate codes is that the first existence proof has a terrible exponent and then people improve it for a decade. This is that first proof.
+
+Maya: What would you want to see before anyone gets excited on hardware grounds?
+
+Sam: Concrete qubit counts, a decoder, and a threshold — none of which exist here. Also the stabilizer weights grow with dimension, because barycentric subdivision inflates the complex a lot, and the constant-rate case specifically needs even dimensions. The advertised color-code advantages — single-shot correction, transversal non-Clifford gates — are stated as motivation, not demonstrated in these codes. Read it if you work on constant-overhead fault tolerance for reconfigurable hardware where you're not bound by geometric locality anyway.
+
+[BREAK]
+
+Maya: Okay. Paper four is the one I read twice, and I want you to tell me why it isn't nonsense.
+
+Sam: Fair. Here's the claim. Decoherence is the thing that ruins quantum computers. Cao and Zhao describe a setting where decoherence is the only thing giving you a quantum computer at all.
+
+Maya: Spell out the setting, because I suspect it's doing work.
+
+Sam: It is. Take a processor that can only perform Clifford gates, Pauli measurements, and adaptive feedforward. On its own that's classically simulable — no computational power beyond a classical machine. Its only noise is idling in contact with a local thermal bath. And critically, you monitor the bath: you see the individual energy-exchange events, a quantum was emitted, a quantum was absorbed.
+
+Maya: And the detected events are harmless?
+
+Sam: Completely. A detected jump is effectively a measurement plus a reset — still stabilizer stuff. All the interesting behavior is in the branch where nothing happened. The quiet branch. If you prepare a superposition state, let it idle, and postselect on the environment reporting no exchange at all, that state can acquire magic.
+
+Maya: Under what condition? Because "can" is hiding a threshold.
+
+Sam: A sharp one, and it's made of numbers every hardware group already measures: the coherence time, the relaxation time, and the thermal excited-state population. There's a single combination of those three, and the dividing line is when it equals one. Below the line, they prove the entire adaptive circuit — outputs and the full time-resolved environmental record — is efficiently classically sampleable, and they give a continuous-time tableau sampler that does it. Above the line, one idle location that you can reuse is enough to bootstrap full universality: twirl the postselected state, feed it into standard distillation, done.
+
+Maya: So the same hardware, the same noise, and the classification flips based on what?
+
+Sam: On which bit of the record you keep. If the controller retains the exchange flag, you're above the line. If it only keeps a coarser record — say, a parity check at the end — you can be on the simulable side, because a thermal round trip restores the parity after the coherence is already gone. They prove those two records are information-theoretically incomparable. That's the sentence that got me: what your control system chooses to remember belongs in the specification of the machine.
+
+Maya: Where does real hardware sit?
+
+Sam: Uncomfortably, right on the boundary. For typical transmon numbers, if you use the echo coherence time you land essentially at zero with error bars straddling the line; if you use the Ramsey time you're clearly above it. Which proxy is physically correct is unresolved.
+
+Maya: That feels like a big caveat to leave hanging.
+
+Sam: It's one of several, and they're upfront. The Clifford control is assumed noiseless, so this is a theory boundary, not a hardware proposal. The window where you're above threshold is narrow by construction. Only energy-counting records are classified — diffusive records and continuous feedback are unclassified. And near the boundary the postselection gets rare, so the overhead lives exactly where the effect is interesting.
+
+Maya: Is there anything that breaks the picture?
+
+Sam: They break it themselves, nicely. Two qubits coupled to a shared bath can open a magic margin even when every individual qubit's number sits on the simulable side. So the locality of the criterion is an artifact of assuming independent baths. And the practical hook — erasure-conversion and jump-monitoring architectures, including the loss-flag machinery in that neutral-atom design we covered last week, already produce exactly these event flags. Today everybody treats them as decoder input. This paper says they might be a resource.
+
+[BREAK]
+
+Maya: Last one, and it's a benchmark. Guo and colleagues built a fake laboratory.
+
+Sam: A sandboxed virtual lab called Quantum-Harbor. An AI agent gets instrument-like tools — it can request measurements, run calibrations, design experiments — across simulated transmons, ions, neutral atoms, photonics. Then it submits an answer. And the clever part is the grading.
+
+Maya: Which is what, exactly?
+
+Sam: Evidence-bound. There's a hidden container logging every job the agent actually executed. If the agent reports a number, the grader recomputes it from that private log. If the agent submits a calibration or a design, the grader replays it against fresh draws from noise parameters the agent never saw. So you cannot pass by reporting a plausible number you never measured.
+
+Maya: That's the loophole every science benchmark has, and it's nice to see it shut. What did they find?
+
+Sam: Forty-nine expert-authored tasks, seventeen frontier agentic systems, and pass rates spanning from roughly seventy-eight percent down to three percent. That spread is the headline, because these same systems cluster within a few points of each other on general agent benchmarks. This benchmark separates things that otherwise look identical.
+
+Maya: And the failures? I assume they're physics failures.
+
+Sam: That's what I assumed, and no. Roughly two in three failures were the agent burning through its three-hour budget and never submitting anything at all. Not wrong — absent. The rest look like bad experimental judgment: trusting a stale calibration, discarding results it already had in hand.
+
+Maya: Give me one task so I can picture the judgment call.
+
+Sam: My favorite is a lattice-surgery task on a large transmon lattice where the provided notebook helpfully suggests reusing a decoder that was calibrated on the two patches separately. But once you merge them, you get seam-correlated errors that are simply invisible in that calibration data. The agent has to notice the prior doesn't apply anymore. They call these honest traps, lifted from real labs.
+
+Maya: Which, incidentally, is the same complaint as the compiler survey — a decoder calibrated for one configuration silently failing in another.
+
+Sam: Exactly the co-design gap, showing up as a trap for a machine instead of a research agenda for humans. I liked that echo.
+
+Maya: Now the part that limits how much I'll read into the numbers. Three trials per task.
+
+Sam: And only about a third of the passing system-task pairs passed all three attempts. So "capability" here is intermittent — a system that solves a task once may fail it twice. Everything ran on simulators; live-hardware backends exist but weren't used. And the results genuinely conflate the model with the harness it's driven by, which they acknowledge.
+
+Maya: Plus the agents had internet access and the thresholds are unpublished.
+
+Sam: Which means contamination control and reproducibility depend on the maintainers, yes. My verdict: the environment design is the contribution, more than the leaderboard. If you're building lab-automation agents, the fact that the bottleneck is budget management and judgment rather than physics knowledge tells you where to spend your next month.
+
+[BREAK]
+
+Maya: Closing round. One result each.
+
+Sam: The exact simulation of magic state cultivation at fault distance seven. Not because the number is beautiful, but because a whole class of threshold claims just moved from "we benchmarked a proxy and assumed" to "we computed it." That's a real epistemic upgrade, and it came from noticing that a magic state is pinned down by symmetries you already knew how to handle.
+
+Maya: For me it's the environmental-records dichotomy. The idea that two labs could run the identical noisy circuit on identical hardware, and one of them has a classically simulable device while the other has a universal quantum computer, purely because of which bit of the bath's record they bothered to keep. Even with all the idealizations, that reframes what "the machine" means.
+
+Sam: And it's a nice pairing with paper one, actually. Both are about magic appearing where the standard accounting says it shouldn't be trackable.
+
+Maya: Links to all five papers are in the show notes, along with a link for sending in questions — we read everything, and today's mailbag was empty because we cleared the backlog, so this is your moment.
+
+Sam: Put us to work. See you tomorrow.
