@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-09-17",
+    "title": "SciRate Digest \u2014 2026-09-17",
+    "summary": "Today's 5 papers: Exact logical error rates for magic state cultivation; Diagnosing and Restoring the Degraded Fault Distance of Magic State Cultivation; Query-Optimal and Gate-Efficient Lindbladian Simulation; Logarithmic-depth quantum simulation of boson sampling; Continuous variable distributed quantum sensing in integrated photonics.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-09-17/digest.mp3",
+    "mp3_bytes": 16269741,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2609.18922",
+        "title": "Exact logical error rates for magic state cultivation",
+        "abs_url": "https://arxiv.org/abs/2609.18922",
+        "scirate_url": "https://scirate.com/arxiv/2609.18922",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2609.17706",
+        "title": "Diagnosing and Restoring the Degraded Fault Distance of Magic State Cultivation",
+        "abs_url": "https://arxiv.org/abs/2609.17706",
+        "scirate_url": "https://scirate.com/arxiv/2609.17706",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2609.18757",
+        "title": "Query-Optimal and Gate-Efficient Lindbladian Simulation",
+        "abs_url": "https://arxiv.org/abs/2609.18757",
+        "scirate_url": "https://scirate.com/arxiv/2609.18757",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2609.18907",
+        "title": "Logarithmic-depth quantum simulation of boson sampling",
+        "abs_url": "https://arxiv.org/abs/2609.18907",
+        "scirate_url": "https://scirate.com/arxiv/2609.18907",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2609.19092",
+        "title": "Continuous variable distributed quantum sensing in integrated photonics",
+        "abs_url": "https://arxiv.org/abs/2609.19092",
+        "scirate_url": "https://scirate.com/arxiv/2609.19092",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-09-16",
     "title": "SciRate Digest \u2014 2026-09-16",
     "summary": "Today's 5 papers: Exact efficient simulation of noisy logical magic states using Clifford stabilizers; Quantum Compiler Design for Fault-Tolerant Quantum Computing; Hyperbolic color codes with constant rate and polynomial distance; Environmental records unlock universal quantum computation from thermal decoherence; Evaluating Verified Autonomy in Quantum Engineering.",
