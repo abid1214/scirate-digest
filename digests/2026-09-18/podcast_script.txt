@@ -1,0 +1,185 @@
+Maya: A compiler engineer told me last week that the cheapest gate in a fault-tolerant machine is the one where you don't do anything — you just relabel which qubit is which and carry on.
+
+Sam: Free in the sense that no physical operation touches the hardware, yes. Today's top paper works out exactly how much logic you can buy with "free," and the bill at the bottom of the receipt is rough.
+
+Maya: And then three papers about proving things — real proofs — for noise that isn't a coin flip. That's the shape of the day.
+
+[BREAK]
+
+Maya: This is The SciRate Daily Digest for Friday, September eighteenth, twenty twenty-six. I'm Maya.
+
+Sam: I'm Sam. On the slate: the exact ceiling on what free logical gates can do; a way to benchmark non-Clifford gadgets without ever tracking a quantum state; two independent proofs that error correction survives coherent miscalibration; and a claim that would close a central open problem in quantum coding theory — if it holds.
+
+[BREAK]
+
+Maya: Sam, everyone in fault tolerance repeats the same story: Clifford gates are cheap, the non-Clifford ones are the expensive part, magic states dominate the budget. This paper from Koh, Majidy, Yao and collaborators says that's the wrong dividing line. Unpack that.
+
+Sam: So the setting is what they call automorphism gates. You take a stabilizer code and you're only allowed two moves: apply a single-qubit Clifford to each physical qubit, and permute the qubits. No ancillas, no measurements, no entangling physical gates. Those are about as cheap as operations get. The question is: what logical operations can that ever produce?
+
+Maya: And they answer it completely?
+
+Sam: For any code with three or more logical qubits, yes — they pin down the exact maximal group you can reach, and they build codes that hit it. The ceiling is: all addressable phase gates and all addressable CNOTs between logical qubits. Which is a lot. But you can never, ever get an addressable Hadamard this way on an indecomposable CSS code. That's a hard no-go.
+
+Maya: Okay, but a ceiling you can actually reach sounds like good news. Where's the brutal bill?
+
+Sam: In the qubit count. To get all those addressable CNOTs, the number of physical qubits has to roughly double for every logical qubit you add. So the rate — logical per physical — crashes to zero exponentially. Meanwhile, if you only want the diagonal gates, phase gates and controlled-Z, transversal single-qubit Cliffords get you there with a number of qubits growing like the square of the logical count.
+
+Maya: That's a completely different regime.
+
+Sam: And here's the part that surprised me. Go up to the magic diagonal gates — the T gate and its two- and three-qubit cousins, controlled-S and controlled-controlled-Z — fully addressable, and the cost grows like the cube of the logical count. Cheaper than all addressable CNOTs. So the sharp cost divide isn't Clifford versus non-Clifford. It's gates that only stamp phases versus gates that shuffle information between logical qubits.
+
+Maya: What's the machinery? Because "we classified all stabilizer codes" is a strong sentence.
+
+Sam: The pretty piece is an all-or-nothing lemma: on an indecomposable CSS code, the single-qubit Cliffords that swap bit-flip and phase roles have to appear on every qubit or none. That forces any automorphism to factor cleanly into a transversal part and a permutation part, and then the group structure follows. For general stabilizer codes that factorization fails, and they have to induct and lean on a finite-group-theory classification of large symplectic subgroups to kill the remaining candidates.
+
+Maya: Caveats — the optimal-size constructions. What's the catch there?
+
+Sam: They have distance one against phase errors. So they're not usable codes as built; you restore protection by concatenation, and the overhead of doing that isn't quantified in this paper. And everything here bounds group size and structure, not the circuit-level fault tolerance or the decoding cost of the resulting code.
+
+Maya: Still, if you're designing a high-rate code, this tells you to stop chasing maximal native power.
+
+Sam: Exactly that. Pick the handful of gates your workload actually needs, and get the rest some other way — which loops back to the lifted surgery result we covered last week. That whole line of work exists because high-rate codes can't have everything for free, and now we know precisely how much "not everything" means.
+
+[BREAK]
+
+Sam: This next one is the other side of a coin we've been turning over all week. Earlier we had exact simulation of noisy logical magic states using Clifford stabilizer tricks — small gadgets, exact answers. Magdalena de la Fuente and Scruby are after the opposite regime: big blocks, many logical qubits, approximate but scalable.
+
+Maya: And the obstruction is the same one that's always there — you can simulate the Clifford part of a circuit efficiently, and the moment a T gate shows up you're stuck.
+
+Sam: Right. Which is maddening, because the non-Clifford gadgets are exactly the pieces whose noise performance dominates the resource budget. Their move is to notice you don't need the quantum state at all. What you actually want is the decoding problem: what syndromes come out, how a decoder responds, how often it picks the wrong logical class.
+
+Maya: Why is the decoding problem easier than the state?
+
+Sam: Because the protocol is fault tolerant. That's the structural insight, and I found it genuinely elegant. If the block is fault tolerant, the statistics of the measurement record are almost independent of the encoded information — the little that isn't independent is computable from the geometry of the circuit. They write the whole circuit as what they call a spacetime phase polynomial, and fault tolerance forces the placement of the non-Clifford gates to be a cohomology invariant of the fault complex.
+
+Maya: Translate that.
+
+Sam: The phase the circuit stamps on an error pattern can't depend on the arbitrary choices you make in filling that pattern in — only on its boundary data. If it did depend on the filling, the gate wouldn't be fault tolerant in the first place. So there's this rigidity you get for free.
+
+Maya: And then operationally, what does a user run?
+
+Sam: You decode the bit-flip errors exactly as in the underlying CSS circuit, because phase operators commute through diagonal gates. Then the leftover bit-flip pattern twists your phase detectors: some of them stop being detectors, and you inherit some extra effective random errors. All of that comes out of an explicitly constructible matrix — linear algebra. Then you run your ordinary matching or belief-propagation decoder on the twisted graph. And the overhead from the non-Clifford part doesn't grow with the number of logical qubits you're acting on.
+
+Maya: So a thousand parallel T gates costs what one costs, in simulation terms. That's the headline.
+
+Sam: That's the headline. It applies to code switching, transversal non-Clifford gates, gauging diagonal symmetries — the whole family.
+
+Maya: Now push back for me. What's soft here?
+
+Sam: Two things. There's a technical requirement they call condition C — essentially that the leftover bit-flip region is contractible and isolated — and verifying it exactly is exponentially hard in the circuit volume. In practice you use approximate checks or lean on topological structure, and whenever it fails you simply declare a decoding failure. So the failure rate you get is a provable overestimate, which is the safe direction, but how loose it is isn't quantified.
+
+Maya: And the second?
+
+Sam: No numerics in this paper — they're deferred to a companion. So this is a framework with a theorem, not a benchmark yet. And the honest verdict on regime: for post-selection-heavy, low-distance protocols like cultivation, the exact tableau methods we discussed this week are the right tool. This one earns its keep when you have a big block and lots of logical qubits.
+
+[BREAK]
+
+Maya: Let's talk about an assumption that's been sitting in threshold theorems since the nineties. Every proof I've read models noise as random Pauli errors — bit flips and phase flips drawn from a distribution.
+
+Sam: And that's not an accident of taste, it's what the proof technique can handle. If errors are independent random events, you can union-bound over bad configurations, do a percolation argument, done. Real hardware doesn't oblige. A slightly mis-calibrated pulse gives you a small coherent over-rotation, and those are amplitudes, not probabilities — they can add constructively or cancel.
+
+Maya: And the naive fix fails how badly?
+
+Sam: Catastrophically. If you bound each term separately with a triangle inequality, you pick up a factor exponential in the circuit size, and your bound says the logical error is bigger than one. Vacuous. So for thirty years the coherent case was numerics and hope, with rigorous results only for special codes or noise that shrinks as the code grows.
+
+Maya: Enter Han, Zhao, Xu, Wang and Liu.
+
+Sam: They prove that any family of quantum low-density parity-check codes — qLDPC — whose distance grows at least like the logarithm of the code size has a nonzero threshold against arbitrary local coherent noise. Below a constant rotation strength, the logical error, measured in diamond distance, is suppressed exponentially in the code distance with only a polynomial prefactor.
+
+Maya: Logarithmic distance is a weak requirement.
+
+Sam: Remarkably weak. Previous work needed constant rate and linear distance. This covers surface codes, color codes, hypergraph products, bivariate bicycle codes, expander codes, the asymptotically good families — essentially everything on anyone's roadmap. And it extends beyond unitary over-rotations to arbitrary local noise channels.
+
+Maya: What's the trick that replaces the union bound?
+
+Sam: They call it cluster resummation. Instead of bounding every error configuration in isolation, you mark one large connected cluster of fault locations and then exactly resum all the configurations disconnected from it — before you take any operator norms. The cancellation between amplitudes stays intact, and what's left is a geometric series that converges when the rotation strength is small.
+
+Maya: And the diamond distance matters why?
+
+Sam: Because coherent errors scale as the square root of the infidelity — the naive fidelity metric flatters them. Diamond distance is the honest worst-case measure, so using it is the right call.
+
+Maya: Here's my asterisk, and it's a big one: is syndrome extraction noisy in this model?
+
+Sam: No. This is code capacity — perfect, noiseless measurements. Circuit-level coherent noise is wide open, and so is non-Markovian noise. Also the threshold is a constant that depends on the check weights and the noise support, and they never evaluate it numerically; they're candid that it's likely far below the true value. And the guarantee for a practical decoder uses minimum-weight decoding, which isn't efficiently implementable in general.
+
+Maya: So no efficient decoder with a coherent-noise guarantee yet.
+
+Sam: Not yet. Hold that thought, because paper five attacks the same wall from a completely different direction.
+
+[BREAK]
+
+Sam: Before that, though — the biggest claim of the day, and I want to be careful with it. Gay and Jeronimo say they have asymptotically good quantum locally testable codes.
+
+Maya: Start with what local testability buys. I know what rate and distance are for.
+
+Sam: It means a handful of random checks tells you roughly how far your state is from the code space — the fraction of violated checks is proportional to the actual distance. Not just "is there an error," but a calibrated estimate of how bad things are, from constant effort. Classically that property is the backbone of probabilistically checkable proofs, and the classical version with all three parameters constant was only settled a few years ago.
+
+Maya: And the quantum analogue has been the standing open problem.
+
+Sam: Right — we've had good rate and distance together for a while now. Adding constant-weight testers with constant soundness on top was the missing corner. Their construction places Reed–Solomon-based local codes on arithmetic quotients of products of trees, and the engine underneath is a new theorem that tuples of Reed–Solomon codes are product-expanding uniformly — the expansion constant is fixed before you pick your dimensions or field sizes.
+
+Maya: That sounds like a heavy algebraic-geometry hammer.
+
+Sam: It is. Which brings me to the honesty part. This is a claim, not yet a verified fact. It runs thirteen sections plus appendices, it invokes external algebraic-geometry results in modified form, and nobody outside the authors has checked it. That's not a criticism — it's the normal state of a long proof on day one.
+
+Maya: And even if it's right, the constants?
+
+Sam: Astronomically bad. Explicit, but the locality will be enormous and the soundness microscopic. So nobody is building this. The value is that it settles a question of principle and hands the community a product-expansion theorem that's useful on its own for robust tensor codes.
+
+Maya: Who should actually read it?
+
+Sam: Coding theorists and people who work on quantum PCP-style hardness. What I'd watch for is verification of the interpolation and regularity arguments, and whether the soundness bound survives scrutiny.
+
+Maya: There's also a nice hook to the previous paper — the coherent-noise theorem explicitly covers locally testable codes.
+
+Sam: It does, and that's a real connection rather than a cute one. If this family stands up, it inherits provable robustness to worst-case coherent miscalibration for free, without anyone doing extra work.
+
+[BREAK]
+
+Maya: Okay, the other coherent-noise proof. Tamiya and Koashi. You said different direction — how different?
+
+Sam: They narrow the noise and get a number. Pure single-qubit phase rotations, CSS qLDPC codes with a bounded number of logical qubits — which includes the rotated surface code, the toric code, color codes — and maximum-likelihood Pauli recovery. And they prove a constant, code-size-independent threshold with an explicit value.
+
+Maya: Which is?
+
+Sam: For the rotated surface code, over-rotations up to about half a degree. Below that, infidelity falls off exponentially in the phase distance.
+
+Maya: Half a degree feels small.
+
+Sam: It's one to two orders of magnitude below what simulations suggest the real threshold is. But notice what changed: the gap to numerics is now quantitative rather than conceptual. Nobody has to wonder whether a threshold exists under coherent noise for these codes anymore.
+
+Maya: What's the mechanism, and how does it differ from cluster resummation?
+
+Sam: They go through Fourier analysis. The logical channel's fidelity becomes a sum over syndromes of pairwise overlaps between logical classes; writing the phases of computational basis states inside the code space, those overlaps turn into Fourier coefficients of convolutions. Then the crucial norm becomes the partition function of a polymer model — polymers being connected sets of qubits with trivial syndrome — and a classical cluster expansion converges when the rotation angle is small enough.
+
+Maya: So they've turned coherent error correction into statistical mechanics.
+
+Sam: Into a very specific, very well-studied piece of statistical mechanics, yes. And the reason the distance shows up is lovely: when you compare cluster sums for two different logical classes, everything cancels except clusters that act nontrivially on the logic — and those have to contain at least a code distance worth of qubits.
+
+Maya: You flagged something earlier about a negative result inside this paper.
+
+Sam: That's the bit I keep thinking about. They write down explicitly what happens if you discard the interference with a triangle inequality: your bound grows exponentially in the number of physical qubits. So they demonstrate, rather than assert, that keeping the cancellation is load-bearing. Anyone who tries the easy route is guaranteed to fail.
+
+Maya: Let me press on the decoder, though. Maximum likelihood here needs to know the rotation angles.
+
+Sam: It does. And your objection is the obvious one — if you knew your miscalibration that precisely, you'd just fix the pulse.
+
+Maya: Right, that's my worry. It feels like the proof is assuming away the problem.
+
+Sam: Partly fair. Two defenses. One, in practice you characterize the angles statistically and feed that into a decoder prior, which is what people already do for biased Pauli noise. Two, the conceptual point stands regardless: syndrome extraction plus Pauli recovery alone suppresses coherent noise. You don't need twirling, you don't need randomized compiling, you don't need teleportation to scramble the errors away. That was genuinely unsettled.
+
+Maya: And the same asterisk as the qLDPC paper — noiseless measurements.
+
+Sam: Same asterisk. No bit-flip errors, no measurement errors, entanglement fidelity with a maximally mixed input as the figure of merit — and the diamond-norm version of their bound is weaker. Matching-style decoders aren't covered either. Put the two papers side by side: one gives you breadth of noise model and a broad code class, the other gives you a concrete number and a decoder that's actually optimal. Neither has circuit-level noise. That's the next mountain, and I'd bet the polymer picture is how someone climbs it.
+
+[BREAK]
+
+Maya: One result each. Mine is the cost divide from the automorphism paper. I came in thinking the expensive thing about a gate is how hard it is to make fault tolerant, and I'm leaving thinking the expensive thing is whether it moves information between logical qubits. That reorders how I'd read every architecture proposal.
+
+Sam: Mine is the small demonstration buried in the topological threshold paper — that throwing away interference doesn't just weaken your bound, it destroys it completely. It's a rare case where a paper shows you exactly why the obvious approach was never going to work, and then does the hard thing anyway.
+
+Maya: Links to all five papers are in the show notes.
+
+Sam: And the show notes have a link for sending in questions — we read them, and we work through the backlog. Keep them coming.
+
+Maya: We'll see you next time.

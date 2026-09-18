@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-09-18",
+    "title": "SciRate Digest \u2014 2026-09-18",
+    "summary": "Today's 5 papers: Achieving the limits of automorphism gates; Efficiently estimating failure rates of fault-tolerant logical non-Clifford blocks; Coherent error threshold for quantum LDPC codes; Asymptotically Good Quantum Locally Testable Codes; Proof of a positive coherent-error threshold for topological quantum codes.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-09-18/digest.mp3",
+    "mp3_bytes": 18484269,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2609.19250",
+        "title": "Achieving the limits of automorphism gates",
+        "abs_url": "https://arxiv.org/abs/2609.19250",
+        "scirate_url": "https://scirate.com/arxiv/2609.19250",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2609.19485",
+        "title": "Efficiently estimating failure rates of fault-tolerant logical non-Clifford blocks",
+        "abs_url": "https://arxiv.org/abs/2609.19485",
+        "scirate_url": "https://scirate.com/arxiv/2609.19485",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2609.20537",
+        "title": "Coherent error threshold for quantum LDPC codes",
+        "abs_url": "https://arxiv.org/abs/2609.20537",
+        "scirate_url": "https://scirate.com/arxiv/2609.20537",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2609.20780",
+        "title": "Asymptotically Good Quantum Locally Testable Codes",
+        "abs_url": "https://arxiv.org/abs/2609.20780",
+        "scirate_url": "https://scirate.com/arxiv/2609.20780",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2609.20708",
+        "title": "Proof of a positive coherent-error threshold for topological quantum codes",
+        "abs_url": "https://arxiv.org/abs/2609.20708",
+        "scirate_url": "https://scirate.com/arxiv/2609.20708",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-09-17",
     "title": "SciRate Digest \u2014 2026-09-17",
     "summary": "Today's 5 papers: Exact logical error rates for magic state cultivation; Diagnosing and Restoring the Degraded Fault Distance of Magic State Cultivation; Query-Optimal and Gate-Efficient Lindbladian Simulation; Logarithmic-depth quantum simulation of boson sampling; Continuous variable distributed quantum sensing in integrated photonics.",
