@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-09-19",
+    "title": "SciRate Digest \u2014 2026-09-19",
+    "summary": "Today's 5 papers: Hardness of Pathfinding in a Welded Tree; Emergent classicality and wavefunction branching in an isolated quantum many-body system; FT-Weave: Real-Time Compilation Framework for Reconfigurable Fault-Tolerant Quantum Architectures; Scalable logical qubits; Quantum Simulation of Dissipative Non-Markovian Coupled Classical Oscillators.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-09-19/digest.mp3",
+    "mp3_bytes": 17330733,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2609.20651",
+        "title": "Hardness of Pathfinding in a Welded Tree",
+        "abs_url": "https://arxiv.org/abs/2609.20651",
+        "scirate_url": "https://scirate.com/arxiv/2609.20651",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2609.19254",
+        "title": "Emergent classicality and wavefunction branching in an isolated quantum many-body system",
+        "abs_url": "https://arxiv.org/abs/2609.19254",
+        "scirate_url": "https://scirate.com/arxiv/2609.19254",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2609.20573",
+        "title": "FT-Weave: Real-Time Compilation Framework for Reconfigurable Fault-Tolerant Quantum Architectures",
+        "abs_url": "https://arxiv.org/abs/2609.20573",
+        "scirate_url": "https://scirate.com/arxiv/2609.20573",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2609.20549",
+        "title": "Scalable logical qubits",
+        "abs_url": "https://arxiv.org/abs/2609.20549",
+        "scirate_url": "https://scirate.com/arxiv/2609.20549",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2609.20721",
+        "title": "Quantum Simulation of Dissipative Non-Markovian Coupled Classical Oscillators",
+        "abs_url": "https://arxiv.org/abs/2609.20721",
+        "scirate_url": "https://scirate.com/arxiv/2609.20721",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-09-18",
     "title": "SciRate Digest \u2014 2026-09-18",
     "summary": "Today's 5 papers: Achieving the limits of automorphism gates; Efficiently estimating failure rates of fault-tolerant logical non-Clifford blocks; Coherent error threshold for quantum LDPC codes; Asymptotically Good Quantum Locally Testable Codes; Proof of a positive coherent-error threshold for topological quantum codes.",
