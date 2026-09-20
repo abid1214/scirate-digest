@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-09-20",
+    "title": "SciRate Digest \u2014 2026-09-20",
+    "summary": "Today's 5 papers: Blind Quantum Computation with a Small Quantum Server; Marton's conjecture in polynomial time; Quantum computers will not be that different: A blueprint for quantum computer architecture at scale; $k$-fold unbiased measurements and maximal incompatibility; $n$-fold unbiased bases: an extension of the MUB condition.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-09-20/digest.mp3",
+    "mp3_bytes": 17278509,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2609.20729",
+        "title": "Blind Quantum Computation with a Small Quantum Server",
+        "abs_url": "https://arxiv.org/abs/2609.20729",
+        "scirate_url": "https://scirate.com/arxiv/2609.20729",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2609.20771",
+        "title": "Marton's conjecture in polynomial time",
+        "abs_url": "https://arxiv.org/abs/2609.20771",
+        "scirate_url": "https://scirate.com/arxiv/2609.20771",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2609.19639",
+        "title": "Quantum computers will not be that different: A blueprint for quantum computer architecture at scale",
+        "abs_url": "https://arxiv.org/abs/2609.19639",
+        "scirate_url": "https://scirate.com/arxiv/2609.19639",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2609.20728",
+        "title": "$k$-fold unbiased measurements and maximal incompatibility",
+        "abs_url": "https://arxiv.org/abs/2609.20728",
+        "scirate_url": "https://scirate.com/arxiv/2609.20728",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "1706.04446",
+        "title": "$n$-fold unbiased bases: an extension of the MUB condition",
+        "abs_url": "https://arxiv.org/abs/1706.04446",
+        "scirate_url": "https://scirate.com/arxiv/1706.04446",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-09-19",
     "title": "SciRate Digest \u2014 2026-09-19",
     "summary": "Today's 5 papers: Hardness of Pathfinding in a Welded Tree; Emergent classicality and wavefunction branching in an isolated quantum many-body system; FT-Weave: Real-Time Compilation Framework for Reconfigurable Fault-Tolerant Quantum Architectures; Scalable logical qubits; Quantum Simulation of Dissipative Non-Markovian Coupled Classical Oscillators.",
