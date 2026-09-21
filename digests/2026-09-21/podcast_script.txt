@@ -1,0 +1,151 @@
+Maya: Sam, you know the feeling where the sticker says half price, and then you get to the fine print and there's a restocking fee and a two-year contract?
+
+Sam: I do, and that is uncomfortably close to my reading notes from this week. Every single paper on today's list advertises a saving — fewer qubits, fewer parameters, a hard calculation reduced to two numbers — and in every case the interesting part is what the discount costs you somewhere else.
+
+Maya: Then that's the show. Welcome to the SciRate Daily Digest for Monday, September twenty-first. Today: a color code layout that halves the footprint of a logical qubit, a low-density-parity-check architecture rebuilt for chips whose wiring is frozen at the factory, a leaner way to parameterize quantum signal processing, a theory of how non-stabilizerness spreads that has a genuinely counterintuitive punchline, and a warning that the critical exponent you measure at an error-correction threshold might be telling you about your noise model rather than about nature.
+
+Sam: Five papers, one theme: read the fine print.
+
+[BREAK]
+
+Maya: Let's start with the number that actually decides whether anyone builds a quantum computer: how many physical qubits does one protected logical qubit cost you?
+
+Sam: Right, and for the rotated surface code the answer is roughly two physical qubits for every unit of distance-squared — data plus the helper qubits that do the measuring. Color codes have always looked better on paper, because their checks are denser, but that advantage has a habit of evaporating once you count the ancillas and let the measurement circuits be noisy too. This paper takes the square-octagon color code and re-embeds it in what the author calls a brickwork layout on a plain square grid: alternating rails of data and ancilla qubits, nearest-neighbour couplings only.
+
+Maya: Plain square grid meaning it doesn't ask the hardware people for anything exotic.
+
+Sam: Exactly the same connectivity superconducting chips already have. The clever bit is the readout schedule. Instead of one dedicated pair of helper qubits per face, entangled ancilla pairs are shared between the little square faces and the big octagonal ones, and each pair reads out both an X-type and a Z-type check in the same cycle — that's the "superdense" trick. Twelve layers of two-qubit gates and you've extracted every check in the code.
+
+Maya: And the payoff?
+
+Sam: Asymptotically about one physical qubit per distance-squared, against one and a half for the triangular color code and two for the surface code. So roughly half the surface code footprint at matched protection.
+
+Maya: Okay, but sharing ancillas is exactly the sort of thing that usually breaks the code. One helper qubit touching many data qubits is how you get hook errors — a single fault that propagates into a multi-qubit error and quietly halves your distance.
+
+Sam: That's the heart of the paper, and it's why the planar version alternates forward and reverse cycles — the schedule runs one way, then mirrors, so the hook errors from the two phases don't line up into a cheap logical. The author checks it properly, with matched upper and lower bounds on the full circuit-level distance in both bases and both starting phases, at planar distances three, seven, eleven and fifteen.
+
+Maya: Checked, not proved. And only for distances in one arithmetic family.
+
+Sam: Correct, and the paper says "appear to preserve" rather than claiming a theorem. There's a second cost I want on the record: the cycle is about two and a half times as many gate moments as a surface code round. That means more error per round, so the sub-threshold decay with distance is worse. The argument for why the footprint still wins is a crossover statement — for small enough physical error rate and a demanding enough target, the family with the smaller footprint coefficient always wins eventually, whatever the prefactors.
+
+Maya: "Eventually" is doing work in that sentence.
+
+Sam: It is, and the demonstrated advantage leans on the two largest simulated points. No threshold is quoted. What sold me instead was a negative result buried in there: repacking the honeycomb color code schedule into eight layers instead of ten keeps the syndrome extraction perfectly correct in the noiseless sense — and collapses the circuit distance to three. That's a beautiful reminder that checking your schedule against ideal syndromes tells you almost nothing.
+
+Maya: We looked at hyperbolic color codes with constant rate last Wednesday, and this feels like the same current from the other direction — less about asymptotic rate, more about making a modest planar patch actually cheap on real wiring.
+
+Sam: Agreed. Who should read it: anyone on a superconducting roadmap doing memory resource estimates. What I'd watch for: a fast decoder. The simulations use a near-optimal but slow decoder, and this is memory only — no lattice surgery, no logical gates, no multi-qubit layouts.
+
+[BREAK]
+
+Maya: Next paper picks a fight with a widespread assumption about low-density-parity-check codes. Sam, set up the fight.
+
+Sam: The promise of qLDPC codes is a big drop in qubits per logical qubit relative to surface codes. But the most efficient architectures assume you can change which qubits talk to which during the computation — move an ancilla gadget here, then there. Atoms and ions can do that. A superconducting chip cannot; the couplers are etched at fabrication. So there's been a real worry that fixed connectivity forces you back into a restricted instruction set and a large time overhead.
+
+Maya: And this paper says no.
+
+Sam: It says you can freeze the flexibility into hardware with two moves. First, permanently wire in one measurement gadget per logical generator, and then the only thing you switch during the computation is whether each gadget is on or off. Second — and this is the part I liked — instead of moving the gadgets to the data, rotate the data among its own qubits, using a cyclic shift that's a symmetry of the code and needs only couplers that already exist.
+
+Maya: So the logical Pauli measurement you want is always reachable: shift the block until the operator lines up under the gadgets you already built.
+
+Sam: Yes, at most a handful of primitive shifts, costing a few extra code cycles. They work with a generalized bicycle code carrying sixteen logical qubits in five hundred and ten physical ones, and the headline capability survives: any logical Pauli product measured in a single logical cycle, with every qubit's coupler count capped at eight.
+
+Maya: Eight couplers per qubit being the number superconducting people say is buildable.
+
+Sam: That's the design constraint, yes. And the resource estimate lands at factoring a two-thousand-forty-eight-bit key in about a month with roughly a hundred and twenty thousand physical qubits — versus about a hundred thousand for the hardware-agnostic version. So a twenty percent penalty for obeying the wiring constraint, not a factor of several.
+
+Maya: Here's my problem. Degree eight bounds how many couplers touch a qubit. It says nothing about how long those couplers are or how many of them cross each other on the chip — and crossings are exactly what actually kills a superconducting layout. Their inter-block memory construction adds something like a thousand extra connections per block.
+
+Sam: That's the right objection and the paper concedes it. Degree is a necessary condition, not a sufficient one. My other reservation is the error rate. The logical failure figure comes from simulating distances up to ten and extrapolating to twenty-four — that's an order of magnitude in the exponent, and the quoted confidence interval spans an order of magnitude too. Also the shift circuits and the measurement circuits are simulated separately and then added, rather than as one integrated architecture with memory access and the magic-state factory running.
+
+Maya: Which connects to the blueprint paper we discussed yesterday — the argument that once a machine is big, the hard problems become the boring engineering ones. Wiring, latency, layout.
+
+Sam: And on latency this paper is honest that it doesn't analyse decoder throughput for these big blocks, even though the whole design assumes a ten-microsecond reaction time. Read it if you do cryptanalytic resource estimates and you've been discounting qLDPC because of connectivity. Watch for someone laying this out as an actual floorplan.
+
+[BREAK]
+
+Maya: Paper three claims exponentially fewer tunable parameters in quantum signal processing. Sam, when I read a claim like that my first instinct is: where's the catch?
+
+Sam: Your instinct is correct, and I'll get to the catch, but the idea underneath is genuinely nice. Quantum signal processing is the engine behind Hamiltonian simulation, matrix inversion, eigenvalue transforms. You interleave a signal rotation with tunable phase rotations, and the number of angles you need grows in step with the degree of the polynomial you're implementing. Finding those angles is numerically fragile — it's a nonlinear factorization problem that people have written whole papers about stabilizing.
+
+Maya: And the change here?
+
+Sam: Let each layer repeat the signal rotation several times instead of once, and treat the repetition counts as part of the design. Then the polynomial you can produce isn't every order up to the degree — it's supported exactly on what they call the reach: all the orders you can hit by adding and subtracting your repetition counts with either sign.
+
+Maya: So a small set of counts covers a scattered set of high orders.
+
+Sam: Right, and each extra layer can roughly double the number of distinct orders you cover. So if your target function is sparse in the Chebyshev basis — a handful of terms, some of them high order — you can hit it with far fewer angles than the degree would suggest. And here's the part I think is the real contribution: the map from angles to coefficients becomes an explicit Hadamard-like linear system. Angle finding stops being a delicate nonlinear fit and becomes solving a linear system.
+
+Maya: Okay. Now the catch. Does this make Hamiltonian simulation cheaper? Because repeating the signal operator sounds like it should cost more queries, not fewer.
+
+Sam: It does not make it cheaper, and this is the honest limitation. The framework as written lives in the classical-input regime, where the signal is a known number, so repeating the rotation collapses into one rotation with a bigger angle — free. The moment your signal is a block-encoded oracle, repeating it means querying it repeatedly, and the query depth is unchanged. Extending this to weighted access inside singular-value transformation is explicitly left open.
+
+Maya: So it's a parameter-count result, not a query-complexity result.
+
+Sam: Yes. And the sparsity condition bites: many of the functions people actually want — inverse, sign, step — are not sparse in Chebyshev, so you fall back to a superset of orders plus an approximation error. There's also a dimension-counting caveat: with a few angles and many coefficients, the reachable coefficient vectors form a low-dimensional surface. Expressivity is preserved for favorable targets, not universally.
+
+Maya: Where does the machine learning come in?
+
+Sam: They use these compact circuits as the learnable single-variable functions on the edges of a Kolmogorov-Arnold network — the architecture where the learnable object lives on the connections rather than being a fixed activation. It sidesteps the block-encoding overhead of earlier quantum versions, and the rotations it needs are the ones hardware already does natively. I'd read this if you write angle-synthesis code. The variational claims I'd treat as promising rather than demonstrated.
+
+[BREAK]
+
+Maya: Paper four has the result that made me stop and re-read, so let's just lead with it. Sam, what happens to non-stabilizerness under chaotic dynamics?
+
+Sam: It gets destroyed. Which is backwards from what most people would guess. The quantity here is nonlocal magic — the part of a state's non-stabilizerness that you cannot remove by changing basis locally on each side of a cut. It's the irreducible overlap of entanglement and magic, and it's been almost impossible to compute in dynamical settings because it involves an optimization over the whole entanglement spectrum.
+
+Maya: And they found a shortcut.
+
+Sam: They found that it's controlled, to very good accuracy, by one simple quantity: the capacity of entanglement — essentially the variance of the entanglement spectrum, how spread out the Schmidt weights are. Entropy is the mean, capacity is the fluctuation. If the spectrum is broad, nonlocal magic grows like the logarithm of the capacity; if it's nearly flat, it grows linearly. Two cumulants replace a hard optimization.
+
+Maya: Which is what lets them turn it into a dynamical theory.
+
+Sam: Exactly — capacity after a quench is something you can compute with a quasiparticle picture in integrable models, and they push it to interacting integrable systems too. And that's where the punchline lands. Under strongly scrambling dynamics, nonlocal magic rises, peaks at a time set by the subsystem size, and then decays away — because scrambling flattens the entanglement spectrum, and a flat spectrum has no fluctuation left to support the resource. It settles to about a quarter of a bit at a balanced cut. Whereas free-fermion dynamics — matchgate circuits, classically simulable — keeps it, growing like the logarithm of the subsystem size, forever.
+
+Maya: Hold on. If a classically simulable evolution sustains more of this resource than a chaotic one, then nonlocal magic can't be a measure of classical hardness. So what is it a measure of?
+
+Sam: That's exactly the right correction to make, and the paper leans into it. It's a catalytic resource. Nonlocal magic is what lets a state act as a universal catalyst — the embezzlement property, where you can extract any entangled state you like from it while barely disturbing it. Their conclusion is that catalytic power and scrambling power come apart: strong scramblers embezzle only transiently. Free fermions are the good catalysts.
+
+Maya: How solid is the evidence?
+
+Sam: Mixed, in a way they're upfront about. The free-fermion side is strong — covariance-matrix methods at thousands of sites. The chaotic side is exact statevector evolution at twenty spins with thousands of realizations, which is small, and in the mixed-field Ising model the peak grows faster than their formula over the sizes they can reach; they attribute that to pre-asymptotic effects without proving it. Their Gaussian approximation also fails at hard-edged spectra, and they construct explicit counterexamples where large capacity does not imply large nonlocal magic. So the law is predictive, not universal.
+
+Maya: Who's the audience?
+
+Sam: People doing resource theory and entanglement-spectrum measurements, because capacity is a quantity you can already access in tensor networks and, in some settings, experiment. What I'd want next is the interacting-integrable prediction tested numerically — right now it's an unverified formula.
+
+[BREAK]
+
+Maya: Last paper. Sam, there's a piece of physics folklore I want you to defend: that it doesn't matter whether you fix a quantity or let it fluctuate — canonical versus grand canonical — because in the thermodynamic limit the universal properties come out the same.
+
+Sam: It's more than folklore, it's a load-bearing assumption in how we extract critical exponents. And this paper builds a solvable counterexample at an error-correction threshold. The model is deliberately simple: encode with a Haar-random unitary, apply single-site errors, decode by inverting the encoder. There's a sharp transition in the fidelity when the error strength crosses the redundancy of the code — a Singleton-bound analogue.
+
+Maya: And the exponent that says how fast the transition sharpens with system size...
+
+Sam: ...depends on how you drew the errors. If you fix the number of each error type across the chain, the transition sharpens at one rate. If instead each site independently samples its own error, and you average the success probability over those draws, it sharpens at a different rate — the exponent doubles. Both values exactly saturate information-theoretic lower bounds, which they extend, including to a family of ensembles that interpolate between the two.
+
+Maya: Why does the fixed-count version behave differently at all?
+
+Sam: Because a Haar-random encoder is permutation symmetric, so the fidelity depends only on how many errors of each type occurred, not where. Fix those counts and the randomness is inert — you get a step function smoothed only by the discreteness of integer counts. Let the counts fluctuate and you get fluctuations of order the square root of the system size, which smear the step out much more gently. Central limit theorem, essentially.
+
+Maya: Here's my worry about generalizing. This model has no recovery operation at all — the "fidelity" is post-selected on getting a trivial syndrome. That's a proxy for decoding, not decoding. So is the warning real, or is it an artifact of a very thin model?
+
+Sam: I think one specific part of it is real and important, and it's not the exponent. It's their depolarizing example. You can write the same physical noise channel as a mixture of classical error trajectories in many inequivalent ways — and they exhibit a decomposition into unitary over-rotations where a particular choice of rotation angle drives the effective error strength to infinity and the transition vanishes entirely. Identical channel, identical physics, different bookkeeping, no threshold.
+
+Maya: That's a genuinely uncomfortable result if you simulate noise by sampling trajectories.
+
+Sam: It is. And it lands right next to our first two papers today, both of which quote logical error rates by fitting a scaling form and extrapolating it well past the simulated sizes. This paper's point is that the scaling form itself can encode a modeling choice.
+
+Maya: Caveats for the record?
+
+Sam: The analytics are done for one averaging order with the other argued and checked only at twenty qubits, the fixed-count data show a strong staircase from integer effects, and one of the two bounds rests on a heuristic counting argument. You could also reasonably say these are just different noise models rather than thermodynamically equivalent ensembles. Read it if you fit threshold collapses for a living. The compact channel invariant they build the whole calculation on looks reusable.
+
+[BREAK]
+
+Maya: One result each. Mine is the eight-layer repacking that looked perfect on ideal syndromes and had a circuit distance of three. That's the kind of failure that would sit in a codebase for a year.
+
+Sam: Mine is chaos erasing nonlocal magic while free fermions keep it. I have spent years using "scrambling" as shorthand for "hard and resourceful," and that paper pulled those two apart.
+
+Maya: Links to all five papers are in the show notes, along with a link for sending in questions — we've got a backlog and we work through it oldest first.
+
+Sam: Read the fine print. See you tomorrow.
