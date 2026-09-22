@@ -1,0 +1,173 @@
+Maya: Sam, I tried to picture a partition function with a complex magnetic field this morning, and I got about as far as "imaginary magnet."
+
+Sam: Nobody pictures it. It's a bookkeeping move that turns "does this material have a phase transition" into "where are the roots of a polynomial." And as of today that trick finally works for electrons, which is genuinely overdue.
+
+Maya: Which sets up the day, actually — today's list is about boundaries. One that turned out to be provable, one that turned out to be false, and one with an exact price tag in entangled pairs.
+
+[BREAK]
+
+Maya: This is the SciRate Daily Digest for Tuesday, September twenty-second, twenty twenty-six. I'm Maya.
+
+Sam: And I'm Sam. Five papers: a Lee–Yang theorem for interacting fermions, a measurement trick that pulls exponentially many quantities out of one setting, the death of a phase-space uncertainty conjecture, the exact entanglement cost of purifying a state across a network, and a trapped-ion machine running a full fault-tolerant toolbox on an awkward little code.
+
+Maya: Start with the one that's been open since the nineteen fifties.
+
+[BREAK]
+
+Sam: So in nineteen fifty-two, Lee and Yang proved something beautiful about ferromagnets. Write the partition function as a polynomial in the magnetic field, let the field go complex, and ask where the roots are. Their theorem says all the roots sit on the imaginary axis — meaning at any real, nonzero field, the partition function never vanishes, and a phase transition is impossible there.
+
+Maya: And zeros mean transitions because the free energy is a logarithm of that thing — a zero is where it goes singular.
+
+Sam: Exactly. Now, that got extended to quantum spin systems years ago. But for fermions — electrons, the things chemistry and materials are made of — nobody had it. Not even for free fermions, which is embarrassing when you say it out loud.
+
+Maya: This is Rayudu, Misawa, Zhao and Takahashi. What class of models do they crack?
+
+Sam: Hopping plus pairing plus density-density interactions — so a Hubbard-type world — with two real conditions: the hopping matrix has to be positive semidefinite, and the interactions have to be attractive after the appropriate rotation. Under that, they prove all the zeros in the complex field plane lie in a strip whose width is set by the largest hopping eigenvalue. Turn the field up past the edge of that strip and you're in guaranteed zero-free territory.
+
+Maya: And zero-freeness buys you what, concretely?
+
+Sam: A spectral gap — provably, proportional to the field you turned on. And once you have a promised gap, there's an existing quantum algorithm that estimates the ground energy in polynomial time. So you get rigorous guarantees for strongly correlated electron models, which is a very short list.
+
+Maya: Which models actually land inside the class?
+
+Sam: Attractive Hubbard in a pairing field, bipartite repulsive Hubbard in a staggered Zeeman field, and — this is the one people will chase — the interacting Hofstadter model, electrons on a lattice in a magnetic flux. That one has no known sign-problem-free formulation, so classical Monte Carlo chokes on it.
+
+Maya: Hold on, though. The gap only exists because you switched on a field that isn't the physically interesting knob. Nobody studies the Hubbard model in a big staggered field because that's where the interesting physics is.
+
+Sam: That's the honest limitation, yes. The statement is about that specific rotated field, not about zero field, and it doesn't tell you there's no transition in the thing you care about. The other cost is that the gap only grows linearly with the field, so precision is bought at polynomial cost, not logarithmic.
+
+Maya: What's the mechanism? How do you even prove something like this with interactions in the room?
+
+Sam: This is the part I liked. They Trotterize, write the partition function as a polynomial in one variable per mode per time slice, and for free fermions its square is a determinant. Positivity of the hopping matrix makes a certain operator a contraction, and that kills the roots inside the unit polydisc. Then the interactions come in as a term-by-term product with a classical ferromagnetic Ising partition function — literally the Lee–Yang original — and there's a stability theory saying such products preserve zero-freeness.
+
+Maya: So the interacting fermion problem is a free determinant multiplied into a classical ferromagnet.
+
+Sam: Coefficient by coefficient, yes. There's also a cute corollary: no gapped topologically ordered phase with field-stable degeneracy can live in this class, which lines up with how the honeycomb-Hubbard "intermediate phase" debate got resolved. Who should read it: anyone doing sign-problem-free classifications, and anyone hunting provable quantum advantage. What I'd watch is whether Hofstadter gets a classical hardness argument, because right now it's a candidate, not a proof.
+
+[BREAK]
+
+Maya: Next one is a puzzle I want you to resolve for me. The claim is you can estimate every Pauli observable — four to the number of qubits of them — from a single measurement setting. That sounds like it should be illegal.
+
+Sam: It sounds illegal because normally it is. Setup first: virtual distillation is an error-mitigation move where you hold several copies of a noisy state and measure across them, and what you read out are expectation values on a purified version of the state — the noise gets suppressed without ever physically cleaning anything up.
+
+Maya: And the cost of learning all the Pauli values of that purified state was thought to be exponential.
+
+Sam: Right, previous replica-shadow protocols scaled like two to the number of qubits or worse. Chen, Zheng, Wang and Chen argue the barrier was never really an information barrier — it was a measurement-incompatibility barrier, and it dissolves if you linearize the problem the right way.
+
+Maya: Unpack "linearize."
+
+Sam: The quantity you want is nonlinear in the state, so you write it as an ordinary observable acting on several copies at once. That rewriting isn't unique — and that freedom is the whole paper. They pick a version where each Pauli acts on a paired-up couple of replicas. Any minus sign from two Paulis anticommuting shows up twice, once in each member of the pair, so it cancels. The result is that the entire exponentially large family of observables commutes.
+
+Maya: And commuting means one joint eigenbasis, one measurement, unbiased estimators for all of them simultaneously.
+
+Sam: With unit range, which matters — you get a concentration bound, union bound over all the targets, and the copy count grows with the number of qubits, not with two to the number of qubits. Their worked example: fifty qubits, five percent accuracy, roughly a quarter of a million copies. That's two hundred physical qubits running at once, but it's finite.
+
+Maya: What's the catch, because there's clearly a catch.
+
+Sam: You get the squares of the moments. The signs are gone. There's a second protocol that recovers signs using a randomly generated "mimicking state," and it hits the optimal replica count — but sampling that state needs solving a satisfiability-style program that isn't guaranteed efficient. So the signed version is information-theoretic, not yet practical, and its error scaling is worse than shot noise.
+
+Maya: Does losing the signs kill the applications?
+
+Sam: For energies, yes — you can't add up Hamiltonian terms without signs. But for magic certification it's fine, because the stabilizer Rényi quantities are built from even powers of exactly those moments. So certifying non-stabilizerness of a noisy state becomes a single-setting measurement. There's also a general tool here: an efficiently computable yardstick for how incompatible a family of nonlinear properties is, and it reproduces known shadow-tomography lower bounds as special cases.
+
+Maya: My objection is the hardware irony. This is an error-mitigation protocol that demands four coherent copies of your state plus transversal entangling gates between them — and the paper gives no noise analysis of that circuit.
+
+Sam: That's fair and I'd underline it. The Bell-sampling circuit is coherent, meaning the subtraction happens in the quantum register rather than in classical post-processing, and that's what lifts you from linear to quadratic in the state. But nobody has asked what a two-percent gate error does to it. That's the next paper somebody writes.
+
+[BREAK]
+
+Maya: Paper three is a funeral. A conjecture people liked for years is now false.
+
+Sam: The Wigner entropy conjecture. Background: the Wigner function is the phase-space picture of a quantum state, and it can go negative — that's the signature of non-classicality. But some states have a Wigner function that's non-negative everywhere, so you can treat it as a genuine probability distribution over position and momentum and compute its Shannon entropy.
+
+Maya: And the conjecture was that the vacuum is the most concentrated one possible.
+
+Sam: The vacuum plus its squeezed and displaced cousins, yes. It was a natural-looking strengthening of the entropic uncertainty principle — a hard floor on how tightly a legal phase-space distribution can be packed. Van Herstraeten, Cerf and Chabaud construct explicit states that go below it.
+
+Maya: How far below?
+
+Sam: Barely. About a thousandth, in their best numerics. And the states sit arbitrarily close to the vacuum in trace distance — you mix a little bit of a high Fock state into vacuum, with just enough coherence between them that the Wigner function stays non-negative.
+
+Maya: So why does a violation that small matter? That reads like a curiosity.
+
+Sam: Because a false uncertainty principle is worth exactly nothing as a tool. People were treating this as a bound you could lean on for certification arguments in bosonic quantum information. The size of the violation doesn't soften that — it's either a theorem or it isn't.
+
+Maya: Okay, but tell me why it fails, because "we found weird states" isn't an explanation.
+
+Sam: This is the satisfying part. The entropy change splits into two competing pieces. Adding a Fock component raises entropy in proportion to the photon number — that's linear. But the resulting Wigner function is non-Gaussian and lumpy, and that structure lowers the entropy — and that piece grows exponentially with the photon number. Exponential beats linear starting at three. So the conjecture is true for the vacuum mixed with the one- and two-photon states, and dies at three.
+
+Maya: They prove the true cases too?
+
+Sam: They do — every Wigner-positive state built from vacuum and the two-photon state turns out to be a beam-splitter state, which satisfies the bound. So their counterexamples are minimal, which is the difference between a stunt and a complete answer. The majorization and Rényi versions of the conjecture fall as corollaries.
+
+Maya: So what replaces it?
+
+Sam: An open window. The true minimum is somewhere between the known general bound and the vacuum value — a gap of about three tenths in natural units, which is not small. And there's a nice inversion: going below the vacuum is now a certificate. If you measure sub-vacuum Wigner entropy, you've ruled out passive states, Fock mixtures, beam-splitter states, and anything of low purity. Worth saying, another group posted similar counterexamples around the same time, which makes me more confident, not less.
+
+[BREAK]
+
+Maya: Paper four connects to something we covered Sunday — the architecture blueprint arguing that big quantum machines will have the same design problems as big classical ones. This one hands you an actual line item in the budget.
+
+Sam: Exactly that. Zhao, Zhu, Wang and Bai ask: two distant nodes share two noisy copies of some unknown entangled pure state, hit by depolarizing noise. They want to probabilistically distill one better copy. If you had a magic joint device sitting across both nodes, the optimal thing is known — project the two copies onto the symmetric subspace and throw one away.
+
+Maya: And a network can't do joint operations, that's the whole problem.
+
+Sam: So the question is how much preshared entanglement the two parties need to exactly match that joint optimum with local operations and classical messages. The answer is one ebit. One EPR pair. And it doesn't depend on the local dimension, and it doesn't depend on how strong the noise is.
+
+Maya: That's the part I don't believe. Purifying two enormous registers should cost more than purifying two qubits.
+
+Sam: I had the same reaction, and the protocol explains it. It's a swap test, split across the two nodes. Each side does a controlled-swap between its halves of the two noisy copies, controlled by its half of the EPR pair. Local Hadamard, local measurement, accept if the two outcomes agree. The EPR pair is only a coherent control register — it's carrying the single bit "did the comparison succeed," coherently. That one bit doesn't get bigger when the registers do.
+
+Maya: And the converse — you can't do it with less?
+
+Sam: They prove the optimal joint map is unique, which is the load-bearing step, and then show any resource that reproduces it must have at least one ebit of entanglement of formation. And they prove it allowing a strictly larger class of operations than LOCC, so the bound isn't an artifact of the protocol model. There's also a rigidity statement: for two-qubit resources, only the maximally entangled pair works.
+
+Maya: Meaning some states with more entanglement still fail?
+
+Sam: Yes — they exhibit pure states with more than one ebit that can't do the job. The amount isn't the resource; the shape is. Which is a useful corrective if you're thinking of entanglement as a fungible currency in a network.
+
+Maya: Limits?
+
+Sam: It's two copies and global depolarizing noise. The authors are upfront that the swap test is near-optimal for Pauli-type noise and poor for amplitude damping, which is the dominant channel in a lot of photonic links. The figure of merit is a Haar average of a success-weighted fidelity gain, not a worst case. And the extension past two copies costs more ebits with no proof it's tight. Also worth noting the pure-state converse is formally verified in a proof assistant, which I'd like to see more of in this corner of the field.
+
+Maya: Who reads it?
+
+Sam: Anyone writing the resource-allocation layer for a modular machine or a repeater chain. The open question I'd chase is the tradeoff below one ebit — if you can only spare half, how much of the benchmark do you keep? Right now, nobody knows.
+
+[BREAK]
+
+Maya: Last one, and it opens with an awkward fact: on this device, running a round of error correction makes the memory worse, not better. And I still think it's a paper worth reading.
+
+Sam: Freund and colleagues, sixteen calcium ions in a trap, and they implement the full universal fault-tolerant toolbox on the five-qubit perfect code — the smallest code that corrects any single-qubit error.
+
+Maya: Why that code? It's famously inconvenient.
+
+Sam: That's the point. Almost every experimental demonstration uses codes built from two classical codes, where logical gates act qubit-by-qubit in parallel — transversally, which is automatically fault-tolerant. The five-qubit code doesn't have that structure. So every single primitive has to be hand-built: flagged state preparation, a fault-tolerant way to measure a logical operator, an entangling gate between two blocks built in pieces with error detection interleaved, magic-state preparation with verification. They check fault tolerance by inserting every possible single fault and confirming it doesn't spread.
+
+Maya: And the headline primitive?
+
+Sam: Logical teleportation between two separate code blocks, using mid-circuit measurements and real-time classical corrections. That's the connectivity move for a modular machine — you move encoded information without any gate spanning the two blocks. They also measure the logical non-Clifford gate with a logical-level tomography that fits a handful of parameters instead of the thousand-odd you'd need physically, and get about eighty-five percent process fidelity.
+
+Maya: Now the honesty. How much of this is postselection?
+
+Sam: A lot. The teleportation acceptance rate is roughly three runs in ten thousand. So this is proof-of-principle, firmly at the postselected end of the taxonomy we went through on Saturday with the scalable logical qubits paper — not repeated, actively corrected memory. The error budget is dominated by two-qubit gates at around the two percent level and mid-circuit readout that takes a full millisecond against a coherence time of a couple hundred.
+
+Maya: So the value is in the constructions, not the numbers.
+
+Sam: Right — the protocol layer is real and reusable, and the hardware numbers are the thing that improves on their own schedule. And there's one measurement in here I hadn't seen before: they quantify spectator crosstalk. Running an error-correction cycle on one logical qubit raises the infidelity of the idle logical qubit next to it by about a fifth, relatively.
+
+Maya: Which architecture papers routinely assume is zero.
+
+Sam: They do, and it won't be. That number is the thing I'd want repeated on other platforms. The broader reason to care: the high-rate LDPC codes everyone wants for scaling need non-transversal, carefully scheduled logical operations for selective addressing. This is that regime in the smallest possible footprint. If you're designing compilers for those codes, read the circuit constructions and ignore the fidelities for now.
+
+[BREAK]
+
+Maya: One result each. Mine is the exponential-beats-linear story in the Wigner paper. The conjecture didn't just fail — it failed at a specific photon number, for a reason you can say in one sentence. That's a rare kind of clean.
+
+Sam: Mine is the fermionic Lee–Yang strip. A seventy-year-old trick from classical magnetism, finally made to work on interacting electrons, and the payoff is a provable polynomial-time quantum algorithm for a model that classical Monte Carlo can't touch. I'd love to see somebody widen that class past attractive interactions.
+
+Maya: Links to all five papers are in the show notes.
+
+Sam: And the show notes also have a link for sending us questions — we work through the backlog oldest first, so keep them coming.
+
+Maya: We'll see you tomorrow.
