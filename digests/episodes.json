@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-09-23",
+    "title": "SciRate Digest \u2014 2026-09-23",
+    "summary": "Today's 5 papers: When are bosonic Gaussian states classical to learn?; A quantum lower bound for path finding in welded trees; $\\mathsf{BQP} \\subseteq \\mathsf{IP}$ Does Not Relativize; Good Quantum Locally Testable Codes from Product Expansion; Hamiltonian Learning and Certification via Eigenphase Engineering.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-09-23/digest.mp3",
+    "mp3_bytes": 17171373,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2609.26705",
+        "title": "When are bosonic Gaussian states classical to learn?",
+        "abs_url": "https://arxiv.org/abs/2609.26705",
+        "scirate_url": "https://scirate.com/arxiv/2609.26705",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2609.26712",
+        "title": "A quantum lower bound for path finding in welded trees",
+        "abs_url": "https://arxiv.org/abs/2609.26712",
+        "scirate_url": "https://scirate.com/arxiv/2609.26712",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2609.25680",
+        "title": "$\\mathsf{BQP} \\subseteq \\mathsf{IP}$ Does Not Relativize",
+        "abs_url": "https://arxiv.org/abs/2609.25680",
+        "scirate_url": "https://scirate.com/arxiv/2609.25680",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2609.26735",
+        "title": "Good Quantum Locally Testable Codes from Product Expansion",
+        "abs_url": "https://arxiv.org/abs/2609.26735",
+        "scirate_url": "https://scirate.com/arxiv/2609.26735",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2609.26596",
+        "title": "Hamiltonian Learning and Certification via Eigenphase Engineering",
+        "abs_url": "https://arxiv.org/abs/2609.26596",
+        "scirate_url": "https://scirate.com/arxiv/2609.26596",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-09-22",
     "title": "SciRate Digest \u2014 2026-09-22",
     "summary": "Today's 5 papers: Lee-Yang theorem for fermions; Pauli-resolved virtual distillation; Wigner-positive quantum states can have lower entropy than the vacuum; Entanglement Cost of Optimal Distributed Quantum State Purification; Modular fault-tolerant quantum computing on a non-CSS code.",

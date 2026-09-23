@@ -1,0 +1,153 @@
+Maya: Sam, here's a distinction I've been chewing on all week. There's finding your way out of a maze, and there's being able to hand somebody the map.
+
+Sam: And those turn out to be wildly different prices. That's basically the spine of today's list — five papers about what it costs to write down what you know.
+
+Maya: Welcome to the SciRate Daily Digest for Wednesday, September twenty-third, twenty twenty-six. I'm Maya.
+
+Sam: I'm Sam. On deck: when learning a beam of light is no harder than learning a classical bell curve, a two-decade-old maze problem finally closed, a barrier explaining why classical verification of quantum computers keeps stalling, a conditional construction of the codes everyone wants, and a way to learn a Hamiltonian without pulsing your hardware faster than it can physically pulse.
+
+[BREAK]
+
+Sam: Let's start somewhere concrete. Imagine you're running a dark-matter haloscope — a big cold cavity, listening for a faint signal in many electromagnetic modes at once. You need to characterize the state of the light in that cavity. How many repetitions of the experiment does that take?
+
+Maya: And the answer presumably depends on whether the light is cold and quantum or warm and noisy.
+
+Sam: Exactly, and this paper — Chen, the two Meles, and Preskill — pins that down sharply. Take an unknown Gaussian state across many modes. If every mode carries at least roughly one thermal photon of noise, the cost to learn it grows with the square of the number of modes, and you achieve that with plain heterodyne detection. No adaptivity, no cleverness.
+
+Maya: Heterodyne being the standard optical readout, beat the signal against a reference laser.
+
+Sam: The bread-and-butter measurement, yes. And here's the punchline: that's exactly the cost of learning an ordinary classical multivariate Gaussian distribution from samples. A warm beam of light is, for learning purposes, just a classical fluctuating field. No quantum penalty whatsoever.
+
+Maya: Okay, so where does it break?
+
+Sam: When you go cold. Near-vacuum states — total photon number of order one — provably cost a factor of the mode count more. Cubic rather than quadratic. And that's a lower bound, not a limitation of some particular scheme.
+
+Maya: Couldn't you escape it with a fancier apparatus? Collect several copies of the state and measure them jointly?
+
+Sam: That's the part that surprised me. They show entangling a fixed number of copies buys you almost nothing — the hardness survives. You'd need a quantum computer holding many copies at once to beat it. So cold Gaussian tomography genuinely needs a resource that warm Gaussian tomography doesn't.
+
+Maya: What's the trick behind the lower bound? Because "cold states are hard" isn't obvious — they're closer to pure, and pure states are usually easier.
+
+Sam: Two different arguments. One embeds ordinary finite-dimensional mixed-state tomography inside cold Gaussian tomography, so known no-go theorems transfer over. The other is a Bayesian argument showing each single-copy measurement tilts your posterior by only a tiny amount against an enormous space of candidate states. And I want to flag what I think is the conceptual gift here: this is a notion of "classical light" defined by learnability, and it's strictly finer than the usual phase-space-positivity criterion.
+
+Maya: Caveat time. This is full tomography of an arbitrary Gaussian state, right? A haloscope isn't trying to reconstruct everything — it's looking for one signal.
+
+Sam: You've put your finger on the honest limitation, and the authors say it themselves: real sensing lives on a low-dimensional slice of parameters, and on those slices heterodyne may be far from optimal. Also squeezed states fall outside the tight characterization. But if you're designing readout for a many-mode quantum sensor, this tells you exactly which side of the temperature line you're on and whether photon counting is worth the trouble.
+
+[BREAK]
+
+Maya: Friday we covered a hardness result on pathfinding in welded trees. And here we are again.
+
+Sam: We are, and I want to be careful about what's happening. Carolan, Childs, Coudron and Gilani have an independent attack on the same open problem, and it lands. Quick refresher on the object: two big binary trees, glued leaf-to-leaf by a random tangle of edges. A quantum walk finds the far exit in polynomial time; classically it's hopeless. It's the textbook exponential quantum speedup.
+
+Maya: And the open question was whether the quantum computer can actually tell you the route it took.
+
+Sam: Right — output an explicit entrance-to-exit path. This has been on Aaronson's open-problems list for the better part of two decades. The answer here is no, unconditionally: any quantum query algorithm needs exponentially many queries in the height of the tree to write down a path.
+
+Maya: Let me push on the "so what." If I can reach the exit, why do I care about the path?
+
+Sam: Because the path is a witness — something you can hand to a skeptic who checks it in a minute. Search without a witness is exactly the awkward regime for verifiable quantum advantage. And welded trees get reused as a gadget all over the place: adiabatic optimization arguments, quantum learning separations. Knowing that witness-finding is hard there changes what you can build on it.
+
+Maya: What was the barrier before? Someone must have tried.
+
+Sam: There was a prior result, but it only ruled out algorithms that behaved in a restricted, well-mannered way — ones that always keep track of how they reached the vertices they hold. This paper allows arbitrary algorithms, including ones that deliberately forget. The tool is a compressed oracle — you let the randomness of the graph stay in superposition and track what the algorithm's queries have effectively committed to.
+
+Maya: And you show that commitment never contains a path.
+
+Sam: That's the shape of it. They show the oracle's database stays inside a subspace they call path-free — superpositions of non-backtracking colored walks growing inward from the two roots that never actually meet. The informative part of the database grows only linearly per query, so you'd need exponentially many queries for the two halves to touch. There's a technical workhorse they call the clipping lemma that makes this hold for arbitrary superpositions rather than one database at a time.
+
+Maya: Verdict?
+
+Sam: Query complexity people should read it for the technique — compressed permutation oracles escaping cryptography and doing real graph lower bounds is a genuinely portable idea. Two things I'd watch. They prove it for a weld built from three independent random matchings rather than the original single-random-cycle weld; they say adapting it is routine, but it's deferred. And the exponent is almost certainly loose — the bound is exponential in a twelfth of the tree height, which is not where the truth lives.
+
+[BREAK]
+
+Maya: Here's a thing that confuses me about our next paper. We already know a classical laptop can verify a quantum computation — there are protocols based on lattice cryptography. So how can anyone prove that's impossible?
+
+Sam: Because that's not quite what's being ruled out. Bouland, Huang, Natarajan, Shalit and Tal build a world — an oracle — where quantum polynomial time escapes everything a single-prover interactive proof can verify. Many rounds, lots of communication, doesn't matter. The verifier is classical, the prover is untrusted and all-powerful.
+
+Maya: And the cryptographic protocols survive because they look inside the computation.
+
+Sam: Exactly right. Those use arithmetization and hardness assumptions — they don't treat the quantum machine as a black box. What this paper says is: black-box reasoning alone will never get you there. So the decades of frustration trying to find an unconditionally sound protocol with an efficient prover? There's now a formal reason those attempts kept dying.
+
+Maya: What's the hard object at the center?
+
+Sam: They reuse the Forrelation distribution — the same gadget from the Aaronson–Ambainis work that separated quantum computing from the polynomial hierarchy. A quantum computer spots the hidden correlation between two functions; a classical verifier chatting with a prover cannot.
+
+Maya: And the new technical ingredient?
+
+Sam: This is the part I found lovely. An interactive proof's acceptance probability is a tree of averages and maximizations — the verifier averages over its coins, the prover maximizes over its strategies. Maximization is a nightmare for the Fourier-analytic tools you'd want to use, because it has sharp corners. They replace the max gates with soft versions — smoothed maxima — in a way that preserves convexity, and it's convexity that makes the smoothing actually useful. There's even a remark showing that without convexity, the derivative bounds you'd want are vacuous, because every Boolean function admits some tame-looking smooth extension.
+
+Maya: Can I register a mild skepticism about oracle separations generally? They're suggestive, but they've been wrong guides before.
+
+Sam: Fair, and I'd say the value here isn't prophecy, it's triage. It tells you which toolbox is dead. And there's a second result that's more than suggestive: combined with a recent multi-prover protocol that does relativize, this gives the first oracle separating single-prover from multi-prover interactive proofs — a question that's been open since Fortnow's thesis in the eighties.
+
+Maya: So multi-prover systems genuinely use something extra.
+
+Sam: And the paper pinpoints it: joint maximization over complete prover strategies, which is exactly the structure the barrier can't handle. Complexity theorists are the audience. What I'd watch is whether the convex-smoothing lemma shows up elsewhere — anywhere max gates have been blocking progress.
+
+[BREAK]
+
+Sam: Next one is a code construction, and the headline is almost a slogan: commutativity was the bottleneck.
+
+Maya: Unpack that. Bottleneck for what?
+
+Sam: For quantum locally testable codes. You want a code where a few random checks tell you roughly how far a state is from the codespace — local testability — while also having constant rate and constant distance. Classically these exist and they're the foundation of probabilistically checkable proofs. On the quantum side, the best-known constructions were "almost good": distance and soundness decayed logarithmically.
+
+Maya: And we talked about a run at this target about a week ago.
+
+Sam: We did — different route, same summit. Here, Bafna, Li and Nguyen trace the logarithmic loss to its source. Those constructions were built on complexes made from commutative symmetry groups, and a commutative group needs many generators before it expands well. So they swap in a non-commutative object — a complex built out of products of trees, from work of Rungtanapirom, Stix and Vdovina — and the loss vanishes. Constant rate, constant distance, constant soundness, constant locality, binary alphabet.
+
+Maya: There's a "conditional" hanging over this, isn't there.
+
+Sam: There is, and it's load-bearing. Everything rests on a product-expansion conjecture — roughly, that tensor products of Reed–Solomon codes evaluated on carefully chosen structured point sets are robust. And the honest wrinkle is that the original version of that conjecture, over prime fields, is false over the extension fields they need. So they formulate a modified version, for Reed–Solomon codes evaluated on specific multiplicative subgroups.
+
+Maya: That gives me pause. A conjecture that had to be reshaped to dodge a known counterexample is a conjecture with less evidence behind it.
+
+Sam: Agreed, and I'd say that's the single thing to watch for this line of work. Though the reshaping wasn't arbitrary — they chose subgroups specifically to rule out the low-degree-curve obstructions that killed the naive generalization. There's also a genuinely clever engineering move I want to credit: the non-commutative complex permutes its edge labels, which would normally scramble your local codes. But projective Reed–Solomon codewords, under the relevant transformations, are only rescaled permutations of codewords — and local testability only cares about which coordinates are nonzero, not their values. So the rescaling is harmless. That's the trick that makes a previously abandoned approach work.
+
+Maya: What does this unlock if the conjecture holds?
+
+Sam: It closes the parameter question and immediately feeds downstream: no low-energy trivial states, quantum interactive oracle proofs, gap amplification for quantum constraint problems — the road toward the quantum PCP conjecture. I'd temper expectations on fault tolerance, though. The constants aren't quantified anywhere, and the locality, while constant, is presumably large, because the paired local codes need rates near one and near zero simultaneously.
+
+Maya: So not a hardware proposal.
+
+Sam: Not remotely. Read it if you work on high-dimensional expanders or quantum PCP. And the frame-matrix structure they extract from the algebraic complex looks reusable regardless of whether the conjecture survives.
+
+[BREAK]
+
+Maya: Last one, and I want to start from the lab bench. Sam, what does a calibration engineer actually complain about?
+
+Sam: That the pulse generator has a minimum pulse width, and the theory papers keep asking for pulses spaced closer and closer together. That's the real tension Shin and Tong attack. If you want to learn an unknown many-body Hamiltonian at the best possible precision scaling — Heisenberg-limited, where error falls off as one over total evolution time rather than one over its square root — the standard recipe interleaves control pulses to synthesize an effective Hamiltonian. And the required spacing shrinks as you demand more accuracy.
+
+Maya: Which is exactly the wrong direction for hardware.
+
+Sam: Right. Their result is that the two demands decouple entirely. You can get optimal precision scaling with pulses spaced as far apart as information theory allows — essentially the inverse of the system's energy scale — and that spacing never shrinks as you push accuracy.
+
+Maya: How? If you're not building an effective Hamiltonian, what are you measuring?
+
+Sam: They call it eigenphase engineering. Instead of simulating a Hamiltonian you wish you had, you take a circuit you can actually run — a known control operation followed by the system's own evolution — and you look at how a couple of isolated phases in that circuit's spectrum drift as you let the system evolve a little longer. The first-order drift is exactly an energy expectation. Repeat the circuit many times and the phase drift amplifies coherently, while the error in the relevant eigenvectors stays put.
+
+Maya: And there must be a bias from the higher-order terms.
+
+Sam: There is, and the fix is elegant: the leftover series is even in time, so they measure at a handful of grid points and extrapolate in the square of the time. A logarithmic number of points kills the bias without ever shrinking the step. Total evolution time then scales linearly in the Hamiltonian's sparsity divided by target error. They also give a version using only single-qubit preparations, pulses and measurements — no ancillas — which is the variant an analog simulator group could actually attempt.
+
+Maya: Here's my objection. High-order extrapolation is famously fragile. You amplify noise along with signal, and this is analyzed in a noiseless model — no readout errors, no pulse imperfection.
+
+Sam: That's the right worry and it's the paper's stated gap. The extrapolation weights do stay controlled — they grow only like the square root of the number of grid points — so it's not a blow-up by construction. But robustness to state-preparation and measurement error is untested, and unlike some competing schemes this one requires interleaved control at all.
+
+Maya: Anything on the lower-bound side?
+
+Sam: They improve it too, which narrows the gap in how the cost must grow with sparsity — though a gap remains, shrinking as the interaction range grows. If you benchmark analog simulators, read this one for the primitive itself: the same machinery does learning, certification, and estimating one single interaction coefficient with no sparsity assumption at all.
+
+[BREAK]
+
+Maya: One result each. Mine is the Gaussian learning paper — the idea that "classical light" can be defined by how cheap it is to learn, and that the crossover sits at roughly one thermal photon per mode, is a definition I'll actually use.
+
+Sam: Mine's the welded trees bound. Twenty years of people wondering whether the quantum walk could be made to confess its route, and the answer is a clean no. Easy to escape the maze, exponentially hard to draw the map.
+
+Maya: Links to all five papers are in the show notes.
+
+Sam: And the show notes have a link for sending us questions — we read them, we answer them, and we get to them in order.
+
+Maya: Thanks for listening. We'll see you tomorrow.
