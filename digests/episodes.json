@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-09-24",
+    "title": "SciRate Digest \u2014 2026-09-24",
+    "summary": "Today's 5 papers: Emergent Prethermal Symmetries for Scalable Hamiltonian Learning; Sharp pairwise reduction for quantum hypothesis testing; Efficient learning of Clifford disentanglers and typical $t$-doped unitaries with exponentially more $T$ gates; Improved Transversal Non-Clifford Gates from Cup Products; Sustained growth of quantum circuit complexity in many-body Hamiltonian dynamics.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-09-24/digest.mp3",
+    "mp3_bytes": 16539693,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2609.27181",
+        "title": "Emergent Prethermal Symmetries for Scalable Hamiltonian Learning",
+        "abs_url": "https://arxiv.org/abs/2609.27181",
+        "scirate_url": "https://scirate.com/arxiv/2609.27181",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2609.28440",
+        "title": "Sharp pairwise reduction for quantum hypothesis testing",
+        "abs_url": "https://arxiv.org/abs/2609.28440",
+        "scirate_url": "https://scirate.com/arxiv/2609.28440",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2609.27565",
+        "title": "Efficient learning of Clifford disentanglers and typical $t$-doped unitaries with exponentially more $T$ gates",
+        "abs_url": "https://arxiv.org/abs/2609.27565",
+        "scirate_url": "https://scirate.com/arxiv/2609.27565",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2609.27801",
+        "title": "Improved Transversal Non-Clifford Gates from Cup Products",
+        "abs_url": "https://arxiv.org/abs/2609.27801",
+        "scirate_url": "https://scirate.com/arxiv/2609.27801",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2609.26885",
+        "title": "Sustained growth of quantum circuit complexity in many-body Hamiltonian dynamics",
+        "abs_url": "https://arxiv.org/abs/2609.26885",
+        "scirate_url": "https://scirate.com/arxiv/2609.26885",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-09-23",
     "title": "SciRate Digest \u2014 2026-09-23",
     "summary": "Today's 5 papers: When are bosonic Gaussian states classical to learn?; A quantum lower bound for path finding in welded trees; $\\mathsf{BQP} \\subseteq \\mathsf{IP}$ Does Not Relativize; Good Quantum Locally Testable Codes from Product Expansion; Hamiltonian Learning and Certification via Eigenphase Engineering.",

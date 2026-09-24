@@ -1,0 +1,149 @@
+Maya: Sam, quick test. A chaotic quantum system scrambles for a while. Everything you can measure locally looks thermal and boring. Is the information gone?
+
+Sam: Filed. Badly. Under a heading you would never think to look. And three of today's five papers are, in one way or another, about finding the filing system.
+
+Maya: Which beats our usual theme of "everyone is confused about chaos again."
+
+Sam: I resent that, mostly because it's accurate.
+
+Maya: Welcome to the SciRate Daily Digest for Thursday, September twenty-fourth, twenty twenty-six. I'm Maya.
+
+Sam: And I'm Sam. Today: learning a many-body Hamiltonian using nothing but steady magnetic fields; a sharp answer to how hard it is to tell many quantum states apart; a learning algorithm that breaks a piece of folk wisdom about magic and chaos; a new recipe for codes with cheap non-Clifford gates; and a proof that circuit complexity really does keep climbing under ordinary Hamiltonian dynamics.
+
+[BREAK]
+
+Maya: Let's start with a chicken-and-egg problem that anyone running a quantum device lives with. To calibrate your machine, you need to know its Hamiltonian — who's coupled to whom and how strongly. But the best learning protocols assume you already have clean entangling gates or very fast control pulses. Which you don't, because you haven't calibrated yet.
+
+Sam: Right, and it gets worse the more precision you want. The best-case scaling — people call it the Heisenberg limit — means that to halve your error you just double the total runtime, instead of quadrupling it. But to hold that scaling, the standard technique, Hamiltonian reshaping, makes you fire control pulses faster and faster as your target precision improves. The pulse rate blows up.
+
+Maya: Because otherwise the system scrambles the local signal you were trying to read.
+
+Sam: Exactly. The paper is by Shin, Lee, Marvian and Tong, and the move is beautifully simple. Instead of pulsing, you just switch on a strong static field on each qubit and leave it there. That field creates an approximate conservation law — a kind of dressed charge — and the system can't thermalize without violating it. That's prethermalization, and the protection lasts exponentially long in the field strength.
+
+Maya: So the chaos is postponed rather than defeated.
+
+Sam: Postponed long enough, which is the whole trick. They pick out one site, give it half the field strength of its neighbourhood, and that mismatch makes two product states into near-eigenstates that beat against each other. You get a Ramsey fringe — the oldest trick in spectroscopy — whose frequency encodes the local couplings. Product state in, single-qubit measurement out, no adaptivity.
+
+Maya: Okay, but what does that buy us over yesterday's eigenphase engineering result? That was also Heisenberg-limited learning without punishing control.
+
+Sam: Fair, and they're cousins. The distinguishing claim here is scalability with strictly local resources. The field strength you need doesn't grow with the number of qubits at all, and it grows only like a power of the logarithm as you demand more precision. Then they colour the lattice — treat sites far enough apart as independent — and run many of these little spectroscopy experiments in parallel, so the total time doesn't grow with system size either.
+
+Maya: What's the catch? Because "prethermal" always sounds like it comes with a fine-print constant.
+
+Sam: Two honest ones. First, your real hardware has a maximum field strength, so there's a precision floor — exponentially milder than before, but it exists. Second, this is pure theory: no numerics at all, and the machinery they lift from the prethermalization literature is notoriously pessimistic in its constants. They also assume you know which Pauli terms are present and are only estimating strengths, and it's qubits only — no fermions or bosons yet.
+
+Maya: So who should actually read it?
+
+Sam: Anyone building calibration routines on trapped ions, Rydberg arrays or superconducting chips, because the experimental ask is almost embarrassingly modest. And I'd watch for someone simulating a small lattice to see whether the required field is ten times the coupling or ten thousand times. That number decides whether this is a protocol or a theorem.
+
+[BREAK]
+
+Sam: Next one has the shape of a problem that should have been closed decades ago. You're handed one of several possible quantum states and asked which. For two candidates, Helstrom solved it in the sixties — exact formula, done. For twenty candidates, there's no closed form at all.
+
+Maya: And the natural hope is that the twenty-way problem is basically the hardest pair, or the sum of all the pairs.
+
+Sam: The sum of all the pairs, up to some universal constant. That's the "pairwise reduction." People knew the constant was at most eight, from Cheng and Liu, and numerical evidence from Audenaert and Mosonyi suggested the truth was four. Lee and Lami prove it's four, and prove four can't be beaten.
+
+Maya: How do you prove a constant can't be improved? You'd need a worst case.
+
+Sam: They build one: an ensemble arranged like a regular simplex, perfectly symmetric, where the ratio creeps up to four as you add more candidates. And crucially the upper bound holds for the pretty good measurement — which, despite the name, is a specific thing you can construct from the states and actually implement. So it isn't an abstract existence result about some optimal measurement nobody can build.
+
+Maya: I want to push on "universal." Does the constant depend on dimension? Because optical people care about infinite-dimensional states.
+
+Sam: It doesn't, and they went out of their way to cover trace-class operators in infinite dimensions by finite-rank truncation. So you can apply this to bosonic and Gaussian ensembles without imposing an artificial photon-number cutoff — which is where a lot of guarantees quietly break.
+
+Maya: What does it give someone doing an actual experiment?
+
+Sam: A copy count. If you want to identify an unknown state from a menu with some confidence, they hand you a formula in terms of pairwise overlaps only — quantities you can compute — and the number of copies grows just with the logarithm of how many candidates there are. There's also a technical inequality inside, relating two ways of measuring distance between states, where they knock a factor of two off the known constant. That one will get recycled in tomography guarantees.
+
+Maya: Anything unfinished?
+
+Sam: Yes. Four is the limit as the number of hypotheses grows; for a fixed small number the sharp constant is still open. And there's a conjectured hierarchy — that grouping hypotheses three at a time, four at a time, gets you steadily closer to the truth — which is untouched. I'd also say the write-up has at least one typo where an equality sign should be an inequality. Not fatal, but read carefully.
+
+[BREAK]
+
+Maya: Now something that overturns a belief rather than sharpening one.
+
+Sam: The folk wisdom is this: a quantum state that has lots of entanglement and lots of magic — magic being the non-Clifford resource that makes simulation hard — should be hard to learn. And for circuits, the received line is that once you dope a Clifford circuit with more than logarithmically many T gates, you fall off a cliff into unlearnability.
+
+Maya: And Aguilar, Jerbi, Eisert and Bittel say the cliff is somewhere else entirely.
+
+Sam: Much further out. Their setup: an unknown Clifford scrambler applied to a product state. That's maximally entangled-looking and full of magic, and yet the product structure leaves a fingerprint. When you do Bell sampling — measure two copies jointly — the outcome distribution obeys a whole vector space of quadratic constraints, and those constraints are all simultaneously block-diagonal in the Clifford's own frame.
+
+Maya: So the scrambling rotates the structure but doesn't destroy it.
+
+Sam: It moves it into a basis you can find. They lift the Bell outcomes so the quadratic constraints become linear, do Gaussian elimination to get the whole space of them, then use a Wedderburn-style simultaneous block-diagonalization to read off both the disentangling Clifford and where the product cuts were. Polynomial time, with copies scaling like the square of the qubit count.
+
+Maya: And applied to circuits?
+
+Sam: Feed it the Choi state of a doped Clifford circuit — push the T gates through and it looks exactly like this template. Typical such circuits are properly learnable up to roughly twice as many T gates as you have qubits. Previously: logarithmically many. That's an exponential jump in the doping you can handle, and "proper" means you get an actual circuit out, not just a black box that predicts measurements.
+
+Maya: Typical, though. I'd guess the worst case still bites.
+
+Sam: It does, and there's a sharper limitation. Everything here is exact — exact Clifford, exact product structure. Perturb either and the constraints go noisy, and the problem degenerates into something that looks like learning parity with noise, which the authors conjecture is genuinely hard. They also need a spectral gap promise on the stabilizer structure.
+
+Maya: So the headline for cryptography people is what, precisely?
+
+Sam: That high entanglement plus high magic is no longer evidence of pseudorandomness. You cannot take a pseudorandom product state, glue a Clifford on the front, and expect it to survive two-copy access. Anyone designing pseudorandom state constructions needs to check that their scrambler isn't secretly Clifford-shaped.
+
+[BREAK]
+
+Maya: Codes next — and a barrier that's been sitting there for a while.
+
+Sam: A fault-tolerant computer has to apply non-Clifford gates, and the cheapest way is a code where the gate is a shallow physical circuit rather than a distilled resource state. But every sparse-check code with that property has been stuck in a repetition-code-like tradeoff: either good distance, or many logical qubits you can act on at once. The product of the two was capped at roughly the block length.
+
+Maya: And Golowich, Tamo and Zhu break the cap.
+
+Sam: They do, with a recipe. The ingredient is a classical code family with a multiplication property — multiply two codewords position by position and you stay inside a related code. Reed–Muller codes have that, which is why they underpin most transversal non-Clifford constructions, but Reed–Muller isn't sparse. These authors build sparse Tanner codes with the multiplication property by puncturing high tensor powers of algebraic-geometry codes.
+
+Maya: Why does multiplication matter for a quantum gate?
+
+Sam: Because a multi-controlled phase gate, applied qubit by qubit, does something cubic or higher to your logical information. The topological object that tracks that is a cup product, and the multiplication property is exactly what lets you define one on these codes. The result: constant-weight checks — genuinely LDPC — with distance times logical count comfortably beating the old barrier. The practical consequence is that the magic-state distillation overhead exponent can be pushed arbitrarily close to zero while keeping sparse checks.
+
+Maya: Which is the thing the qLDPC architecture papers we looked at earlier this week are all quietly bottlenecked on — the factories, not the memory.
+
+Sam: Exactly that. Memory overhead has been coming down; magic-state cost hasn't, in the sparse-check regime. So this is the right target. But I want to be very clear about the caveats, because they're substantial.
+
+Maya: Go.
+
+Sam: These are subsystem codes. The distance holds only on a chosen subsystem, and every gauge qudit and unused logical has to be fixed to a known state first — and they don't give a fault-tolerant procedure for doing that, or a Clifford gate protocol to go with it. The distance is only a fractional power of the block length, nowhere near linear. The decoders they provide handle adversarial errors, not realistic noise models. And in the fully LDPC version, the logical yield is still sublinear; the variant with a linear number of logical qubits gives up constant check weight.
+
+Maya: So not a blueprint.
+
+Sam: A recipe plus a proof of concept. And to their credit they name the missing ingredient precisely: constant-rate classical LDPC codes with polynomial distance and a multiplication property. If a coding theorist produces those, this machine converts them into what you actually want.
+
+[BREAK]
+
+Maya: Last one starts from something that bothers me every time I hear it stated. A chaotic system thermalizes. Local observables stop changing, entanglement saturates. And yet the wavefunction is still moving. What's still moving?
+
+Sam: Circuit complexity — the number of elementary gates you'd need to build that state from scratch. Brown and Susskind conjectured it keeps growing long after everything else has flatlined, and in holography that growth is supposed to be dual to the interior of a black hole getting longer. But every rigorous result was about random circuits, where you re-randomize at each time step.
+
+Maya: Which throws away energy conservation.
+
+Sam: And energy conservation is the whole point of the black hole story. Lee, Pilatowsky-Cameo and Choi close that gap. Generic local Hamiltonian on a lattice, fixed in time, typical product state at high effective temperature — and they prove the complexity is exponentially large in the number of qubits at all but a doubly-exponentially small sliver of times. No complexity-theoretic assumptions.
+
+Maya: What's the mechanism? I can't picture a proof of a complexity lower bound that doesn't assume something unproven.
+
+Sam: It's a counting argument, and it's lovely. Circuits with a given number of gates can only reach so many states — a finite net. Then they show that the evolving state spends almost no time anywhere near any fixed target state, by bounding high time-averaged moments of the overlap. Union bound over the net, and you're done. The tolerance can be enormous — you're allowed to be nearly wrong about the state and still need exponentially many gates.
+
+Maya: And the two lemmas they had to prove along the way, I gather, were things people had been assuming.
+
+Sam: That's arguably the more durable contribution. One: generic local Hamiltonians have no resonances at any order — sums and differences of energies don't accidentally coincide — with exceptions forming a measure-zero set. People had this only for the simplest order. Two: typical product states at finite temperature spread over exponentially many energy eigenstates. Equilibration and deep-thermalization proofs lean on both.
+
+Maya: Here's my objection. If complexity is astronomically large, why does no experiment notice?
+
+Sam: They answer that, and I liked it. Any region small enough — up to logarithmic size in the translation-invariant case — genuinely thermalizes and is easy to prepare. The hardness only appears once you look at almost the whole system. So the theory is consistent with everything we see, which is reassuring and also a warning that this will never be directly tested.
+
+Maya: What's not proven?
+
+Sam: Linear growth. They get "enormous, and therefore growing for an enormous stretch," not a rate — and a rate provably can't be established without separating complexity classes nobody can separate. "Generic" is measure-theoretic, so no specific Hamiltonian on your desk is certified. And the time window rests partly on a heuristic guess about spectral gaps. High temperature only, qubits only, no symmetries.
+
+[BREAK]
+
+Maya: One result each. Mine is the static-field Hamiltonian learning. The idea that you can buy protection from scrambling by turning a knob and walking away, rather than pulsing frantically, is the kind of thing that changes what a calibration routine looks like — assuming the constants cooperate.
+
+Sam: Mine is the Clifford disentangler paper. I genuinely believed that entanglement plus magic bought you unlearnability, and it turns out a product state hiding behind a scrambler leaves an algebraic signature you can just solve for. I'll be re-examining a few intuitions this week.
+
+Maya: Links to all five papers are in the show notes.
+
+Sam: And there's a link there to send us questions, too — we read them, and we answer them on air. See you tomorrow.
