@@ -1,0 +1,185 @@
+Maya: Sam, when you buy a car, there's a spec sheet. Mileage, horsepower, price, and you can compare two of them on a table.
+
+Sam: And a quantum error-correcting code has one too — how many physical qubits you spend, how many protected qubits you get back, how much damage it survives, and how many qubits each parity check has to touch. The difference is that for most of the good codes we know, nobody designed that spec sheet. Somebody searched until a nice one fell out.
+
+Maya: Which is exactly where today's most-scited paper starts. Welcome to the SciRate Daily Digest for Friday, September twenty-sixth, twenty twenty-six. I'm Maya.
+
+Sam: And I'm Sam. Today: a design manual for record-density quantum codes, the final word on how many copies it takes to read off a state's eigenvalues, a big review of what randomness means after a system thermalizes, an honest tomography algorithm that hands you something you can actually use, and a way to do the hardest gate in fault tolerance using nothing but your own error-detection machinery.
+
+Maya: Five papers, no filler. Let's go.
+
+[BREAK]
+
+Maya: So the stake on paper one is blunt: physical qubits are the whole cost of a quantum computer, and most of them go to error correction. The new generation of these low-density codes promises something like two physical qubits per logical one.
+
+Sam: Right, and that number is startling if you've lived in surface-code land, where the ratio is more like a thousand to one. But those ultra-high-rate codes have been found the way you find truffles — you dig in promising dirt. This paper, from Jong Yeon Lee and collaborators, is trying to turn digging into engineering.
+
+Maya: What's the actual design flow?
+
+Sam: Two pieces I'd highlight. First, templates: they build codes out of shifted-permutation blocks in a structured pairing pattern, so you have knobs instead of a haystack. Second — and this is the cute one — a folding trick. If your code has a symmetry that swaps its two kinds of checks with no fixed points, you can fold it in half. Half the physical qubits, same rate, and you only pay a modest amount of protection.
+
+Maya: Half the qubits for free feels like it should have a catch.
+
+Sam: The catch is that the folded code is no longer one of the nice two-halves codes — it's what's called non-CSS, which makes the logical gates fussier. And the fold needs that fixed-point-free symmetry, which not every code has. They actually show one well-known code whose symmetry group fails the test outright.
+
+Maya: Okay. And the headline design conclusion?
+
+Sam: That the dial that matters most is how many checks each qubit participates in. Crank it up and your decoder gets worse, because the decoding graph gets loopier — but your protection improves faster than the decoder degrades. At a physical error rate of about one in a thousand, which is roughly where good hardware sits, heavier wins. They land on codes with checks touching ten qubits, and get things like ninety physical qubits carrying twenty-one logical ones with real, certified protection.
+
+Maya: Certified how? Because I've noticed a lot of numbers in this literature are really upper bounds — somebody found a low-weight logical operator and that's the reported distance.
+
+Sam: You just named one of my favorite parts. They give a symmetry-reduced search that actually proves the minimum distance, exploiting the code's cyclic structure so the search size doesn't blow up with the block length. They also prove a ceiling: within these families, at fixed check weight, the protection can't grow forever no matter how big you make the block. There's a hard cap.
+
+Maya: Which is useful precisely because it tells you to stop looking.
+
+Sam: Exactly. Now my caveat, and it's a real one: this is all what's called code-capacity analysis. Noise on the qubits, decode, done. It does not simulate the circuit that actually extracts those weight-ten checks — and a check touching ten qubits is ten interactions and a lot of connectivity.
+
+Maya: That's the tension with the Pinnacle architecture we covered on Monday, which deliberately fixed every qubit's connections at degree eight because rewiring mid-computation isn't realistic on most hardware.
+
+Sam: Same collision, yes. If you're on neutral atoms and can shuttle, weight ten is plausible. If you're on a fixed superconducting lattice, this paper is a wish list. I'd say: read it if you design codes, and watch for whether anyone reproduces these rates under circuit-level noise.
+
+[BREAK]
+
+Sam: Paper two settles a question that's been open since twenty sixteen, and it settles it by proving the expected answer wrong.
+
+Maya: Set it up for me. What's the question?
+
+Sam: Full tomography — learning an unknown quantum state completely — is expensive, and the cost grows roughly with the cube of the dimension. But very often you don't want the whole state. You want its list of eigenvalues, because that alone gives you the purity, the entropies, the entanglement spectrum.
+
+Maya: So: can you skip learning the eigenvectors and get a discount?
+
+Sam: You can, and the discount is about a full factor of the dimension — you drop from cubic to quadratic. On top of that, people knew there was an extra logarithmic saving, and the community had conjectured how big it was. Bakshi, Singh and Tan now give an algorithm whose cost matches the known lower bound exactly, and it reveals two different regimes depending on how much accuracy you demand.
+
+Maya: And in one of them you do better than expected.
+
+Sam: In the coarse-accuracy regime, yes — the logarithmic discount is twice as deep as conjectured. That's the refutation. When you push for very fine accuracy, the scaling changes character and the discount shrinks. There's a genuine crossover, which nobody had seen.
+
+Maya: How do they do it? And please, no polynomials.
+
+Sam: Fine — the picture is this. Instead of reconstructing the spectrum directly, you estimate a bunch of smoothed averages over the eigenvalues, then ask: which spectrum would have produced these averages? It's moment matching, the same idea classical statisticians use to estimate a distribution you can't see directly. The technical fight is controlling how noisy each of those averages is, and their trick is to decompose the noise by how many copies of the state it involves at once — so a nasty matrix question collapses into a question about ordinary one-variable functions.
+
+Maya: Let me push on the practicality. What measurement does the optimal algorithm actually require?
+
+Sam: A collective measurement across every copy at once — the Schur-type measurement. So if you're an experimentalist holding a thousand copies of a state, this is not your protocol.
+
+Maya: So it's a boundary result, not a recipe.
+
+Sam: Mostly, but they also give the version where you measure copies one at a time, which is the realistic setting, and they improve that too — knocking the dependence on accuracy down substantially over prior work. They conjecture it's optimal but can't prove it, especially against adaptive strategies.
+
+Maya: Who should read it?
+
+Sam: Learning theorists, obviously. But I'd also point people at the toolkit rather than the theorem — this moment-matching-plus-variance-decomposition machinery looks reusable for entropy estimation and other spectral properties. Someone will retarget it within a year.
+
+[BREAK]
+
+Maya: Paper three is a review, and I want to start with the history, because I think the framing is the contribution.
+
+Sam: Go ahead.
+
+Maya: Classical statistical mechanics says: take a big isolated system, look at a small piece of it, and that piece looks thermal because you've averaged over everything you can't see. That's been the story for a century.
+
+Sam: And the punchline of this review — from Mark, Endres, Ippoliti, Ho and Choi — is that today's experiments broke the premise. On a Rydberg array you can read out every single atom, shot by shot. You're not stuck averaging anymore. So the right object isn't the averaged state of your little subsystem; it's the entire probability distribution over pure states you get, one for each measurement outcome on the rest.
+
+Maya: The projected ensemble.
+
+Sam: Right, and the claim of deep thermalization is that this distribution also has a universal form. Not just "the average is thermal" — the whole spread of outcomes converges to the most random distribution consistent with the constraints.
+
+Maya: Which sounds like it just means "random," and I want to know why that's a theorem rather than a slogan.
+
+Sam: Because the constraints change the answer in a specific, named way. If nothing is conserved and your measurement leaks nothing, you get uniformly random pure states — the Haar distribution. But if there's a conserved quantity, or your measurement basis tells you something about the energy or the charge, the limit deforms into what's called a Scrooge ensemble.
+
+Maya: Scrooge?
+
+Sam: It's the ensemble that is maximally stingy with information. Among all distributions with a given average state, it's the one from which you can extract the least about which state you actually got. It's an old concept from quantum information that turns out to be exactly what chaotic dynamics produces once you tie its hands.
+
+Maya: This echoes the circuit-complexity paper we did on Wednesday — the one where complexity keeps climbing long after local observables have flatlined.
+
+Sam: Same moral, different quantity. The density matrix stops moving and people declare the physics over, and in both cases there's a whole second layer still evolving underneath. Here the payoff is practical, though: if chaotic dynamics natively generates near-perfect randomness, then an analog simulator with no gate-level control becomes a randomness source. You can do benchmarking and randomized-measurement tomography on hardware that can't run circuits.
+
+Maya: What's the honest weak spot?
+
+Sam: Two things the review itself flags. One, to see the ensemble you have to sort your data by bath measurement outcome — and there are exponentially many outcomes, so the sample cost of really reconstructing the distribution is brutal. Experiments get at low moments, not the full object. Two, it's genuinely open whether Scrooge randomness buys you anything that ordinary uniform randomness doesn't.
+
+Maya: So it's a beautiful taxonomy still shopping for a killer app.
+
+Sam: That's fair. As a review it's excellent — if you've been hearing "deep thermalization" for three years and nodding politely, this is the one to read.
+
+[BREAK]
+
+Sam: Paper four fixes a problem I think is under-appreciated outside learning theory. There's a mode of learning where the algorithm gets a great score and hands you something useless.
+
+Maya: Explain "useless."
+
+Sam: Say you want to summarize an unknown many-body state as a matrix product state — a tensor network with a fixed, modest bond dimension, which is the compact description everyone uses. An improper learner is allowed to output anything at all, as long as its fidelity score is good. So it might hand you a monstrous state with huge bond dimension that happens to score well. You wanted a compressed description, and you got a certificate that one exists.
+
+Maya: And this paper gives you the actual compressed thing.
+
+Sam: Yes — Cedillo Vayson de Pradenne and Cotler give the first proper agnostic algorithm. Two words doing work there. Proper means the output is a genuine bond-limited tensor network. Agnostic means they assume nothing about the unknown state — it can be arbitrary, arbitrarily far from a tensor network — and they still guarantee the output scores within a small margin of the best that any tensor network of that size could achieve.
+
+Maya: With polynomial copies?
+
+Sam: Polynomial in the system size, the bond dimension, and the accuracy, and polynomial runtime once you fix the bond dimension and accuracy.
+
+Maya: Okay, here's my objection. Near-optimal within the class is a relative guarantee. If the true state is nothing like a tensor network, the best score in the class is terrible, and you've learned to be terrible efficiently.
+
+Sam: Completely right, and they say so. What saves it is the use case. Because you can sweep the bond dimension across the same measurement data, this becomes a model-selection tool — you ask "how well does a bond-ten description fit my experiment, and does bond twenty help?" That's a benchmarking question experimentalists actually have, and until now nobody could answer it with a guarantee.
+
+Maya: What's the idea that makes it work?
+
+Sam: The one I'd steal is what they call comparator-dual compression. Normally when you truncate a tensor network you try to stay close to the original vector, and your error accumulates cut by cut down the chain. Instead they only demand closeness as seen by the restricted family of states you'll ever compare against. Do that, and the error does not grow with the length of the chain at all. That's a statement classical tensor-network people should care about independently of any quantum learning.
+
+Maya: Cost?
+
+Sam: The runtime exponent grows with bond dimension squared over accuracy squared, which is ugly — but they argue some blowup is forced, because a fully efficient version would collapse a hard classical complexity class into the quantum one. And the measurements aren't friendly: adaptive projections and post-selection across copies, not simple single-qubit readout. Also, periodic boundary conditions still come out improper.
+
+Maya: So: theorists first, experimental model selection later, once someone simplifies the measurement side.
+
+Sam: That's how I'd bet.
+
+[BREAK]
+
+Maya: Last paper, and it has the best one-sentence pitch of the day. Sam?
+
+Sam: The error-detection machinery can be the gate. That's it. In fault tolerance, the expensive operation is the non-Clifford gate — the one that gets you beyond classically simulable circuits — and the standard answers are to distill special resource states or to switch between two codes mid-computation. Bharti, Haug and Tanggara show that for any stabilizer code with even minimal protection, you can get that gate out of the syndrome measurement itself.
+
+Maya: How does dropping a check give you a gate?
+
+Sam: Think of the checks as constraints that pin your logical information in place. Temporarily release one and the code space breathes — there's an extra encoded qubit hiding in the same physical block that you now have access to. You apply two overlapping Pauli rotations that anticommute, then measure the syndrome. It comes back one of exactly two ways, fifty-fifty, and both are correctable by a Clifford fix-up. Deterministic, no magic state, no second code.
+
+Maya: Fifty-fifty but deterministic — because either branch is repairable.
+
+Sam: Exactly, and that's the difference from magic-state injection, where a bad outcome costs you the resource. And here's the part I respect: they then prove their own scheme isn't automatically fault tolerant.
+
+Maya: Prove it how?
+
+Sam: A single fault landing between the two rotations is completely invisible to the syndrome, and it reverses the sign of the rotation angle. You get a logical error at first order in the physical error rate, no matter how large your code's distance is. That's a clean no-go, and it kills the naive version.
+
+Maya: So what do they put in its place?
+
+Sam: Two explicit circuits with the hole plugged. One is a twenty-two-qubit construction where different logical qubits get encoded in different inner codes, so the dangerous fault has somewhere to be caught — and that one can be concatenated recursively for more protection. The other wraps the Golay code and monitors the gate with a transported check, verified with small cat states.
+
+Maya: Cost?
+
+Sam: The twenty-two-qubit gate still consumes fifteen physical non-Clifford gates internally. So you haven't escaped them, you've localized them.
+
+Maya: Which brings me to a connection with our first paper. You said the protection available mid-gate is capped by how many qubits each check touches.
+
+Sam: Yes — and that's a lovely collision. Paper one argues you should push check weight up to about ten because heavier checks buy you protection. This paper says low-weight checks hard-cap how much protection survives while your state is outside the code space. Two independent arguments pointing the same direction, from completely different corners.
+
+Maya: The honest limitation?
+
+Sam: No threshold, no logical error rates — single-fault guarantees and an analytic two-fault bound, that's it. And they assume flexible connectivity with mid-circuit reset. I'd read this less as a product and more as a theory of what protects your data during a non-Clifford operation, which is exactly the gap in the pieceable-fault-tolerance literature.
+
+[BREAK]
+
+Maya: Sam, one result that stuck.
+
+Sam: The fold. Take a code, find the right symmetry, cut its size in half and keep the rate. That is a design move, not a search result, and design moves compound.
+
+Maya: Mine is the no-go in the last paper — that a fault sitting quietly between two rotations can flip your gate and your syndrome will never know. It's a good reminder that "the state is protected" and "the computation is protected" are different sentences.
+
+Sam: And the fix was a specific circuit, not a bigger code. That's the trend I'd watch.
+
+Maya: Links to all five papers are in the show notes, along with a link to send us questions — we read them, and we answer them on air.
+
+Sam: See you Monday.

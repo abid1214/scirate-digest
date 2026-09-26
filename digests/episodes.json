@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-09-26",
+    "title": "SciRate Digest \u2014 2026-09-26",
+    "summary": "Today's 5 papers: Design Principles for Ultra-High-Rate Quantum Codes; Optimal spectrum estimation; Deep thermalization and Hilbert space ergodicity; Proper Agnostic Learning of Matrix Product States and Tree Tensor Networks; Syndrome measurements enable deterministic fault-tolerant $T$ gates.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-09-26/digest.mp3",
+    "mp3_bytes": 17394861,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2609.30069",
+        "title": "Design Principles for Ultra-High-Rate Quantum Codes",
+        "abs_url": "https://arxiv.org/abs/2609.30069",
+        "scirate_url": "https://scirate.com/arxiv/2609.30069",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2609.30171",
+        "title": "Optimal spectrum estimation",
+        "abs_url": "https://arxiv.org/abs/2609.30171",
+        "scirate_url": "https://scirate.com/arxiv/2609.30171",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2609.30248",
+        "title": "Deep thermalization and Hilbert space ergodicity",
+        "abs_url": "https://arxiv.org/abs/2609.30248",
+        "scirate_url": "https://scirate.com/arxiv/2609.30248",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2609.30148",
+        "title": "Proper Agnostic Learning of Matrix Product States and Tree Tensor Networks",
+        "abs_url": "https://arxiv.org/abs/2609.30148",
+        "scirate_url": "https://scirate.com/arxiv/2609.30148",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2609.29890",
+        "title": "Syndrome measurements enable deterministic fault-tolerant $T$ gates",
+        "abs_url": "https://arxiv.org/abs/2609.29890",
+        "scirate_url": "https://scirate.com/arxiv/2609.29890",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-09-24",
     "title": "SciRate Digest \u2014 2026-09-24",
     "summary": "Today's 5 papers: Emergent Prethermal Symmetries for Scalable Hamiltonian Learning; Sharp pairwise reduction for quantum hypothesis testing; Efficient learning of Clifford disentanglers and typical $t$-doped unitaries with exponentially more $T$ gates; Improved Transversal Non-Clifford Gates from Cup Products; Sustained growth of quantum circuit complexity in many-body Hamiltonian dynamics.",
