@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-09-27",
+    "title": "SciRate Digest \u2014 2026-09-27",
+    "summary": "Today's 5 papers: Non-Abelian sheaf quantum LDPC codes: good and magical; All you need is the universal correlation detector: A unified approach to universalize communication protocols over quantum channels; Quantum Channel Stein Theorem beyond Definite Causal Order; A General Composition Theorem for Approximate Degree; The regularized channel R\u00e9nyi divergence is continuous.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-09-27/digest.mp3",
+    "mp3_bytes": 18677037,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2609.30159",
+        "title": "Non-Abelian sheaf quantum LDPC codes: good and magical",
+        "abs_url": "https://arxiv.org/abs/2609.30159",
+        "scirate_url": "https://scirate.com/arxiv/2609.30159",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2609.29954",
+        "title": "All you need is the universal correlation detector: A unified approach to universalize communication protocols over quantum channels",
+        "abs_url": "https://arxiv.org/abs/2609.29954",
+        "scirate_url": "https://scirate.com/arxiv/2609.29954",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2609.30268",
+        "title": "Quantum Channel Stein Theorem beyond Definite Causal Order",
+        "abs_url": "https://arxiv.org/abs/2609.30268",
+        "scirate_url": "https://scirate.com/arxiv/2609.30268",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2609.30139",
+        "title": "A General Composition Theorem for Approximate Degree",
+        "abs_url": "https://arxiv.org/abs/2609.30139",
+        "scirate_url": "https://scirate.com/arxiv/2609.30139",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2609.29885",
+        "title": "The regularized channel R\u00e9nyi divergence is continuous",
+        "abs_url": "https://arxiv.org/abs/2609.29885",
+        "scirate_url": "https://scirate.com/arxiv/2609.29885",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-09-26",
     "title": "SciRate Digest \u2014 2026-09-26",
     "summary": "Today's 5 papers: Design Principles for Ultra-High-Rate Quantum Codes; Optimal spectrum estimation; Deep thermalization and Hilbert space ergodicity; Proper Agnostic Learning of Matrix Product States and Tree Tensor Networks; Syndrome measurements enable deterministic fault-tolerant $T$ gates.",
