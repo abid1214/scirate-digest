@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-09-28",
+    "title": "SciRate Digest \u2014 2026-09-28",
+    "summary": "Today's 5 papers: Oracle Distillation; Sipser-Spielman meets Dijkgraaf-Witten: non-Abelian qLDPC codes via twisted sheaf gauge theory and almost-constant-overhead magic state fountain; Non-Abelian qLDPC: TQFT Formalism, Addressable Gauging Measurement and Application to Magic State Fountain on 2D Product Codes; Optimal noisy sequential multiparameter quantum sensing; Nonstabilizerness of quantum tensor network states is intractable in two dimensions.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-09-28/digest.mp3",
+    "mp3_bytes": 19484589,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2609.31596",
+        "title": "Oracle Distillation",
+        "abs_url": "https://arxiv.org/abs/2609.31596",
+        "scirate_url": "https://scirate.com/arxiv/2609.31596",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2609.31541",
+        "title": "Sipser-Spielman meets Dijkgraaf-Witten: non-Abelian qLDPC codes via twisted sheaf gauge theory and almost-constant-overhead magic state fountain",
+        "abs_url": "https://arxiv.org/abs/2609.31541",
+        "scirate_url": "https://scirate.com/arxiv/2609.31541",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2601.06736",
+        "title": "Non-Abelian qLDPC: TQFT Formalism, Addressable Gauging Measurement and Application to Magic State Fountain on 2D Product Codes",
+        "abs_url": "https://arxiv.org/abs/2601.06736",
+        "scirate_url": "https://scirate.com/arxiv/2601.06736",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2609.30398",
+        "title": "Optimal noisy sequential multiparameter quantum sensing",
+        "abs_url": "https://arxiv.org/abs/2609.30398",
+        "scirate_url": "https://scirate.com/arxiv/2609.30398",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2609.31459",
+        "title": "Nonstabilizerness of quantum tensor network states is intractable in two dimensions",
+        "abs_url": "https://arxiv.org/abs/2609.31459",
+        "scirate_url": "https://scirate.com/arxiv/2609.31459",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-09-27",
     "title": "SciRate Digest \u2014 2026-09-27",
     "summary": "Today's 5 papers: Non-Abelian sheaf quantum LDPC codes: good and magical; All you need is the universal correlation detector: A unified approach to universalize communication protocols over quantum channels; Quantum Channel Stein Theorem beyond Definite Causal Order; A General Composition Theorem for Approximate Degree; The regularized channel R\u00e9nyi divergence is continuous.",

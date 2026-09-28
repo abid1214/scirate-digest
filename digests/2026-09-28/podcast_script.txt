@@ -1,0 +1,165 @@
+Maya: Sam, I've got a strange shopping list from today's SciRate feed. Two papers that hand out magic states almost for free, and one that says you can't even check how much magic you're holding.
+
+Sam: A bumper harvest and a broken scale. And then, bookending it, two papers about getting guarantees out of systems you can't characterize at all — which honestly might be my favorite thread of the day.
+
+Maya: Welcome to the SciRate Daily Digest for Monday, September twenty-eighth, twenty twenty-six. Today: fault tolerance for an oracle you've never seen, two heavyweight non-Abelian quantum LDPC papers from the same group, one convex program that pins down the ultimate precision of an adaptive sensor, and a hardness result that closes a door on two-dimensional tensor networks.
+
+Sam: No mail in the bag this morning, so we go straight in.
+
+[BREAK]
+
+Maya: So, Sam. The folklore I've carried for years is that Grover's algorithm is fragile. Give the oracle a constant error rate per query and the quadratic speedup dies. Our top paper today says that's wrong. What gives?
+
+Sam: It says it's wrong in a specific and rather beautiful way. The paper's called Oracle Distillation, by Ruohan Shen and Soonwon Choi. Start from the real gap in fault tolerance: error correction protects operations you know in advance. You compile your circuit, you encode it, you correct. But in a query algorithm — or in a sensor — the interaction that matters is with something unknown. You can't compile a black box you haven't identified.
+
+Maya: Right, and you can't just measure it first, because identifying it is often the whole problem.
+
+Sam: Exactly, and that's the tension they formalize. They want a procedure that takes many uses of a noisy unknown oracle and produces one near-perfect oracle, while remaining completely agnostic about which oracle it was. Three demands fighting each other: stay label-blind, keep errors correctable, and preserve the functionality.
+
+Maya: Okay, so how do you purify something without looking at it?
+
+Sam: The core trick is what they call a weak query. Instead of feeding the oracle a sharp input, you feed it a carefully spread-out superposition whose amplitude pattern is designed so that any low-weight error in the index register pushes you into a direction orthogonal to everything you care about — so it's detectable rather than confusing. The price is that each query only gives you a faint whisper of the answer.
+
+Maya: So you're deliberately weakening the query to make it noise-symmetric, then accumulating whispers.
+
+Sam: That's the two-stage structure. Many blocks get queried weakly, a threshold-counting step tallies the responses onto a clean register, and then you query once more to undo the interaction — a phase oracle applied twice is the identity. Because everything has been converted into phase noise that commutes with both the oracle and the tally, all the damage piles up in one place and the recovery map doesn't need to know the oracle's identity.
+
+Maya: And they prove this is close to optimal?
+
+Sam: They do, using the standard error-correction conditions to get a lower bound on how many queries any such distillation must cost, and their protocol overshoots it only by a modest polynomial factor. Then comes the headline: a threshold theorem. Any Boolean oracle problem with a polynomial advantage budget — Grover, forrelation, Simon — retains a quantum advantage as long as the per-qubit depolarizing rate is below a constant. For Grover that constant is about five in ten thousand.
+
+Maya: Five in ten thousand is brutal, though. Surface-code thresholds are around a percent. And you said polynomial overhead — doesn't that eat Grover's quadratic gain?
+
+Sam: It eats into it, yes. The overhead grows as a power of the search space size, so the surviving exponent is smaller than the ideal one, and you need a big enough classical-to-quantum gap to absorb it. The threshold number is protocol-specific, not fundamental. What's conceptually new is that a constant threshold exists at all for unknown dynamics.
+
+Maya: And how does this square with the old no-go results?
+
+Sam: That's the part I found genuinely clarifying. The distinction is correlated versus local noise. The earlier pessimism assumed errors that can conspire across the query register; here the noise is independent per qubit, and independence is what the weak query exploits. Also worth saying: gates, memory and encoding are all assumed noiseless, and if the response bit itself is noisy, distillation is information-theoretically impossible.
+
+Maya: So it's fault tolerance for the oracle, inside an otherwise perfect machine.
+
+Sam: For now. If you work on query complexity, noisy algorithms, or computational sensing — where the oracle is synthesized from the dynamics you're probing — read this one. What I'd watch for is whether anyone extends it past Boolean oracles to general unitary families, because that's where sensing actually lives.
+
+[BREAK]
+
+Maya: We covered a sheaf-based non-Abelian quantum LDPC paper yesterday. Today the feed hands us two more from an overlapping group, and the first one is doing something I want you to unpack slowly, because it sounds like a category error.
+
+Sam: It's the Sipser–Spielman meets Dijkgraaf–Witten paper — Guanyu Zhu, Samuel Tan, Ryohei Kobayashi, Po-Shen Hsin. The history matters here. There have always been two routes to universal fault-tolerant logic in topological codes: add a third dimension, which buys you a transversal non-Clifford gate but demands nasty connectivity, or use non-Abelian topological order, which is intrinsically universal but has only ever lived on lattices and manifolds.
+
+Maya: And quantum LDPC codes are neither. They're expander graphs. There's no space.
+
+Sam: Which is exactly the obstruction they dissolve. The observation is that a classical expander code of the Sipser–Spielman type is literally the first homology of a sheaf on a graph — think of a bookkeeping rule where each vertex and each edge carries its own little code. And then a subdivision theorem: any parity-check matrix with no empty rows or columns can be turned into a sheaf code on an honest simplicial graph, with repetition codes sitting on the bit vertices and single-parity checks on the check vertices.
+
+Maya: Why go to that trouble? What does the simplicial version buy you?
+
+Sam: Cup products. On a genuine simplicial object you get the cochain-level multiplication back — and we talked about cup products last week in the transversal non-Clifford gate context. With multiplication restored, you can write down a topological twist intrinsically on the code's own chain complex. They write a three-copy gauge theory with a triple-product twist, gauge it, and out comes a Clifford-stabilizer code whose X checks are dressed with controlled-Z. That code carries non-Abelian order in two dimensions.
+
+Maya: And the payoff is the thing you called a bumper harvest.
+
+Sam: The magic state fountain. A number of measurement rounds proportional to the code distance, each of constant weight and all commuting, then you ungauge — and you harvest a huge batch of controlled-Z-type magic states in parallel, all on disjoint supports. With good LDPC inputs it's about the square root of the qubit count; with a special family having a multiplication property, it's almost one magic state per physical qubit.
+
+Maya: Compared with distillation, where you burn many noisy states sequentially to get one clean one.
+
+Sam: That's the contrast, yes. But let me get ahead of your objection. There is no decoder here, no threshold, no circuit-level simulation. And because it's a Clifford-stabilizer code rather than a Pauli one, syndrome extraction and decoding are strictly harder than in the familiar setting — that work hasn't been done.
+
+Maya: That's a big hole for something being pitched as an architecture result. And the distance?
+
+Sam: Subsystem distance, with short cycles absorbed into gauge qubits. Also, the almost-one-per-qubit rate needs a large alphabet, and the constants blow up as you push toward that limit — the constant-rate version is stuck back at square-root yield. And the states you get are eigenstates of a non-Pauli Clifford, so how many of them a universal computation actually needs isn't quantified in this paper.
+
+Maya: So the verdict is: a real conceptual unlock, unpriced.
+
+Sam: That's fair. Anyone building qLDPC logic should read the subdivision theorem specifically — it's a tool, independent of the gauge theory.
+
+[BREAK]
+
+Sam: Now here's the thing about today's number three. It's the January paper from the same line of work, still climbing the feed — so the chronology is inverted relative to what we just discussed.
+
+Maya: And this is the one with the result that made me sit up. Tell me about the book.
+
+Sam: So: a two-dimensional surface has essentially one top-dimensional cycle. A general two-dimensional chain complex — the kind you get from a hypergraph product code — has many. Picture a book: lots of pages, all sharing the same spine. Each page is its own top cycle.
+
+Maya: And on a manifold, transversal controlled-Z from the top cycle gives you one global logical action.
+
+Sam: One, and it hits everything. On the book, you get one per page — which means many independently addressable logical controlled-Z gates on an ordinary two-dimensional hypergraph product code. They call these zero-form subcomplex symmetries. And it's an explicit counterexample to the folklore that addressable controlled-Z requires a three-dimensional product code carrying a transversal triple-controlled-Z.
+
+Maya: Which is exactly the connectivity cost people have been dreading. How do they actually perform the gate?
+
+Sam: By gauging. A global transversal Clifford symmetry gets factorized into constant-weight Gauss-law operators — those controlled-Z-dressed X stabilizers — which you can measure fault-tolerantly, ancilla-free. Multiply the outcomes over a chosen homology class and you've reconstructed the eigenvalue of the symmetry on that class. Do it on disjoint classes and you've measured many transversal controlled-Zs at once. The logical action is derived from a spacetime path integral rather than guessed.
+
+Maya: And the non-Abelian order — is that demonstrated or asserted?
+
+Sam: Demonstrated at the level of the field theory: they compute fusion rules and find Borromean-ring braiding, which traces back to triple intersections of magnetic worldsheets. That's a lovely piece of physics, and it extends Kitaev-style combinatorial topological field theory beyond manifolds to a much wider class of complexes.
+
+Maya: Here's my worry. You said the distance bound depends on an unproven statement.
+
+Sam: It does — a TQFT claim about condensation descendants. So the twisted codes' distance is conjectural. And the construction route is heavy: they thicken the hypergraph product code onto a sixteen-dimensional cell complex, built as a product of two eight-dimensional complexes from code-to-manifold machinery. The constant factors are enormous. They mitigate it by pulling back to the bare two-dimensional skeleton, which is clever, but "mitigate" is the right verb.
+
+Maya: And the yield is the square-root one, which is precisely what the sheaf paper improves.
+
+Sam: Right — so read these two together. The January paper tells you the hidden structure is there in the codes you already care about; the September one removes the manifold scaffolding and pushes the harvest toward linear. Neither has a decoder. That's the open job, and it's the job that decides whether any of this reaches hardware.
+
+[BREAK]
+
+Maya: Let's go to the bench. Suppose I've built a sensor. I send in a probe, it interacts with the thing I'm measuring several times, I'm allowed to twiddle the probe between interactions, I measure at the end, and I turn data into a number. Four things to optimize at once.
+
+Sam: And that joint optimization is miserable, because the choices are coupled. Worse, if the noise is correlated in time — non-Markovian, environment with memory — the usual Fisher-information tools get weak exactly where you need them, and if you're estimating several parameters at once, measurement incompatibility bites on top.
+
+Maya: So what do Tanggara, O Conlon, Gorshkov and Bharti do about it?
+
+Sam: They stop treating the protocol as four decisions and treat it as one object — a quantum comb, a circuit with slots that the unknown process plugs into. Then they lift the Nagaoka–Hayashi Cramér–Rao bound into that setting. The result is a single semidefinite program — a convex optimization any standard solver eats — whose value lower-bounds the mean squared error of any physically realizable adaptive strategy. Probe, controls, measurement, estimator, all at once.
+
+Maya: A bound is nice, but bounds are often unreachable. Is this one tight?
+
+Sam: For single-parameter problems that are finite-dimensional and regular, and where an optimal comb exists — yes, provably. And this is the part I like: the optimizer isn't just a number, it's a blueprint. You take spectral projectors of the relevant derivative operator to get your measurement, rescaled eigenvalues give the estimator, and the comb decomposes into a concrete probe state, intermediate isometries, and a final measurement. So you get the limit and the recipe that saturates it.
+
+Maya: And multiparameter, which is what the title advertises?
+
+Sam: There it's a bound, not an equality, and they're upfront about why: saturation needs the effective estimator observables to commute on the relevant support. When they don't, the bound may be strictly loose, and the optimizer needn't correspond to any physical protocol.
+
+Maya: Now the cost. How big can these programs get?
+
+Sam: This is the real limitation. The comb matrices grow exponentially in the number of time steps, so the numerics run at a few steps. Which means the asymptotic Heisenberg-scaling statements in the paper rest on separate analytic arguments, not on the program.
+
+Maya: A few steps. Real sensors do thousands of interactions. So why should an experimentalist care?
+
+Sam: Two reasons. First, at small step counts you can now certify whether your heuristic protocol is actually near-optimal or leaving a factor on the table — nobody could say that before under correlated noise. Second, the structural results don't care about step count: the tightness theorem, the commuting obstruction, and a nice sufficient condition for lifting a known-noise Heisenberg-limited strategy to a correlated process with an unknown discrete noise label, via calibration.
+
+Maya: That last bit connects to the Hamiltonian learning papers we did earlier in the week — the prethermal symmetry one and eigenphase engineering.
+
+Sam: It's the other end of the same conversation. Those papers engineer protocols that reach good precision per unit time; this one tells you what the ceiling is. Also everything here is local estimation — unbiased around a known operating point — so it's a benchmark for a calibrated sensor, not a from-scratch search.
+
+[BREAK]
+
+Maya: Last one, and it's the spoilsport. Sam, in one dimension, if I hand you a matrix product state as tensors, you can compute its magic — its nonstabilizerness — efficiently. People do this routinely for spin chains.
+
+Sam: They do, and the natural hope was that two-dimensional tensor networks would follow, because those are the workhorse for area-law states and topological phases. Esposito and Styliaris close that door hard. Computing the stabilizer Rényi entropy of a square-lattice two-dimensional tensor network state, given the local tensors, is as hard as exact counting — the class called sharp-P. And it's hard already at bond dimension four, meaning tensors with four-dimensional internal legs. That's tiny.
+
+Maya: And the weaker question — is there any magic at all?
+
+Sam: Deciding whether the state is exactly a stabilizer state is complete for a related counting class, the one that asks whether two counts are precisely equal. If that were solvable classically in polynomial time, the whole polynomial hierarchy collapses; if a quantum computer could do it, NP sits inside BQP. So this isn't "we lack an algorithm" — it's structural.
+
+Maya: My instinct is that this is a precision artifact. Exact evaluation of anything is usually hard. Give me constant slack and the problem melts.
+
+Sam: That was my instinct too, and it's wrong here. Estimate the second stabilizer entropy to within about one percent additive error — still hard. Decide stabilizer membership with a generous constant promise gap in distance — still hard. Their phrase, and I think it's the right one: the obstruction is not precision, it's structure. Bounded physical dimension and bounded bond dimension buy you nothing.
+
+Maya: How does the reduction work, roughly?
+
+Sam: Counting satisfying assignments of a Boolean circuit is written as a tensor network contraction — delta tensors for wires, truth-table tensors for gates. Then that single number gets hidden in the amplitude of one marked qubit of a bond-dimension-four state, with everything else trivial. The stabilizer purity of that state depends monotonically on the hidden number, so binary search reads the count straight out. For membership they take a difference of two counts by direct-summing tensors, and ask whether it's exactly zero.
+
+Maya: Elegant. But worst case, presumably.
+
+Sam: Worst case, and they're explicit that the interesting subclasses are open: injective tensor networks, translation invariance, uniformly gapped parent Hamiltonians, isometric networks. That's where physics actually lives, so this isn't a death sentence for magic diagnostics in two dimensions. It's a statement that any working algorithm must lean on physical structure, not on the compressed description alone.
+
+Maya: There's a nice irony running through today, though. Two papers show you can manufacture magic in bulk on a two-dimensional code, and this one says that in a two-dimensional tensor network description you can't even audit it.
+
+Sam: Different objects, so I won't push the pun too far — a stabilizer code with a known gauging protocol is a much more structured thing than an arbitrary tensor network. But the mood is right: magic is easy to make when you designed the structure, and hard to see when you didn't. Also worth flagging that the membership result needs bond dimension thirty-three, well above the value two where contraction hardness is known, so there's room to sharpen.
+
+[BREAK]
+
+Maya: One result each. Mine is the oracle distillation threshold. The idea that you can error-correct an interaction with something you refuse to identify — and that Grover's advantage survives independent noise below a constant rate — genuinely revises a belief I'd stopped questioning.
+
+Sam: Mine's the book. Pages sharing a spine, and that alone gives you individually addressable non-Clifford resources on a two-dimensional product code. Years of assuming you needed a third dimension, undone by noticing that a chain complex isn't a surface.
+
+Maya: Links to all five papers are in the show notes, and the show notes also have a link if you want to send us a question — we read them all and work through the backlog.
+
+Sam: Thanks for listening. We'll see you tomorrow.
