@@ -1,0 +1,145 @@
+Maya: I have a confession. When I see the word "optimal" in a paper title, my first instinct is to check whether they mean optimal, or whether they mean "the best we managed."
+
+Sam: Today is unusual, then, because three of these actually mean it. Matching upper and lower bounds. The book closes.
+
+Maya: Which is a weirdly satisfying mood for a Tuesday. Welcome to the SciRate Daily Digest for September twenty-ninth, twenty twenty-six. On the board: the true cost of quantum linear solvers, finally pinned down; the exact constant-factor speedup for searching a sorted list; a new algebraic lens on decoded quantum optimization; how to compile an arbitrary rotation without paying in circuit depth; and a way to measure, on the hardware itself, how classically hard your experiment really is.
+
+Sam: Four theory papers and one that experimentalists can actually run. Let's go.
+
+[BREAK]
+
+Maya: Top of the list is the quantum linear systems problem, which is about as old as modern quantum algorithms get. The original algorithm is from two thousand nine, it's been cited into oblivion, and yet Bravo-Prieto, Harrow and Kothari are telling us that until this week nobody knew what it costs.
+
+Sam: Nobody knew the joint scaling, which is the honest version. There are three dials. How ill-conditioned your matrix is — how close to singular. How many nonzero entries sit in each row, since you're querying the matrix entry by entry. And how accurate you want the answer. For fifteen years there were two algorithms, and each one got two of the three dials right and was wasteful on the third. Neither dominated the other.
+
+Maya: So they're incomparable. And the lower bounds?
+
+Sam: Also two, also partial. One captured the hardness coming from search, one from conditioning. This paper shows the truth is the product of all three contributions: the cost is the condition number, times the square root of the row sparsity, times a factor that only grows logarithmically as you tighten the error. Upper bound and lower bound, matching.
+
+Maya: Where was the square root hiding? Because the old wisdom, as I understand it, was that feeding a sparse matrix into one of these solvers costs you the full sparsity.
+
+Sam: That's exactly the bottleneck, and it's my favorite part. The standard way to hand a sparse matrix to a solver factors it through a unitary that has to find the nonzero entries in a row — and finding things is unstructured search, so you're paying for search inside your encoding. Their move is to stop encoding the matrix at all. They solve a bigger linear system instead: split the factorization into two coupled equations with an auxiliary vector, so each piece can be normalized individually, entry by entry. The enlarged system has an exact encoding that costs a constant number of queries, and its inverse is only worse than the original by that square root.
+
+Maya: And the answer you want is sitting inside the bigger solution.
+
+Sam: In the bottom block, recoverable with decent probability. Then an existing solver that's already optimal in the condition number finishes the job. The lower bound is the other genuinely new thing — they build a clock construction where a circuit computes, idles, and uncomputes, so the solution vector is a history state and the circuit's output lives in the idle window with exponentially small weight. Then they layer search hardness on top and use a quantum version of the XOR lemma to show the two effects multiply rather than one swallowing the other.
+
+Maya: Let me push on the practical side, though. This is query complexity. It doesn't count gates, it doesn't count ancillas, and the linear-systems primitive has that famous fine print about how you load your data in and what you can read out.
+
+Sam: All fair, and the paper says so — the enlarged register and the controlled rotations aren't tabulated. But there's a piece here that I think gets used immediately regardless. They get a block encoding of any sparse Hermitian matrix with constant normalization using about the square root of the sparsity in queries. Anywhere you're currently eating a factor of the full sparsity in your effective condition number — Hamiltonian simulation, anything built on quantum singular value transformation — that's a drop-in swap.
+
+Maya: And the corollary I liked: if someone hands you a table of a unitary's matrix entries, you can implement it with about the square root of the dimension in queries. Which is the search bound, so that's it, that's the answer.
+
+Sam: Resolving an open question of Berry and Childs, yes. What I'd watch next is whether the enlarged system stays benign once someone counts actual gates, and whether the condition-number dependence can be relaxed when you don't know the condition number up front. Read this if you build primitives. Everyone else can take the headline.
+
+[BREAK]
+
+Maya: Second paper has a number I want printed on a mug. Carolan and Childs, ordered search. Sam, give me the number.
+
+Sam: Twenty-three. Binary search cuts your candidate range in half with every comparison. The optimal quantum algorithm shrinks it by a factor of about twenty-three per query. Which works out to needing roughly four and a half times fewer comparisons than binary search — and that factor is now known exactly, not bounded.
+
+Maya: Twenty-eight years after somebody first showed quantum helps here at all.
+
+Sam: Nineteen ninety-eight, and this is the textbook example of a problem where quantum gives you only a constant factor. The lower bound — one over pi, times the natural logarithm of the list length — has been known since the early two thousands. The algorithms were the problem: every good one came from numerically optimizing a single small fixed-size instance and then recursing. That approach structurally cannot converge to the true constant, and it was already burning serious compute.
+
+Maya: So how do you get a closed form out of that?
+
+Sam: You leave the discrete problem. Their first algorithm lives on the continuum: think of the position in the list on a logarithmic axis, so the oracle becomes a sign flip at an unknown point on the real line. Prepare a wave packet, then alternate the oracle reflection with its Fourier conjugate — and that driver is the unique nontrivial operation invariant under both shifting and rescaling, which is the symmetry the problem actually has. Each query slides the packet a fixed distance leftward on the log axis. Fixed distance in log space means a constant multiplicative narrowing, and that constant is the twenty-three.
+
+Maya: That's clean enough that I'm suspicious it took this long.
+
+Sam: The second algorithm is where the work shows. They want zero error with certainty, not just in expectation, and for that they walk an analytic path through the old polynomial formulation — a one-parameter family of nonnegative polynomials that interpolates from the Fejér kernel to the constant function, advancing greedily as far as nonnegativity lets them at each step.
+
+Maya: Polynomials again. We covered a general composition theorem for approximate degree over the weekend, and it keeps being the case that query complexity is really a question about polynomials wearing a costume.
+
+Sam: It is the native language, and here it pays a second dividend: this confirms the adversary method gives the exactly right answer for ordered search, which Childs and Lee conjectured. The adversary bound is often loose, so knowing it's tight somewhere nontrivial is useful calibration.
+
+Maya: Now the uncomfortable question. Nobody is going to run a quantum computer to search a sorted list. What is this for?
+
+Sam: Nothing, operationally, and the paper doesn't pretend otherwise — the time complexity is unoptimized, the exact version needs polynomial factorizations, and they don't even extract a concrete small-list algorithm to beat the old numerical records. The value is that a canonical constant is now determined, and that the technique — continuum limits and scale invariance instead of brute-force numerics — is portable to other query problems that have plateaued the same way. Also, the lower-order terms are still open, so there's a sequel available to whoever wants it.
+
+[BREAK]
+
+Maya: Paper three has a concrete stake attached, which is why I think people are reading it. There's been a run of quantum optimization algorithms — decoded quantum interferometry and its relatives — that reportedly beat classical heuristics on some structured constraint problems. Shang and Stilck França are asking what makes them work.
+
+Sam: And their answer is that all of them are one thing. You want a state whose amplitudes are a polynomial filter applied to your objective function — sharp filter, good solutions. That's hard to build directly in the complicated system you care about. So you build it in a simple system that happens to share the same algebraic relations, and then coherently carry it across. They call it polynomial transduction.
+
+Maya: Carry it across using what?
+
+Sam: A structure-preserving map between the two algebras, plus a classical decoder running inside the circuit to clean up the bookkeeping — to forget the label of where you came from. Here's the insight that earns the paper: the decoder only has to recover the operator, not which particular product of terms produced it. So any relation that already exists in the simple system is free.
+
+Maya: Meaning the requirement isn't what people thought it was.
+
+Sam: Right. The old criterion was governed by an ordinary code distance, which capped how sharp your filter could be. The relevant quantity is instead a relative distance — the shortest word at which the simple system and the hard system actually disagree. That's never smaller than the ordinary distance, and they exhibit families where the ordinary distance is a constant while the relative distance grows linearly in the number of variables. They also prove the criterion is sharp: twice the filter degree below the relative distance is exactly equivalent to preserving all the inner products you need. Not sufficient — equivalent.
+
+Maya: There's a flip side in here that struck me as the more durable result, actually. The no-go flavored observation.
+
+Sam: Yes — whenever you're comfortably inside that regime, the expectation value of any low-degree observable in the hard system equals the one in the simple system. So if all you want is an expectation value, transducing bought you nothing. Any advantage has to come from sampling the distribution.
+
+Maya: That's a real constraint on where to look. But I want to be blunt about the evidence, because the advantage claim rests on one instance family.
+
+Sam: It does. A nonlinear pairwise variant of an optimal polynomial intersection problem over a prime field, with a degree-fifty filter, and the quantum score comes in around sixty-four percent of constraints satisfied against roughly sixty-one for the best of ten classical heuristic runs with millions of candidates each. Three points. And that quantum number is the ideal, exactly computed score — not a simulated circuit, no noise, and the classical side is a heuristic baseline, not a hardness argument.
+
+Maya: Plus the efficiency is conditional.
+
+Sam: On four separate assumptions, with no general construction offered: preparing the simple state, both directions of the operator Fourier transform, computing the labels, and having an efficient relative decoder. So this is a framework paper with a design knob — engineer the relations in your easy system to raise the relative distance. If you work on decoded optimization or Gibbs state preparation, read it. If you want a demonstrated advantage, this isn't that yet.
+
+[BREAK]
+
+Sam: Now, two things we teach in the first week. Any quantum computation can be rewritten with a small fixed set of gates. And you never need complex numbers — real amplitudes suffice. Both true. Both, it turns out, were quietly cheating on depth.
+
+Maya: Which matters because depth is wall-clock time, and it's the thing that defines the shallow-circuit complexity classes.
+
+Sam: Exactly, and Francisca Vasconcelos closes that gap. The headline: an end-to-end, catalyst-free, constant-depth circuit that approximates an arbitrary single-qubit rotation to any accuracy you like, out of Hadamard, the T gate, and generalized Toffoli gates whose width grows logarithmically in the accuracy. No unbounded fan-out anywhere — that gets eliminated rather than assumed.
+
+Maya: Constant depth for arbitrary precision. How?
+
+Sam: Approximate the rotation you want by a ratio of integers over a power of two, build an approximate block encoding of half that rotation from it, and fix up the amplitude with a single round of robust amplitude amplification. And then all the depth in the whole thing collapses to two operations: a coherent comparison on the address register, and a reflection about the all-zeros state. Both are one layer if your Toffolis are wide.
+
+Maya: And that "if" is doing enormous work. A Toffoli on logarithmically many qubits is not a free gate. You haven't removed the depth, you've hidden it inside a gate you've declared to be one step.
+
+Sam: That objection is essentially the second half of the paper. She proves that if you restrict to any fixed gate set acting on a bounded number of qubits, depth must grow — and it must grow doubly logarithmically in the accuracy, which she matches. The argument is a light-cone count: bounded arity and fixed depth can only reach so many distinct channels, and you need roughly one for every unit of precision. So it's an honest width-versus-depth trade, stated both ways. And practically, wide multi-qubit gates aren't fantasy — neutral atoms with Rydberg blockade are closer to native there than to a CNOT chain.
+
+Maya: What does it buy in complexity theory?
+
+Sam: A collapse. Several shallow classes that looked distinct — arbitrary rotations allowed, fixed universal gate set, real amplitudes only — turn out to be the same class. And the conjecture that parity is not computable by constant-depth circuits with Toffolis, which has been open a long time, now reduces to circuits built only from Hadamard, bit flips, and generalized Toffoli. That's a much more rigid object, and the acceptance probability takes a structured form resembling the Forrelation problem, where there are existing Fourier-growth tools to attack it.
+
+Maya: Caveats worth flagging?
+
+Sam: The fault-tolerant cost of those wide Toffolis is not accounted for, which matters if you're budgeting T gates. And the real-amplitude simulation preserves acceptance probabilities only — it's a statement about decision problems, not about reproducing unitaries. One level down, whether the analogous collapse happens for the depth-limited classes without Toffolis is left open.
+
+[BREAK]
+
+Maya: Yesterday we covered the result that extracting magic from a two-dimensional tensor network is intractable, and that sat in my head as: our standard yardsticks for classical hardness are getting harder to use, not easier. This last paper argues they were the wrong yardsticks all along.
+
+Sam: For this purpose, yes. Schuster and Elben are responding to a specific embarrassment. There's a new generation of classical simulators — sparse Pauli dynamics, tensor networks that truncate on influence — that nail expectation values in systems which look completely hopeless if you measure entanglement or magic. They succeed because they only keep local information. So entanglement tells you the wrong thing about them.
+
+Maya: And their alternative is a property of the whole experiment, not of a state.
+
+Sam: That's the conceptual shift. They define a reactivity function. Propagate your observable backwards through the circuit and it spreads across Pauli operators of different sizes — the number of qubits an operator touches nontrivially. Reactivity asks: of the expectation value you finally measure, how much is carried by operators of each size, at each moment in time. Initial state, dynamics, and observable together.
+
+Maya: And if the answer is dominated by small operators, the cheap simulators win.
+
+Sam: They prove a version of that — low reactivity implies you can predict the observable from local randomized-measurement data, and even fast-forward composed dynamics, with a sample cost that grows with the largest supported weight. Numerically, in a one-dimensional mixed-field Ising chain of about fifty spins and a five-by-five transverse-field model, the largest supported operator size tracks the logarithm of the memory that sparse Pauli dynamics actually consumes, very closely. Which surprised me, because that algorithm truncates on coefficient magnitude, not on operator size at all. The easy cases sit below size four; the hard two-dimensional case runs out to about eight.
+
+Maya: Okay, but the part that made this a top-five paper is that you can measure it.
+
+Sam: And the mechanism is lovely. Inject depolarizing noise at some rate into a time slice, and every operator's contribution gets suppressed exponentially in its size. So noise is a Laplace transform on reactivity. Run the experiment at a handful of noise strengths, combine the outcomes with designed filter coefficients, and you read out smoothed features of the spectrum. Naive inversion is hopeless, but if you fix the relative resolution the overhead is constant — about a hundred times more shots gets them usable filters out to operator sizes in the hundreds.
+
+Maya: On hardware, in a regime you can't simulate.
+
+Sam: That's the point. Pauli path spectroscopy. You don't have to argue about whether your demonstration is spoofable by a local-information method — you measure how much of your signal lives above where those methods can reach.
+
+Maya: Except they concede it is spoofable. An adversarial circuit can fake high reactivity. So what does the certificate actually certify?
+
+Sam: It's a benchmark, not a proof — exactly like entanglement entropy, which also doesn't stop an adversary but does tell you honestly that a low-bond-dimension tensor network won't reproduce your state. What's new is that this one is cheap and hardware-native. The limitations I'd watch: the numerics are two Ising models at sizes where the classical method still converges, so they never observe support above size ten, and the correspondence with memory cost is empirical rather than proven. You also have to scan which time slice to probe. And the actual physics of reactivity is deferred to a companion paper, which I'm now waiting for.
+
+[BREAK]
+
+Maya: One result each. Mine is the twenty-three. A quarter century of knowing that quantum search on a sorted list helps by some constant factor, and now we know the constant, and it comes from a wave packet sliding a fixed step along a logarithmic axis. That's a beautiful reason for a number to be what it is.
+
+Sam: Mine is the enlarged linear system. Fifteen years of people paying for unstructured search inside their matrix encoding, and the fix is to solve a different, bigger system whose answer contains yours. That block encoding is going to show up in other people's algorithms within the month, and I don't think most of them will be linear solvers.
+
+Maya: Links to all five papers are in the show notes. The notes also have a link for sending questions — we read them, and the backlog is how we choose what to explain.
+
+Sam: Keep them coming. We'll see you tomorrow.

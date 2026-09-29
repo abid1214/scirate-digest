@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-09-29",
+    "title": "SciRate Digest \u2014 2026-09-29",
+    "summary": "Today's 5 papers: An Optimal Quantum Linear Systems Algorithm; Optimal Quantum Algorithms for Ordered Search; From Simple Sources to Quantum Advantage: Homomorphic Polynomial Transduction via Relative Decoding; Depth-Optimal Quantum Compilation; Probing the classical complexity of quantum dynamics experiments.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-09-29/digest.mp3",
+    "mp3_bytes": 19316013,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2609.35660",
+        "title": "An Optimal Quantum Linear Systems Algorithm",
+        "abs_url": "https://arxiv.org/abs/2609.35660",
+        "scirate_url": "https://scirate.com/arxiv/2609.35660",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2609.34293",
+        "title": "Optimal Quantum Algorithms for Ordered Search",
+        "abs_url": "https://arxiv.org/abs/2609.34293",
+        "scirate_url": "https://scirate.com/arxiv/2609.34293",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2609.35101",
+        "title": "From Simple Sources to Quantum Advantage: Homomorphic Polynomial Transduction via Relative Decoding",
+        "abs_url": "https://arxiv.org/abs/2609.35101",
+        "scirate_url": "https://scirate.com/arxiv/2609.35101",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2609.34659",
+        "title": "Depth-Optimal Quantum Compilation",
+        "abs_url": "https://arxiv.org/abs/2609.34659",
+        "scirate_url": "https://scirate.com/arxiv/2609.34659",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2609.31830",
+        "title": "Probing the classical complexity of quantum dynamics experiments",
+        "abs_url": "https://arxiv.org/abs/2609.31830",
+        "scirate_url": "https://scirate.com/arxiv/2609.31830",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-09-28",
     "title": "SciRate Digest \u2014 2026-09-28",
     "summary": "Today's 5 papers: Oracle Distillation; Sipser-Spielman meets Dijkgraaf-Witten: non-Abelian qLDPC codes via twisted sheaf gauge theory and almost-constant-overhead magic state fountain; Non-Abelian qLDPC: TQFT Formalism, Addressable Gauging Measurement and Application to Magic State Fountain on 2D Product Codes; Optimal noisy sequential multiparameter quantum sensing; Nonstabilizerness of quantum tensor network states is intractable in two dimensions.",
