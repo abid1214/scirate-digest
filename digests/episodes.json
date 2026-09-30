@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-09-30",
+    "title": "SciRate Digest \u2014 2026-09-30",
+    "summary": "Today's 5 papers: Towards verifiable quantum advantage with random circuits: Observables that survive concentration; Optimal Ground-State Preparation with a Guiding State; Ultra-high-distance quantum memories from amplified qLDPC codes; Universal quantum coding; One-dimensional quantum Gibbs states in constant circuit depth.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-09-30/digest.mp3",
+    "mp3_bytes": 16843053,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2609.37890",
+        "title": "Towards verifiable quantum advantage with random circuits: Observables that survive concentration",
+        "abs_url": "https://arxiv.org/abs/2609.37890",
+        "scirate_url": "https://scirate.com/arxiv/2609.37890",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2609.38091",
+        "title": "Optimal Ground-State Preparation with a Guiding State",
+        "abs_url": "https://arxiv.org/abs/2609.38091",
+        "scirate_url": "https://scirate.com/arxiv/2609.38091",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2609.37231",
+        "title": "Ultra-high-distance quantum memories from amplified qLDPC codes",
+        "abs_url": "https://arxiv.org/abs/2609.37231",
+        "scirate_url": "https://scirate.com/arxiv/2609.37231",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2609.38038",
+        "title": "Universal quantum coding",
+        "abs_url": "https://arxiv.org/abs/2609.38038",
+        "scirate_url": "https://scirate.com/arxiv/2609.38038",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2609.35973",
+        "title": "One-dimensional quantum Gibbs states in constant circuit depth",
+        "abs_url": "https://arxiv.org/abs/2609.35973",
+        "scirate_url": "https://scirate.com/arxiv/2609.35973",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-09-29",
     "title": "SciRate Digest \u2014 2026-09-29",
     "summary": "Today's 5 papers: An Optimal Quantum Linear Systems Algorithm; Optimal Quantum Algorithms for Ordered Search; From Simple Sources to Quantum Advantage: Homomorphic Polynomial Transduction via Relative Decoding; Depth-Optimal Quantum Compilation; Probing the classical complexity of quantum dynamics experiments.",
