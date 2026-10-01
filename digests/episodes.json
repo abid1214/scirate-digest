@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-10-01",
+    "title": "SciRate Digest \u2014 2026-10-01",
+    "summary": "Today's 5 papers: All Unitaries Have Constant Depth Quantum Circuits; Quantum circuit compilation with constant overhead; Testing quantum Gaussianity with constant sample complexity; Parallel algebraic surgery for qLDPC codes with constant shuttling depth; Fault Tolerant Quantum Phases of Matter.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-10-01/digest.mp3",
+    "mp3_bytes": 17617965,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2609.40351",
+        "title": "All Unitaries Have Constant Depth Quantum Circuits",
+        "abs_url": "https://arxiv.org/abs/2609.40351",
+        "scirate_url": "https://scirate.com/arxiv/2609.40351",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2609.39092",
+        "title": "Quantum circuit compilation with constant overhead",
+        "abs_url": "https://arxiv.org/abs/2609.39092",
+        "scirate_url": "https://scirate.com/arxiv/2609.39092",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2609.40270",
+        "title": "Testing quantum Gaussianity with constant sample complexity",
+        "abs_url": "https://arxiv.org/abs/2609.40270",
+        "scirate_url": "https://scirate.com/arxiv/2609.40270",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2609.39874",
+        "title": "Parallel algebraic surgery for qLDPC codes with constant shuttling depth",
+        "abs_url": "https://arxiv.org/abs/2609.39874",
+        "scirate_url": "https://scirate.com/arxiv/2609.39874",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2609.39879",
+        "title": "Fault Tolerant Quantum Phases of Matter",
+        "abs_url": "https://arxiv.org/abs/2609.39879",
+        "scirate_url": "https://scirate.com/arxiv/2609.39879",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-09-30",
     "title": "SciRate Digest \u2014 2026-09-30",
     "summary": "Today's 5 papers: Towards verifiable quantum advantage with random circuits: Observables that survive concentration; Optimal Ground-State Preparation with a Guiding State; Ultra-high-distance quantum memories from amplified qLDPC codes; Universal quantum coding; One-dimensional quantum Gibbs states in constant circuit depth.",
