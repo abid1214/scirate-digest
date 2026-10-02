@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-10-02",
+    "title": "SciRate Digest \u2014 2026-10-02",
+    "summary": "Today's 5 papers: Multivariate Quantum Signal Processing; Polynomial-time classical and quantum simulation of quantum impurity models; A provable quantum advantage for approximate optimization via decoded quantum interferometry; One-Shot any Code; Approximation theorems for fermionic Gaussian states.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-10-02/digest.mp3",
+    "mp3_bytes": 20074029,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2610.01125",
+        "title": "Multivariate Quantum Signal Processing",
+        "abs_url": "https://arxiv.org/abs/2610.01125",
+        "scirate_url": "https://scirate.com/arxiv/2610.01125",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2610.02167",
+        "title": "Polynomial-time classical and quantum simulation of quantum impurity models",
+        "abs_url": "https://arxiv.org/abs/2610.02167",
+        "scirate_url": "https://scirate.com/arxiv/2610.02167",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2610.02145",
+        "title": "A provable quantum advantage for approximate optimization via decoded quantum interferometry",
+        "abs_url": "https://arxiv.org/abs/2610.02145",
+        "scirate_url": "https://scirate.com/arxiv/2610.02145",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2610.02137",
+        "title": "One-Shot any Code",
+        "abs_url": "https://arxiv.org/abs/2610.02137",
+        "scirate_url": "https://scirate.com/arxiv/2610.02137",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2610.01860",
+        "title": "Approximation theorems for fermionic Gaussian states",
+        "abs_url": "https://arxiv.org/abs/2610.01860",
+        "scirate_url": "https://scirate.com/arxiv/2610.01860",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-10-01",
     "title": "SciRate Digest \u2014 2026-10-01",
     "summary": "Today's 5 papers: All Unitaries Have Constant Depth Quantum Circuits; Quantum circuit compilation with constant overhead; Testing quantum Gaussianity with constant sample complexity; Parallel algebraic surgery for qLDPC codes with constant shuttling depth; Fault Tolerant Quantum Phases of Matter.",
