@@ -1,0 +1,165 @@
+Maya: I made a list this morning of everything today's papers throw out, and it's a weirdly consistent list. Coherent control. Quantum memory. Perfect equilibrium. Geometric layout.
+
+Sam: Four crutches, four papers, four people saying "actually, you can just drop this." It's a good day for anyone who's been told their hardware can't do the fancy version of the thing.
+
+Maya: Welcome to The SciRate Daily Digest for October third, twenty twenty-six. I'm Maya.
+
+Sam: And I'm Sam. Today: a classical algorithm that closes off one route to shallow-circuit quantum advantage, ground-state preparation with no controlled evolution at all, a new stabilizer language for topological phases, optimal learning of stabilizer states one copy at a time, and a disarmingly simple test for learning Hamiltonians from states that never actually equilibrated.
+
+[BREAK]
+
+Maya: So the top paper is a story that's been running for about ten years, and this is the chapter where it ends. Set it up for me.
+
+Sam: Constant-depth quantum circuits — each qubit touched only a fixed number of times — are the cleanest testbed for quantum advantage, because you can actually build them. And a very natural question is: if I ask for the probability that the circuit spits out one particular bit string, how hard is that classically? Not sampling — just that one number, to the accuracy a real device would get from a reasonable number of repetitions.
+
+Maya: And the answer kept depending on how the qubits are wired together.
+
+Sam: Exactly. First people solved it for circuits laid out on a two-dimensional grid, where light cones are nice geometric blobs. Then more general grids. For arbitrary wiring — any qubit talking to any other — the best known algorithm was quasipolynomial: faster than exponential, but growing faster than any polynomial. Coudron, Gullans, Nelson, Rajakumar and Tan now give a deterministic polynomial-time algorithm for any fixed depth, any connectivity.
+
+Maya: What's the move that gets them there?
+
+Sam: They notice that most of the output bits are overwhelmingly likely to come out zero — the circuit is shallow, so each bit is only lightly disturbed. They mark the handful of bits that aren't like that as "bad," and prove there can only be about as many bad bits as the logarithm of your accuracy demand — otherwise the probability you're asking about is smaller than your error bar anyway, and you can just answer zero.
+
+Maya: So you brute-force the bad ones and do something clever with the rest.
+
+Sam: Right — an inclusion–exclusion identity peels the bad set off, and the remaining marginal, over bits that are all strongly peaked toward zero, is handled by a cluster expansion. And here's the part I'd steal: cluster expansions are usually built around the maximally mixed state, the no-information point. They expand around the peaked basis state instead, which is exactly where this distribution actually lives.
+
+Maya: Let me push on the practicality, because I suspect it's bad. What are the constants?
+
+Sam: Terrible. The exponent on the accuracy involves a quantity that's doubly exponential in the circuit depth. Nobody is simulating a lab device with this next week.
+
+Maya: Then what does it actually buy us?
+
+Sam: It relocates a boundary. Estimating a single outcome probability was attractive as an advantage task precisely because it's verifiable and error-mitigation-friendly in a way sampling isn't. That door is now closed in full generality. If you want advantage from shallow circuits, it has to come from sampling, from relational problems where many answers are acceptable, or from adaptivity and depth.
+
+Maya: Which rhymes with the random-circuit observables paper we did on Tuesday — the hunt for something checkable that's also hard.
+
+Sam: It does, and this narrows that hunt. Worth saying: polynomial-time sampling for arbitrary-connectivity shallow circuits is still open, and additive estimates of individual probabilities don't have to add up to a normalized distribution, so there's no free sampler hiding in here.
+
+[BREAK]
+
+Sam: Next one is for the people with analog machines. If you've got a Rydberg array or an optical lattice, you can let your system evolve under the Hamiltonian you've engineered. What you generally cannot do is turn that evolution on and off coherently, conditioned on an ancilla qubit.
+
+Maya: And every good ground-state algorithm wants exactly that.
+
+Sam: Every one. Controlled evolution is the ingredient that lets you do interferometry on energies. Patel, Flammia and Garcia-Patron show the control buys you nothing asymptotically. Their trick — they call it a SWAP echo — is lovely. Take two copies of your system. Evolve one forward in time and the other backward, and sandwich that between two controlled-SWAP gates.
+
+Maya: And the net effect is...
+
+Sam: Exactly evolution under the difference of the two copies' energies, conditioned on the ancilla. You've moved the control off the Hamiltonian and onto a SWAP gate, which is just a gate. No conditional analog evolution anywhere.
+
+Maya: What do you do with a difference of energies?
+
+Sam: You build a comparator. Using quantum signal processing on that echo, they make an operation that flags whether the candidate register has lower energy than an anchor register by at least the spectral gap — without ever estimating either energy. Then you run a tournament: whenever the candidate wins, it becomes the new anchor. The ground state can't lose, so it's absorbing, and you drift down to it.
+
+Maya: We covered an optimal ground-state preparation result on Tuesday as well, the one using a guiding state. How does this sit next to it?
+
+Sam: Same asymptotic cost — it scales with the Hamiltonian's strength over the gap, and with the inverse square root of how much overlap your starting guess has with the ground state. That square root matters; it's the amplitude-amplification speedup, and they get it with fixed-point amplitude amplification rather than measure-and-retry. And it matches a known lower bound that holds even if you do have controlled evolution.
+
+Maya: Here's my objection, though. They've removed coherent control, but the price is two full copies of the system plus coherent SWAP gates between them. On an analog platform, moving every qubit's state to a partner qubit across the machine is not obviously easier than the thing they eliminated.
+
+Sam: That's the honest tension, and I don't think the paper resolves it. You've swapped one hard capability for another. What I'd say in its defense: a SWAP is a fixed, calibratable two-qubit operation that doesn't care what Hamiltonian you're simulating, whereas conditional analog evolution has to be re-engineered per problem. Whether that's a win is an experimentalist's call, not a theorist's.
+
+Maya: Who reads this?
+
+Sam: Anyone designing hybrid analog-digital algorithms. And I'd watch for the echo primitive showing up elsewhere — anywhere controlled evolution is the bottleneck, this is a drop-in substitute.
+
+[BREAK]
+
+Maya: Okay, paper three has a result that made me reread the abstract. Phases of matter with non-abelian anyons — the exotic ones, the ones people want for topological computing — turn out to be cheaper to describe than some purely abelian phases.
+
+Sam: Right, and "cheaper" has a precise meaning here. Fechisin and collaborators define a stabilizer formalism where the stabilizers aren't Pauli operators. They're Pauli-X strings multiplied by diagonal gates drawn from some level of the Clifford hierarchy — so, phase gates, T-like gates, and multi-qudit versions of those.
+
+Maya: Why would you want stabilizers that aren't Paulis?
+
+Sam: Because of the no-go theorem. In two dimensions you cannot get a protected non-Clifford gate out of a topological code. The way people have been dodging it recently is to switch, mid-computation, through an intermediate code whose stabilizers are beyond Pauli. Those constructions have been one-offs — clever, but with no theory saying what such codes can and can't express.
+
+Maya: And this is the theory.
+
+Sam: This is the theory, for a family that's closed under multiplication, which is the nontrivial part — the higher levels of the Clifford hierarchy don't form a group on their own. Their structure theorem says any state uniquely pinned down by such a group looks like a uniform superposition over an affine subspace — basically a classical linear code — decorated by a phase function that sits exactly one level higher in the hierarchy than the stabilizers do.
+
+Maya: One level higher. That's the gear ratio.
+
+Sam: That's the gear ratio, and it comes from a simple fact: taking a finite difference of the phase function drops you one level. It's the exact generalization of the normal form everyone uses for ordinary stabilizer states, so there's an algorithm that takes your stabilizer group and hands you the canonical wavefunction.
+
+Maya: Back to the surprise.
+
+Sam: They apply it to twisted quantum doubles — topological phases built from an abelian gauge group with a twist. For one class of twists, the ones that genuinely entangle three different gauge factors, Clifford-level stabilizers suffice, and that's tight, because the phase has non-abelian anyons so plain Paulis can't do it. For the other twists, which give abelian theories, they conjecture you need to climb the hierarchy as far as the qudit dimension.
+
+Maya: And the conjecture is the soft spot.
+
+Sam: It's evidence, not proof. And more importantly — this is a formalism for states, not yet for codes. No distances, no thresholds, no decoders. Also prime qudit dimensions only.
+
+Maya: Which is a real limit. A stabilizer language without a decoder tells you what you can write down, not what you can protect.
+
+Sam: Agreed. But it connects to the non-abelian qLDPC work we covered Monday — people are actively building code-switching schemes, and now there's a way to rank the intermediate codes by how non-Clifford their stabilizers have to be. That's a cost metric that didn't exist last week. They also get a deterministic logical magic-state preparation on two toric codes, where the qubit version was probabilistic.
+
+[BREAK]
+
+Maya: This next one is a clean little drama about whether you need a quantum memory.
+
+Sam: The task is learning a stabilizer state — the states underneath error correction and benchmarking. The gold-standard method is Bell sampling: hold two copies at once and measure them jointly. That identifies the state from a number of copies that grows linearly with the number of qubits, and that's optimal.
+
+Maya: And without two-copy access?
+
+Sam: The best known strategies needed quadratically more runs, and people conjectured that penalty was real — that single-copy measurement was fundamentally worse. Bittel, Eisert, Gong, Mele and Schatzki show it isn't. Adaptivity alone closes the gap: measure one copy at a time, but let each measurement depend on everything you've seen so far, and you're back to linear. About two measurement rounds per qubit, in expectation.
+
+Maya: What's the engine?
+
+Sam: They keep a running Clifford circuit and track how many unknown directions are left. Measure two copies in the computational basis, XOR the bit strings, and what you get is a uniformly random element of a space that's exactly the part of the stabilizer group you haven't nailed down yet. Then a fan-out of CNOTs from one pivot bit converts that into a new diagonal stabilizer — and crucially, the fan-out is designed so it never undoes any previous progress.
+
+Maya: So it's monotone. You only ever go forward.
+
+Sam: Monotone, with a coin flip in the middle that succeeds about half the time. It's a very simple Markov chain, and the whole analysis falls out of that. The harder work is the noisy case, where the count can go backwards, and they need drift arguments to control it.
+
+Maya: Let me connect this to Thursday's Gaussianity tester, which got away with a constant number of samples regardless of system size. Why is stabilizer testing linear here?
+
+Sam: Good catch, and the paper answers it. With entangled two-copy measurements, stabilizer testing is also constant — the classic six-copy test. The linear cost is the price of having no quantum memory. And they prove a tradeoff: give the algorithm a few qubits of memory and the sample cost drops by exactly that much. To get sub-linear testing you'd have to store essentially the whole state.
+
+Maya: That's a satisfying shape. Memory and samples are interchangeable, one for one.
+
+Sam: And it's a rare provable separation between adaptive and non-adaptive strategies in quantum learning, which I'd argue is the deeper contribution. Caveat on the tolerant version: it needs a promise that your state's fidelity with the nearest stabilizer state is already above about eight-tenths. That's a strong promise — it's not tolerance in the constant-versus-constant sense.
+
+Maya: Still, for anyone verifying codes on hardware that can't hold two copies, this is immediately usable.
+
+[BREAK]
+
+Sam: Last one starts from an embarrassment. Hamiltonian learning from thermal states is a textbook inverse problem — measure a system in equilibrium, infer the interactions. But every rigorous algorithm assumed something false.
+
+Maya: Which was?
+
+Sam: Either that you already knew the interaction graph and only needed the coefficients, or that the temperature was high, or — and this is the one that bothers me — that nature hands you a perfectly equilibrated Gibbs state. At low temperature, preparing that state is itself computationally hard. So the input assumption is implausible on its face.
+
+Maya: And Bergamaschi's fix?
+
+Sam: Reframe learning as a stationarity test. Guess a Hamiltonian. That guess defines a thermalizing dynamics — a detailed-balanced Lindbladian whose fixed point is the guess's Gibbs state. Now take your samples and ask: do they drift under that dynamics? If they sit still, your guess was right.
+
+Maya: That's almost too simple. Where's the content?
+
+Sam: Completeness is trivial — the true Hamiltonian's Gibbs state obviously doesn't drift. The work is soundness: proving that a wrong guess must visibly move the state. That comes from a Fisher-information argument plus a continuity bound showing the dynamics changes smoothly, with influence dying off exponentially with distance on the lattice.
+
+Maya: And the payoff on the realism front?
+
+Sam: This is the part I liked. Any state that's been evolved for a polynomial time under a thermalizing dynamics is already approximately stationary — even if it's statistically nowhere near true equilibrium. So whatever your fridge or your simulator actually produces in reasonable time already carries enough information to recover the couplings. He also gets the first structure learning — recovering the interaction graph itself — for non-commuting lattice Hamiltonians at any temperature, from a number of samples growing only logarithmically with system size.
+
+Maya: Here's my worry. Everything in thermal physics gets harder as you cool, and I'd bet the costs here do too.
+
+Sam: They do, badly. The constants are exponential in a polynomial of the inverse temperature, and the structure-learning runtime grows with the system size raised to a power that itself grows with inverse temperature. Classical algorithms for the analogous problem run in roughly quadratic time. And for the metastable inputs, there's an accuracy floor — you can only learn the couplings down to a precision set by how far from equilibrium your sample is, and that floor gets worse as you cool.
+
+Maya: So the low-temperature regime, which is the interesting one, is where it's weakest.
+
+Sam: Yes. I'd read it as a framework paper rather than a recipe. The unification is the thing — Hamiltonian learning and the Gibbs-sampler toolkit are now the same subject, and the convexity bound he proves was apparently conceived as an attack on log-Sobolev inequalities for those samplers. Expect it to come back around in that literature.
+
+[BREAK]
+
+Maya: Result that stuck with you?
+
+Sam: The SWAP echo. One sandwich of controlled-SWAPs around two copies evolving in opposite directions, and a capability people assumed was essential just evaporates. Even with the two-register overhead, that's the kind of trick that shows up in ten other papers.
+
+Maya: Mine's the shallow-circuit one, and not for the algorithm — for what it rules out. A verifiable, single-number task that looked like a plausible advantage candidate is now provably easy, and that's genuinely useful news even though nobody will ever run the code.
+
+Sam: Negative results with the receipts attached.
+
+Maya: Links to all five papers are in the show notes, and there's a link there to send us questions — we read everything, and we work through the backlog in order.
+
+Sam: See you tomorrow.
