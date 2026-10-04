@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-10-04",
+    "title": "SciRate Digest \u2014 2026-10-04",
+    "summary": "Today's 5 papers: Quantum impurity models: easy at equilibrium, universal in motion; Local random quantum circuits converge to the Porter-Thomas distribution in polynomial depth; Sublinear-depth Quantum Simulation of Electrons with Atomic Orbitals; Learning SYK Hamiltonians; Exponential quantum advantages for decoded quantum interferometry in the streaming setting.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-10-04/digest.mp3",
+    "mp3_bytes": 18122157,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2610.02130",
+        "title": "Quantum impurity models: easy at equilibrium, universal in motion",
+        "abs_url": "https://arxiv.org/abs/2610.02130",
+        "scirate_url": "https://scirate.com/arxiv/2610.02130",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2610.02125",
+        "title": "Local random quantum circuits converge to the Porter-Thomas distribution in polynomial depth",
+        "abs_url": "https://arxiv.org/abs/2610.02125",
+        "scirate_url": "https://scirate.com/arxiv/2610.02125",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2610.00950",
+        "title": "Sublinear-depth Quantum Simulation of Electrons with Atomic Orbitals",
+        "abs_url": "https://arxiv.org/abs/2610.00950",
+        "scirate_url": "https://scirate.com/arxiv/2610.00950",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2610.02178",
+        "title": "Learning SYK Hamiltonians",
+        "abs_url": "https://arxiv.org/abs/2610.02178",
+        "scirate_url": "https://scirate.com/arxiv/2610.02178",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2610.01902",
+        "title": "Exponential quantum advantages for decoded quantum interferometry in the streaming setting",
+        "abs_url": "https://arxiv.org/abs/2610.01902",
+        "scirate_url": "https://scirate.com/arxiv/2610.01902",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-10-03",
     "title": "SciRate Digest \u2014 2026-10-03",
     "summary": "Today's 5 papers: Polynomial-time additive-error estimation of output probabilities for shallow quantum circuits; Near-Optimal Ground-State Preparation without Controlled Hamiltonian Evolutions; Clifford-hierarchy stabilizer formalism with applications to twisted quantum doubles; Adaptivity is all you need: Optimal stabilizer learning using just single-copy measurements; The stationarity test: a framework for learning quantum many-body systems from their thermal states.",
