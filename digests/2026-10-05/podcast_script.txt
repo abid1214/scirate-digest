@@ -1,0 +1,169 @@
+Maya: Sam, I tried explaining your job to my neighbour over the weekend, and she cut straight to the only question that matters. She asked what it costs.
+
+Sam: And you said?
+
+Maya: I said I'd get back to her. Then I read today's papers, and it turns out four different groups spent last week doing exactly that accounting — qubits, energy, time, and temperature.
+
+Sam: Then that's the show. Today is all price tags, and in a couple of cases, somebody arguing the price is lower than we thought.
+
+[BREAK]
+
+Maya: This is the SciRate Daily Digest for Monday, the fifth of October, twenty twenty-six. I'm Maya.
+
+Sam: And I'm Sam. On the list today: a way to build high-rate error-correcting codes out of ordinary flat chips, a quantum memory that answers queries by itself with no control pulses, a result tying quantum cryptography to a classical complexity question nobody can answer, a proof that a celebrated precision limit doesn't apply where people hoped, and a map of when a certain class of thermal states stops being easy.
+
+Maya: Starting with the one that chip designers are going to argue about at lunch.
+
+[BREAK]
+
+Sam: So here's the concrete stake. If you want a fault-tolerant superconducting machine today, the default plan is the surface code, and the surface code is brutally wasteful — you spend something like a thousand physical qubits to get one good logical qubit. The alternative, high-rate codes, pack many logical qubits into one block, but they demand long wires criss-crossing the chip, which fabrication hates.
+
+Maya: Right, and that tension has been the story for years. What's the move here?
+
+Sam: The move is to notice that chips already have to be cut into modules — you can't fabricate a wafer-scale device with perfect yield, so you build tiles and cable them together. This group, Higgott and collaborators at Google and elsewhere, say: put all the weirdness in the cables.
+
+Maya: Unpack "weirdness" for me.
+
+Sam: High-rate surface-like codes live on a curved, saddle-shaped surface rather than a flat one. Curvature is what buys you the encoding rate, and curvature is also what forces the awkward long connections. Their construction takes a curved tiling and replaces every single face with a flat, perfectly ordinary patch of surface code — about a hundred qubits, all gates nearest-neighbour. Inside a module, nothing exotic happens. All the negative curvature gets squeezed into the seams between modules.
+
+Maya: So the exotic connectivity is exactly the connectivity you were already going to pay for.
+
+Sam: Yes, and they lean into that hard. They let the gates across seams be an order of magnitude noisier than the gates inside a module, and they only measure the seam stabilizers once every three rounds, because inter-chip links are slow. Under circuit-level noise at realistic error rates, they still get roughly ten times fewer physical qubits per logical qubit than the surface code, extrapolating to better than thirty-fold at larger sizes.
+
+Maya: Here's my objection, though. Every high-rate code I've heard about has the same dirty secret — storing information cheaply is the easy part, and doing logic on it is where the savings evaporate. Did they address that or just do memory?
+
+Sam: They address it, and it's the part I found most clever. The curved tiling has symmetries — rotations that permute the modules. So you build one small extraction gadget, about a fifth the size of the memory, and instead of moving the gadget to the logical qubit you want, you rotate the whole tiling to walk the logical operator over to the gadget. A handful of moves reaches almost every logical qubit in the block.
+
+Maya: And the honest caveats?
+
+Sam: The thirty-fold number is extrapolation, not simulated. The walking circuits are costed in a simplified model, the extraction gadget is only demonstrated for one of the two code families, and real-time decoding fast enough to keep up is still unsolved. They also do build a fifty-bit adder benchmark on top of it, which is more than most architecture papers bother with.
+
+Maya: It's a nice counterpoint to the atom-array surgery work we covered last Thursday — same problem of supplying long-range connectivity, completely different hardware answer. One moves atoms; this one accepts you have seams and makes them useful.
+
+Sam: Exactly. If you work on superconducting roadmaps, read this one this week.
+
+[BREAK]
+
+Maya: Okay, Sam, explain a puzzle to me. Why is quantum memory supposedly so expensive? When my laptop reads an address, almost the whole chip sits idle.
+
+Sam: That's precisely the puzzle this next paper is built on. A quantum memory has to answer a query in superposition — the address is a superposition of many addresses at once. The controller doesn't know which branch is live, so in the standard design it has to actively pulse every routing node in the device. The energy per query grows with the size of the memory, which is a terrible way to run a computer.
+
+Maya: And this is the thing people wave away when they claim speedups for data-heavy problems.
+
+Sam: Constantly. Jain, Dalzell and Hann go after it directly. Their proposal: don't control the routing at all. Bake it into fixed, pre-manufactured couplings between qubits, inject a single excitation at the root, and let the thing evolve on its own. The excitation propagates through the routing tree, picks up the data, and comes back — and you only ever touch a logarithmic number of qubits at the edges.
+
+Maya: Letting a system evolve and hoping the answer shows up at the right moment sounds fragile. How do you know when to look?
+
+Sam: That's the engineering heart of it. They use perfect state transfer couplings — the trick where you engineer a chain so an excitation walks across it and arrives exactly, with certainty, at a known time. They lay out the whole query as a layered graph where every address path has the same length, so all branches finish simultaneously. You get fidelity one at a prescribed time, not the usual situation where the answer is buried in a superposition over all moments in the computation and you catch it with tiny probability.
+
+Maya: There's a no-go theorem floating around here, isn't there? Something saying the energy has to scale with memory size.
+
+Sam: There is, and it bounds the worst case over all states. The escape is that this dynamics never leaves a sector with only a polylogarithmic number of excitations spread among linearly many modes. The Hamiltonian is big; the physics you actually excite is small. Interactions are four-body and each qubit touches only four others, which is not crazy for Josephson hardware.
+
+Maya: Do they put a number on what you could actually build?
+
+Sam: A back-of-envelope estimate on a standard three-hundred-millimetre wafer at millikelvin temperatures gets you roughly five hundred megabytes of quantum-addressable memory with query error under ten percent. That's the sort of estimate I'd take with salt, but it's a real target.
+
+Maya: What's the part that isn't vindicated?
+
+Sam: The memory contents are assumed noiseless and classical, there's no actual qubit layout, and — the big one — it isn't passive once you embed it in a fault-tolerant machine. Integrating it still costs classical work growing with memory size. So the free-QRAM assumption isn't rescued. What's changed is the objection: this was "probably physically impossible," and now it's "an engineering problem."
+
+Maya: That's a genuine shift in the conversation, even if nobody's building it.
+
+[BREAK]
+
+Sam: Now for something with no hardware anywhere near it. There's a dream in quantum cryptography — people call it Microcrypt — where even if every classical cryptosystem falls, quantum commitments survive, because their security rests on quantum mechanics rather than on some factoring-style hardness assumption.
+
+Maya: And the awkward part is that nobody can prove such a scheme exists.
+
+Sam: Right, and worse, nobody could even explain why it's hard. Kretschmer and Tang now can. Their result: if quantum commitments exist, then one of two long-open classical questions must have a particular answer. Either the unitary synthesis problem has no efficient solution, or randomized polynomial-time computation is genuinely weaker than nondeterministic exponential-time search. Nobody knows how to prove either.
+
+Maya: So building quantum crypto unconditionally would require solving a classical complexity problem that's been open for decades.
+
+Sam: That's the headline, and it's the first bridge of that kind. The engine underneath is what I'd actually call the pretty part — a dichotomy. Take any unitary transformation you can compute in polynomial space. Then either no classical oracle on earth helps you implement it quickly — not even an oracle that solves the halting problem — or you can implement it with an oracle that does exponential-size witness search. There's nothing in between.
+
+Maya: Either the magic hint is useless or it's wild overkill.
+
+Sam: And the proof is almost embarrassingly clean. If some classical oracle does help, an exponential-time nondeterministic machine can just guess the oracle's entire answer table, brute-force the resulting circuit, and check it against the unitary's matrix entries — which you can compute in polynomial space.
+
+Maya: Let me push on the framing, though. A disjunction isn't a lower bound. It stays logically possible that synthesis simply fails, commitments exist, and no classical consequence follows at all.
+
+Sam: Completely fair, and the authors say so. The result constrains the program; it doesn't close it. There's also a slight mismatch in that the witness-search oracle isn't known to be stronger than polynomial space, so "efficient synthesis" isn't quite pinned down.
+
+Maya: There's a second half to this paper that I thought was underrated — the definitions.
+
+Sam: Yes. They rebuild the complexity classes for unitaries from scratch, because the earlier definitions had a leak: uncomputable information could hide in a global phase, which is invisible on its own and then becomes very visible when you control the operation or compose it. So a transformation could look easy while its controlled version is hard. If you work in this area, those definitions are going to be the reference you cite, and they also explain why a certain oracle separation people have been hunting for has resisted everybody.
+
+[BREAK]
+
+Maya: Next one is a negative result, and I want to start with the surprise, because it overturns an assumption I thought was safe.
+
+Sam: It overturned one of mine too. In quantum metrology there's the Heisenberg limit — the idea that if you let a system evolve coherently, your error shrinks in proportion to the total evolution time. Twice the time, twice the precision. That's the whole reason people get excited about learning Hamiltonians by watching dynamics rather than by sampling.
+
+Maya: And a lot of papers have hit that scaling.
+
+Sam: For learning tasks, yes. This paper — Escudero Gutiérrez, Lee and Zur — shows two natural verification tasks provably cannot. One is locality testing: you have a black box evolving under some unknown interaction, and you want to know whether it only couples a few particles at a time or whether there's secretly some many-body term in there. The other is certification: does the box match a target Hamiltonian you were promised?
+
+Maya: And the cost?
+
+Sam: You're stuck at shot-noise-like scaling. To halve your error you need four times the evolution time, not twice. That matches a known protocol exactly, so the question is now closed.
+
+Maya: What's the restriction on the access model? Because I assume you can cheat if you're allowed to run the evolution backwards.
+
+Sam: That's the crucial fine print — this is forward-only. No running time backwards, no coherently controlling whether the evolution happens. Which is the realistic setting for an unknown device someone hands you.
+
+Maya: How do you even prove a lower bound on continuous time? Query complexity lower bounds are all about counting discrete oracle calls.
+
+Sam: They import the adversary method into continuous time, and they had to build the hard instances carefully. The obvious attempt is to make each diagonal entry plus or minus a small amount — but that ensemble conspires: at one particular moment the whole evolution becomes exactly minus the identity, and you can detect that sign in time proportional to one over the precision. Heisenberg scaling, by accident.
+
+Maya: So the naive hard case is actually easy.
+
+Sam: Exactly, and the fix is to draw the entries from a smeared-out spectrum with the same mean and variance but no coherent rephasing. Then they track a progress measure that can only creep upward at a rate set by the square of the precision parameter.
+
+Maya: Here's my concern. The hard instances are diagonal — that's a classical-looking Hamiltonian. Does that undercut the relevance?
+
+Sam: It limits it honestly, and they say so. The bound says nothing about geometrically local or sparse families, which is where experimentalists live, and sparsity testing is still open. What it does establish is conceptual: Heisenberg scaling isn't a gift from forward access. You need structure in both the unknown and the target to earn it.
+
+[BREAK]
+
+Maya: Last paper picks up a thread we've been on twice already — decoded quantum interferometry, which we covered both Friday and earlier in the week.
+
+Sam: And this is a different limb of it. There's a recent algorithm that prepares thermal states of quantum systems by splitting the job in two: a classical decoding step, and then preparing a special purified thermal state whose only remaining structure is which terms commute and which anticommute. How hard that second step is was the open question. Hastings and Schmidhuber answer it.
+
+Maya: Answer it how — a yes or a map?
+
+Sam: A map, with a sharp line drawn on it. They look at what they call redundancy-free Hamiltonians, where the terms are algebraically independent — no term is secretly a product of others. And the controlling parameter turns out not to be what you'd expect. For a generic Hamiltonian, the classical cluster expansion converges when the inverse temperature is below one over the interaction degree. Here it survives down to one over the square root of the degree.
+
+Maya: Quadratically colder. Where does the extra room come from?
+
+Sam: From cancellation. In the redundancy-free setting, any product containing a term an odd number of times is traceless, so it contributes nothing. Only even appearances survive, and that thins the expansion dramatically. So you get an efficient classical algorithm for the partition function in a much larger regime than you'd have guessed.
+
+Maya: And I assume the interesting half is what happens just past that line.
+
+Sam: It stops dead. They build what they call an anticommutation glass — a system where the frustration comes from nothing but the fact that operators refuse to commute. No competing couplings, no disordered weights, just algebra. And in that regime, approximating the partition function to within a factor of two is NP-hard, and finding the ground-state energy is QMA-complete.
+
+Maya: How solid is the glass picture? "Glassy" is a word physicists reach for when simulations misbehave.
+
+Sam: That's a sharper version of the worry I had. The hardness proofs are theorems. The physical story about two competing basins rests partly on quantum Monte Carlo at a couple of hundred spins, where they observe hysteresis — the simulation visibly failing to equilibrate. Which is evidence of glassiness and simultaneously a reason to be careful about what you conclude from it.
+
+Maya: And is the threshold really where the algorithm needs it to be?
+
+Sam: Not quite, which they're upfront about. The hardness construction requires the interaction degree to grow with the block size, and on the easy side what they get for the quantum preparation step is subexponential, not polynomial. There's a real gap in the middle. But for anyone assessing whether that thermal-state algorithm can plausibly give an advantage, this tells you which temperatures to even bother arguing about.
+
+Maya: There's also a side result I liked — a polynomial-time preparation of thermal double states for general bounded-degree Hamiltonians at high temperature, with no dependence on the lattice dimension.
+
+Sam: That one may get cited more than the main theorem, honestly. It's useful to people who don't care about any of this glass business.
+
+[BREAK]
+
+Maya: Sam, one result that stuck.
+
+Sam: The seams. The idea that the module boundaries you were forced into by yield limits are exactly where the exotic connections belong — that's a reframing I expect to see repeated in hardware talks for the next year, whether or not the thirty-fold number holds up.
+
+Maya: Mine is the dichotomy — that for any polynomial-space unitary, a classical hint is either worthless or absurdly powerful, with nothing in the middle. And that this is apparently why quantum cryptography has been so stubbornly hard to put on firm ground.
+
+Sam: Honourable mention to a memory that answers your question just by sitting there.
+
+Maya: Links to all five papers are in the show notes, and the show notes also have a link to send us a question — we read all of them, and we work through the backlog on air.
+
+Sam: Thanks for listening. We'll see you tomorrow.

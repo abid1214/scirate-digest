@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-10-05",
+    "title": "SciRate Digest \u2014 2026-10-05",
+    "summary": "Today's 5 papers: Low-Overhead Quantum Error Correction with Boundary-Connected Planar Modules; Scalable Passive QRAM; Unitary complexity in polynomial space; Hamiltonian locality testing and certification do not achieve the Heisenberg limit; On The Complexity of Redundancy-Free Quantum Hamiltonians.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-10-05/digest.mp3",
+    "mp3_bytes": 17352621,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2610.03682",
+        "title": "Low-Overhead Quantum Error Correction with Boundary-Connected Planar Modules",
+        "abs_url": "https://arxiv.org/abs/2610.03682",
+        "scirate_url": "https://scirate.com/arxiv/2610.03682",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2610.03700",
+        "title": "Scalable Passive QRAM",
+        "abs_url": "https://arxiv.org/abs/2610.03700",
+        "scirate_url": "https://scirate.com/arxiv/2610.03700",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2610.03705",
+        "title": "Unitary complexity in polynomial space",
+        "abs_url": "https://arxiv.org/abs/2610.03705",
+        "scirate_url": "https://scirate.com/arxiv/2610.03705",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2610.03205",
+        "title": "Hamiltonian locality testing and certification do not achieve the Heisenberg limit",
+        "abs_url": "https://arxiv.org/abs/2610.03205",
+        "scirate_url": "https://scirate.com/arxiv/2610.03205",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2610.03697",
+        "title": "On The Complexity of Redundancy-Free Quantum Hamiltonians",
+        "abs_url": "https://arxiv.org/abs/2610.03697",
+        "scirate_url": "https://scirate.com/arxiv/2610.03697",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-10-04",
     "title": "SciRate Digest \u2014 2026-10-04",
     "summary": "Today's 5 papers: Quantum impurity models: easy at equilibrium, universal in motion; Local random quantum circuits converge to the Porter-Thomas distribution in polynomial depth; Sublinear-depth Quantum Simulation of Electrons with Atomic Orbitals; Learning SYK Hamiltonians; Exponential quantum advantages for decoded quantum interferometry in the streaming setting.",
