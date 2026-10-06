@@ -1,0 +1,155 @@
+Maya: Two of today's five titles have the word "magic" in them, and a third one is about what magic costs. I opened the listing and briefly thought someone had hijacked the feed with a stage act.
+
+Sam: It's the least whimsical word in the field. "Magic" just means the part of a quantum computer you can't get for free — and today three separate groups are fighting over the price tag.
+
+Maya: Welcome to the SciRate Daily Digest for Tuesday, October sixth, twenty twenty-six. Today: two very different ways to build non-Clifford gates straight into error-correcting codes, an audit that says some published magic-state costs were too optimistic, a proof that running time backwards is a real computational resource, and a shadow tomography result that drops the dimension entirely.
+
+Sam: A good day for people who like their fault tolerance with a side of algebraic topology.
+
+[BREAK]
+
+Maya: Let's start with the stake, because I think it's the clearest one in the whole field. If you sketch the floor plan of a future fault-tolerant machine, how much of it is making magic states?
+
+Sam: Most of it, in the standard designs. The gates that are cheap to protect — the Clifford gates — aren't enough to compute with. For universality you need something outside that set, and the usual answer is a factory that churns out special resource states and purifies them through distillation. That factory dominates the qubit count and the runtime.
+
+Maya: And this first paper, "Magic Quantum Code Surgery," says: don't build the factory. Do what, instead?
+
+Sam: Measure a Clifford operation directly on the encoded data. Here's the trick that makes it work — if you measure a logical operator that isn't a Pauli, the state you're left with afterwards is itself magical. The measurement manufactures the resource. The problem has always been that such a measurement is a big, non-local thing to perform on a code, and doing it fault-tolerantly is not obvious.
+
+Maya: So how do they make a big non-local measurement into something a sparse code can actually check?
+
+Sam: They gauge it. Conceptually: you bolt extra qubits onto the code — think of them as scaffolding on the edges of a little graph — and you deform the code so that the giant operator you wanted to measure factorizes into a product of many small checks, each one touching only a few qubits. You read the small checks; their product tells you the answer. The recipe is code-agnostic: any low-density code with a transversal Clifford symmetry.
+
+Maya: Scaffolding always costs something. What does the deformed code lose?
+
+Sam: That's the part I found genuinely reassuring. They prove the deformed code is still low-density — checks stay small — and the code distance drops only by a constant factor that doesn't grow as you scale the code up. They also show the measurement protocol's protection against combined data and measurement errors grows linearly with the distance, which is what you need for it to be a real fault-tolerant primitive rather than a one-off.
+
+Maya: And the payoff in concrete terms?
+
+Sam: Take two blocks of the same CSS code, apply transversal controlled-NOTs between them, run the gauging measurement, and you get a batch of unentangled magic states that convert into Toffoli states — roughly one Toffoli for every four or five logical pairs you process. No special code structure required, which is the headline. There's also a neat gadget where a single Clifford measurement applies a controlled-Clifford with one shared control across many targets — that turns the big lookup circuits inside quantum algorithms from a pile of expensive non-Clifford gates into a number of Clifford measurements that grows only logarithmically with the table size.
+
+Maya: Where's the soft spot? Because that all sounds too clean.
+
+Sam: No simulations. There's no threshold number, no decoder study, and the constants — how much the check weights blow up, how much distance you actually lose — are unquantified and could be unpleasant. And the protocol assumes your hardware can physically do certain non-Clifford entangling operations, which is not nothing. So I'd call this a strong framework paper waiting for someone to put numbers on it.
+
+Maya: Who should actually read it?
+
+Sam: Anyone designing a compiler or an architecture for high-rate codes. It slots into the same conversation as the surgery work we covered last week — this is the non-Clifford piece that those surgery toolkits were missing.
+
+[BREAK]
+
+Maya: Paper two attacks the same goal from the opposite direction, and it has a lineage. Sam, give me the history first, because I think it explains why this is hard.
+
+Sam: Right. The dream is a transversal gate: you touch each physical qubit once, errors can't spread, done. There's a famous no-go result saying you can't get non-Clifford gates that way in two-dimensional topological codes. Go up to three dimensions and you can — and the reason is topology. The gate is computed by a cup product, which is a classical operation on cochains that goes back decades in algebraic topology. There's been a steady effort to turn that dictionary into a design tool.
+
+Maya: And the previous instalment of this series — this is "Cups and Gates II" — did what, exactly?
+
+Sam: It gave you gates across several separate code blocks, and only phase-type gates in the controlled-Z family. Useful, but not what you want. On a high-rate code you've got dozens of logical qubits packed into one block, and you want to hit one of them with a true eighth-turn rotation — a T gate — without disturbing its neighbours. Across-block and coarse-grained doesn't cut it.
+
+Maya: So the new ingredient is what?
+
+Sam: Two. First, they twist the construction by the code's own symmetries — the automorphisms. Second, they lift the whole thing from binary coefficients up to finer phase resolution, and that's where the homotopy theory comes in. The naive lift doesn't close up; you need a hierarchy of correction terms, and the machinery they use generates those corrections coherently instead of by hand. There's also a lovely folding move: a known T gate living on three glued surface codes gets folded, by permuting coordinates, onto a single surface code on a cube — and then transported to the three-dimensional torus.
+
+Maya: Give me the concrete output. What can you actually address?
+
+Sam: Individually addressable T gates on all fifteen logical qubits of a hundred-and-eight-qubit code they call a magic tricycle, and on all sixteen of a larger one. Addressable T on three- and four-dimensional toric codes. A qutrit version. And a family of addressable three-qubit gates in a class of good codes. The addressability trick is almost embarrassingly simple once you see it — you precompose with a folding map that projects onto the logical direction you want and kills the rest.
+
+Maya: Here's my objection, and it's a big one. None of this is a fault-tolerance analysis, is it? A constant-depth circuit can still be a disaster if errors spread the wrong way.
+
+Sam: You're right, and the authors say so plainly. Depths are unoptimized, error propagation under these long-range circuits isn't analyzed, distance preservation isn't proven, and the logical actions are stated only up to a Clifford frame. Compare that to the first paper, which proves its deformed code stays protective but shows no simulations. Neither one is finished.
+
+Maya: So they're complementary in an almost annoying way. One buys magic with extra qubits and measurement; the other tries to bake it into the code's geometry.
+
+Sam: Exactly, and I'd bet the real machines use both. Read this one if you design codes — or honestly, if you do homotopy theory, because some of these twisted operations appear to be new to mathematics.
+
+[BREAK]
+
+Maya: Now a puzzle, and it's a direct sequel to something we covered yesterday. Monday we had a paper showing that Hamiltonian locality testing and certification do not reach the Heisenberg limit. Today's paper tells us why.
+
+Sam: And the answer is delightfully physical: you can't run time backwards. Let me set the stakes. In metrology there's a precision ceiling where your error shrinks like one over the total evolution time — that's Heisenberg scaling, the good one. The weaker standard quantum limit has error shrinking like one over the square root of the time. For testing properties of an unknown Hamiltonian, the best algorithms hit the good scaling only if they're allowed to evolve the system backwards as well as forwards.
+
+Maya: And people assumed that was a convenience of the analysis, not a necessity.
+
+Sam: That was my assumption too. This paper proves it's a necessity. With forward-only evolution you are stuck at the weaker scaling, and no amount of ancilla qubits, adaptivity, or chopping the evolution into tiny slices recovers it. They get matching upper and lower bounds across a whole family of distance measures, from average-case to worst-case, including the very-high-precision regime nobody had pinned down before.
+
+Maya: What's the technical move? Because lower bounds against continuous-time access are notoriously slippery.
+
+Sam: The standard hybrid argument gives you nothing useful here. Instead they analyze one random parameter at a time rather than one query at a time, and reduce everything to a quadratic form built from a kernel. And the crux is beautiful: an inequality they need holds only when every evolution time in the protocol is positive. They give an explicit counterexample showing it fails the moment you allow a negative time. So the proof puts its finger on exactly where backwards evolution enters.
+
+Maya: Does this cash out anywhere outside Hamiltonian learning?
+
+Sam: Two places. They sharpen the known lower bound for amplitude estimation without inverse queries. And there's a result on Grover search where the oracle has an unknown but fixed phase error — a miscalibrated reflection, basically. With inverses you can correct it and keep your square-root speedup. Without them, the speedup is gone entirely; you're back to scanning the whole list.
+
+Maya: Let me push on the practical reading, though. Time reversal isn't a button on most machines. If you have to simulate it — flip the sign of the Hamiltonian by some echo sequence — that costs time too. Doesn't that eat the quadratic win?
+
+Sam: It might, and the paper is honest that its bounds on the cost of simulating reversal are implicit and probably loose. I'd also flag that the hard instances here are non-local Hamiltonians. For local Hamiltonians, Heisenberg-limited certification forward-only is already known — so locality is an escape hatch. The honest statement is narrower than the headline: in the general case, echo control buys you a quadratic win, and now you know it isn't optional.
+
+Maya: Which, for a cold-atom or trapped-ion group that already does echo sequences, is a reason to keep investing in them.
+
+Sam: That's the audience. Them, and query-complexity theorists, because the technique survives fractional queries where the usual compressed-oracle argument falls apart.
+
+[BREAK]
+
+Maya: Okay, paper four is the one that made me sit up, because the claim is essentially that a widely cited resource estimate was measuring the wrong thing.
+
+Sam: Yes. The context is magic state cultivation, which is currently the front-runner for cheap magic. The idea is that instead of distilling many noisy states, you grow one carefully and throw it away cheaply if a quality check fails. Postselection does the heavy lifting, so everything depends on that check.
+
+Maya: And the check was... peeking?
+
+Sam: The published metric — the complementary gap — is computed using information from a destructive final measurement of the very state you're trying to make. Which is fine if you're benchmarking in simulation, where you can afford to destroy the state and check later. It's not available during a real computation, where the state has to survive and get used. So the quoted acceptance rates and overheads were based on a test you can't actually run.
+
+Maya: That's a benchmarking artifact that propagates straight into everyone's factoring estimates.
+
+Sam: Right. So they built a replacement: a soft-output decoder called Caliper that estimates the eventual logical failure probability from mid-circuit syndrome information only. It's clever engineering — it walks through the space of hidden syndromes one detector flip at a time, using precomputed shortest-path distances to bound how much the answer can change, and only calls the expensive matching routine to break ties.
+
+Maya: And the verdict on the existing protocols?
+
+Sam: Mixed, which is the interesting part. The color-code cultivation protocols survive nearly intact — about ten percent extra spacetime volume to reach the same error target. But the fold-transversal surface-code protocol needs roughly five times more volume to hit its advertised error rate. And the optimal escape stage changes: you want distance eleven, not distance seven.
+
+Maya: Five times is not a rounding error. Do I believe it?
+
+Sam: Mostly. Their decoder beats every existing postselection heuristic they test, at every discard rate, often by orders of magnitude at the acceptance fractions that matter. The caveats I'd flag: the simulations use a proxy state rather than the real magic state, and recent exact simulations have reported discrepancies with that proxy. It's also restricted to matchable noise models. And there's a latency question — median decoding time around twenty-five microseconds on a single laptop core. That's comfortable for neutral atoms, where cycles are slow. For superconducting qubits you'd need dedicated hardware, and the cost of idling while you wait isn't in the quoted volumes.
+
+Maya: Still — if you've published a cultivation-based resource count in the last two years, this is a re-check-your-numbers paper.
+
+Sam: And it loops back to our first story. If measuring a logical Clifford on a high-rate code can produce magic directly, that's now competing against a cultivation number that just got worse for one of its leading variants.
+
+[BREAK]
+
+Maya: Last one, and it's a change of register — pure learning theory. Sam, remind people what shadow tomography is trying to do.
+
+Sam: You have copies of an unknown quantum state and a long list of yes-or-no questions you'd like answered about it — expectation values of many observables. Classically this is trivial: take samples, reuse them for every question. Quantum mechanically, measuring disturbs the state, so naively you'd need fresh copies per question. Shadow tomography asks how few copies you really need, and the surprising classical answer is: the number of copies grows only logarithmically with the number of questions.
+
+Maya: So what's left to fix?
+
+Sam: The dimension. Every algorithm with that logarithmic scaling paid a price that grows with the size of the Hilbert space — because they all worked by building gentle measurements that extract information while barely disturbing the state, and that framework provably needs a dimension-dependent cost. This paper gets a bound with no dimension dependence at all, while keeping the polylogarithmic scaling in the number of observables. Previous dimension-free results scaled like the square root of the number of observables, so that's a huge jump.
+
+Maya: How do you escape a provable barrier?
+
+Sam: By changing the question and then changing it back. First they solve the average-case problem: assume the state is drawn from a known prior, and apply the canonical best-guess measurement for that prior — the pretty good measurement. That's a one-shot, identify-the-state move, not a gentle one. Then they invoke a minimax theorem from game theory to convert the average-case guarantee into a worst-case one, without ever having to find the hardest prior.
+
+Maya: That "without ever having to find it" is doing a lot of work. This is non-constructive, isn't it?
+
+Sam: Completely. Minimax tells you a good measurement exists; it doesn't hand you one. Writing it down means solving a large optimization over measurements. And even the average-case algorithm uses heavily entangled measurements across many copies at once, and it isn't online. So nobody is running this in a lab. What it is, is a statement about where the true cost lies — and the answer is that quantum non-commutativity costs you at most one extra logarithmic factor over free classical sample reuse.
+
+Maya: What stops it from being tight?
+
+Sam: They diagnose that honestly, which I liked. The natural conjecture — that the pretty good measurement's failure probability decays exponentially as you add copies — is false, and they give an explicit ensemble of pure states where the optimal strategy succeeds with certainty but the pretty good measurement errs a constant fraction of the time. Numerics suggest decay as slow as exponential in the square root of the number of copies. The obstruction is that this measurement amplifies success over the randomness in the prior, but not over its own measurement randomness.
+
+Maya: It sits oddly against the stabilizer-learning result we did Friday, where the answer was that single-copy measurements with adaptivity suffice.
+
+Sam: Opposite ends of the same axis. That one said you can get away with the weakest measurements for a structured family; this one says for the fully general problem, going maximally entangled across copies buys you freedom from the dimension. Worth noting there's concurrent independent work reaching the same complexity, so the result is doubly supported.
+
+[BREAK]
+
+Maya: Pick one, Sam. What stuck?
+
+Sam: The time-reversal proof. Not just that it's necessary, but that the proof localizes the necessity to a single inequality that fails the moment you allow a negative evolution time. That's the kind of lower bound that teaches you physics, not just complexity.
+
+Maya: Mine's the cultivation audit. Someone noticed that an entire line of resource estimates was quietly using information that would have destroyed the thing being measured, and then did the work to replace it rather than just complaining. That's the unglamorous paper that saves the field a year.
+
+Sam: And it reframes both magic-generation papers today — whatever you build has to beat a number that just moved.
+
+Maya: Links to all five papers are in the show notes, along with a link to send us questions — we read everything, and the mailbag is how we pick what to dig into. Back tomorrow.
+
+Sam: Thanks for listening.

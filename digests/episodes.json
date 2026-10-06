@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-10-06",
+    "title": "SciRate Digest \u2014 2026-10-06",
+    "summary": "Today's 5 papers: Magic Quantum Code Surgery; Cups and Gates II: Operads, twists, and addressable intra-code gates; The power of time reversal in Hamiltonian property testing; The practical cost of magic state cultivation; Pretty good shadow tomography.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-10-06/digest.mp3",
+    "mp3_bytes": 18419373,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2610.03920",
+        "title": "Magic Quantum Code Surgery",
+        "abs_url": "https://arxiv.org/abs/2610.03920",
+        "scirate_url": "https://scirate.com/arxiv/2610.03920",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2610.05214",
+        "title": "Cups and Gates II: Operads, twists, and addressable intra-code gates",
+        "abs_url": "https://arxiv.org/abs/2610.05214",
+        "scirate_url": "https://scirate.com/arxiv/2610.05214",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2610.04996",
+        "title": "The power of time reversal in Hamiltonian property testing",
+        "abs_url": "https://arxiv.org/abs/2610.04996",
+        "scirate_url": "https://scirate.com/arxiv/2610.04996",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2610.06828",
+        "title": "The practical cost of magic state cultivation",
+        "abs_url": "https://arxiv.org/abs/2610.06828",
+        "scirate_url": "https://scirate.com/arxiv/2610.06828",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2610.06781",
+        "title": "Pretty good shadow tomography",
+        "abs_url": "https://arxiv.org/abs/2610.06781",
+        "scirate_url": "https://scirate.com/arxiv/2610.06781",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-10-05",
     "title": "SciRate Digest \u2014 2026-10-05",
     "summary": "Today's 5 papers: Low-Overhead Quantum Error Correction with Boundary-Connected Planar Modules; Scalable Passive QRAM; Unitary complexity in polynomial space; Hamiltonian locality testing and certification do not achieve the Heisenberg limit; On The Complexity of Redundancy-Free Quantum Hamiltonians.",
