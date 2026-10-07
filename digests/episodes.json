@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-10-07",
+    "title": "SciRate Digest \u2014 2026-10-07",
+    "summary": "Today's 5 papers: Entanglement manipulation and magic area-laws; Pauli Flat Quantum States Mimicking Maximal Magic; No-Disturbance-without-Uncertainty generates the Quantum set in the simplest Bell scenario; Black Hole Radiation Decoding in the Haar Random Oracle Model; Energy-constrained two-way capacity bounds for noisy Gaussian channels.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-10-07/digest.mp3",
+    "mp3_bytes": 19579821,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2610.08727",
+        "title": "Entanglement manipulation and magic area-laws",
+        "abs_url": "https://arxiv.org/abs/2610.08727",
+        "scirate_url": "https://scirate.com/arxiv/2610.08727",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2610.07172",
+        "title": "Pauli Flat Quantum States Mimicking Maximal Magic",
+        "abs_url": "https://arxiv.org/abs/2610.07172",
+        "scirate_url": "https://scirate.com/arxiv/2610.07172",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2610.08749",
+        "title": "No-Disturbance-without-Uncertainty generates the Quantum set in the simplest Bell scenario",
+        "abs_url": "https://arxiv.org/abs/2610.08749",
+        "scirate_url": "https://scirate.com/arxiv/2610.08749",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2610.07124",
+        "title": "Black Hole Radiation Decoding in the Haar Random Oracle Model",
+        "abs_url": "https://arxiv.org/abs/2610.07124",
+        "scirate_url": "https://scirate.com/arxiv/2610.07124",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2610.08786",
+        "title": "Energy-constrained two-way capacity bounds for noisy Gaussian channels",
+        "abs_url": "https://arxiv.org/abs/2610.08786",
+        "scirate_url": "https://scirate.com/arxiv/2610.08786",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-10-06",
     "title": "SciRate Digest \u2014 2026-10-06",
     "summary": "Today's 5 papers: Magic Quantum Code Surgery; Cups and Gates II: Operads, twists, and addressable intra-code gates; The power of time reversal in Hamiltonian property testing; The practical cost of magic state cultivation; Pretty good shadow tomography.",
