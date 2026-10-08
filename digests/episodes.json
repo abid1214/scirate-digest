@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-10-08",
+    "title": "SciRate Digest \u2014 2026-10-08",
+    "summary": "Today's 5 papers: Building codes with transversal CCZ using projective geometry and SAT solvers; Efficient Estimation of Logical Sensitivities Through Fault-Counting; Witnessing Quantum Bayesian Inference beyond Classical Learning; Efficiently computable bounds on the energy-constrained quantum reading capacity; Gaussian Scrooge Ensemble from Deep Thermalization in Free-Fermions.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-10-08/digest.mp3",
+    "mp3_bytes": 16873005,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2610.09341",
+        "title": "Building codes with transversal CCZ using projective geometry and SAT solvers",
+        "abs_url": "https://arxiv.org/abs/2610.09341",
+        "scirate_url": "https://scirate.com/arxiv/2610.09341",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2610.10531",
+        "title": "Efficient Estimation of Logical Sensitivities Through Fault-Counting",
+        "abs_url": "https://arxiv.org/abs/2610.10531",
+        "scirate_url": "https://scirate.com/arxiv/2610.10531",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2610.09293",
+        "title": "Witnessing Quantum Bayesian Inference beyond Classical Learning",
+        "abs_url": "https://arxiv.org/abs/2610.09293",
+        "scirate_url": "https://scirate.com/arxiv/2610.09293",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2610.08945",
+        "title": "Efficiently computable bounds on the energy-constrained quantum reading capacity",
+        "abs_url": "https://arxiv.org/abs/2610.08945",
+        "scirate_url": "https://scirate.com/arxiv/2610.08945",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2610.10279",
+        "title": "Gaussian Scrooge Ensemble from Deep Thermalization in Free-Fermions",
+        "abs_url": "https://arxiv.org/abs/2610.10279",
+        "scirate_url": "https://scirate.com/arxiv/2610.10279",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-10-07",
     "title": "SciRate Digest \u2014 2026-10-07",
     "summary": "Today's 5 papers: Entanglement manipulation and magic area-laws; Pauli Flat Quantum States Mimicking Maximal Magic; No-Disturbance-without-Uncertainty generates the Quantum set in the simplest Bell scenario; Black Hole Radiation Decoding in the Haar Random Oracle Model; Energy-constrained two-way capacity bounds for noisy Gaussian channels.",

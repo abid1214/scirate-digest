@@ -1,0 +1,173 @@
+Maya: Sam, you once told me — and I wrote it down — that most of the good quantum codes were found by, quote, "staring at things until something clicks."
+
+Sam: I stand by that. Half the famous constructions in fault tolerance are somebody's lucky afternoon. The thing is, our top paper today takes one of those lucky-afternoon problems and turns it into a search you can hand to a solver, with a proof attached about how far down you can possibly go.
+
+Maya: Which, weirdly, rhymes with most of today's list — people getting more out of information they already had and were throwing away.
+
+Sam: That's the thread. Searches that were blind, simulations that were discarded, forecasts nobody thought to compare.
+
+Maya: Welcome to the SciRate Daily Digest for Thursday, October eighth, twenty twenty-six. Today: codes that perform a hard logical gate for free, error budgets squeezed out of simulations you've already run, a five-outcome test for whether an agent is reasoning quantumly, computable limits on reading a quantum memory, and what a free-fermion chain collapses into when you spy on its environment.
+
+[BREAK]
+
+Maya: Okay. Transversal gates. Start me at the beginning, because I know this is an old want.
+
+Sam: Here's the dream. You have a code protecting logical qubits, and you want to do a logical operation. Normally that means a whole circuit, with ancillas and measurements and things that can go wrong in correlated ways. Transversal means: apply one simple rotation to each physical qubit, independently, and the logical operation just happens. No crosstalk, no error spreading within a block. For the easy gates we know how to do this. For the hard non-Clifford ones — the ones you actually need for universal computing — it's rare and precious.
+
+Maya: And rare has meant expensive, because the alternative is the magic state factory we talked about on Monday.
+
+Sam: Right, distillation or cultivation, which eats the majority of your machine. So Bohan Lu and Ken Brown ask: can we systematically build codes on three logical qubits where applying the same little phase rotation to every physical qubit — some forward, some backward — enacts a controlled-controlled-Z on the logicals?
+
+Maya: And their answer isn't a new code, it's a classification?
+
+Sam: It's the shape of the search space. They show the admissible codes aren't arbitrary. The pattern of which qubits your stabilizers touch has to be the solution set of a low-degree polynomial over a finite geometry — it's forced, via the duality structure of Reed–Muller codes. That one constraint simultaneously gives you the divisibility property the phases need and a guaranteed minimum distance. Once the geometry pins down the support, what's left is small enough that a satisfiability solver finishes the job of picking the logical operators.
+
+Maya: So the hard combinatorial hunt becomes a small structured one. What came out?
+
+Sam: Thirteen explicit codes, the smallest being forty-eight physical qubits carrying three logical qubits. But the part I'd actually frame on the wall is the lower bound: they prove no code of this type can exist below thirty-nine physical qubits, even if you're allowed to clean up afterward with a diagonal Clifford correction. The best known construction sits at forty-seven. So the whole remaining question is an eight-qubit window.
+
+Maya: Let me push on the codes themselves, though. You said forty-eight qubits, distance three. Their largest is what, around five hundred?
+
+Sam: Four hundred and ninety-six.
+
+Maya: And the distance doesn't improve. So the big ones protect no better than the small one. What is a four-hundred-qubit, distance-three code for?
+
+Sam: Honestly — nothing, operationally. And they only really control one of the two distances; the other gets little attention. I read the large codes as evidence that the recipe produces a whole family, not as hardware proposals. There's also no decoder here, no fault-tolerance analysis, and crucially no head-to-head overhead comparison against cultivation.
+
+Maya: So who should read it?
+
+Sam: Anyone designing the non-Clifford layer of an architecture. The lower bound is the durable thing — it tells you the floor. And the geometric criterion is reusable: I'd expect people to bolt on distance constraints and search again, which the authors essentially invite.
+
+[BREAK]
+
+Maya: Next one is the paper I'd hand to an experimentalist first. Set the stake.
+
+Sam: You've built a surface code patch. It's failing at some logical error rate, and you have a finite budget. Do you spend it on better two-qubit gates? Faster measurement? Fixing the three worst qubits? To answer that you want an error budget — how much each physical noise source contributes.
+
+Maya: And today you get that by... rerunning everything?
+
+Sam: Exactly. You nudge one noise rate up, rerun the full Monte Carlo and the decoder, take a finite difference, repeat. For every parameter. And you have to decide in advance how to group the noise, because each group costs you another campaign.
+
+Maya: And Winston Fu and colleagues found the shortcut where?
+
+Sam: In data the simulator already generates and throws away. Every shot, the simulator rolls dice at each fault location — did this gate fail, did this measurement flip. Normally you keep only the verdict: logical error, yes or no. They keep the fault configuration too. Then the statistics are simple to state: look at the shots that failed, and ask which fault mechanisms are over-represented in them relative to how often they fire overall.
+
+Maya: Over-represented in failures equals high sensitivity.
+
+Sam: That's the whole idea, and it's an old trick from statistics and reinforcement learning — the score-function estimator. The payoff is that you get the derivative with respect to every noise parameter simultaneously, from one run at one noise point. In their circuit-level surface code simulations it agrees with finite differences, and for the same error bars it needs somewhere between ten and a hundred times fewer shots.
+
+Maya: What does that buy you concretely?
+
+Sam: Resolution you couldn't afford before. Because you never grouped the faults, you can regroup them afterward however you like — by error type, by round of syndrome extraction, or spatially, qubit by qubit. They show heat maps where bulk qubits matter measurably more than boundary qubits. For heterogeneous hardware, where your qubits genuinely aren't identical, that's the map you want.
+
+Maya: And they do something with threshold contours.
+
+Sam: Yes — with gradients in hand you can run Newton's method on the crossing point between a distance-three and a distance-five patch, and trace out a surface in a many-dimensional noise space instead of sampling a grid. That turns an exponential sweep into something one dimension cheaper.
+
+Maya: Here's my objection. This all lives inside the simulator. An experimentalist with real data can't do any of it, because the hardware doesn't tell you which faults fired.
+
+Sam: Completely fair, and they're upfront about it. It's a tool for the design loop, not for the lab bench. Two more honest limits: the decoder is held fixed, so these are sensitivities assuming you don't retune your decoder priors — which you would. And the variance of the estimator grows roughly with the square of the number of parameters you're tracking, so the per-qubit resolution gets expensive at large distances.
+
+Maya: Still, free post-processing of runs people already do.
+
+Sam: That's the sell, and I think it'll be in the standard toolchain within a year.
+
+[BREAK]
+
+Maya: Now a puzzle, and I want you to let me guess wrong first.
+
+Sam: Please.
+
+Maya: An agent gives me a forecast. It observes one outcome, updates, gives me a second forecast. That's all I see — no access to its model. Can I tell whether it's reasoning with ordinary probability or with quantum mechanics?
+
+Sam: Guess.
+
+Maya: Obviously yes, as soon as the measurements are incompatible. Non-commuting observables, weird updates, done.
+
+Sam: Wrong, and that's the content of Francesco Buscemi's paper. Take the tetrahedral measurement on a qubit — four outcomes, informationally complete, maximally non-commuting in the relevant sense. Update using the quantum Bayes rule, the Petz-style retrodiction, re-forecast. He writes down an explicit classical story — an ordinary urn you're learning about from repeated draws — that reproduces that forecast table exactly.
+
+Maya: So noncommutativity by itself leaves no fingerprint.
+
+Sam: None that's visible at the level of forecasts. And it isn't a near miss. He proves that with four outcomes or fewer, every quantum forecast table of this kind has a classical realization — in any dimension, with no more urns than outcomes. The reason is a lovely piece of matrix theory: these tables are symmetric, nonnegative, positive semidefinite objects, and the classical ones are exactly those that factor into nonnegative pieces. Up to size four, those two families coincide. At five, they come apart.
+
+Maya: So five outcomes is a genuine threshold, not an artifact of his proof.
+
+Sam: Sharp threshold. And his witness is minimal: one qubit, five measurement directions spaced evenly around a circle in the Bloch ball — a pentagon — and a completely uninformative prior. There's an inequality any classical urn-learner must satisfy, with a ceiling of one half, and the pentagon gets to about zero point five two.
+
+Maya: That's a two percent margin. Noise is going to eat that alive.
+
+Sam: It might. Robustness is explicitly open, as is the maximal quantum value. If I were designing an experiment I'd want to know whether depolarizing the qubit by a few percent kills it, and nobody has computed that yet.
+
+Maya: My bigger worry is the classical benchmark. "Classical" here means a fixed unknown source, drawn twice, identically. Real agents learn about moving targets.
+
+Sam: Yes — latent dynamics are not excluded, and the quantum side assumes one particular retrodiction rule and that the agent re-measures the same thing. So this isn't a device-independent test of nature. It's a clean statement about when a specific kind of quantum reasoning leaves a trace in behaviour. I'd send it to the foundations crowd and, genuinely, to the econometrics people working on when forecasts are Bayes-explainable.
+
+[BREAK]
+
+Maya: This one connects straight back to yesterday, doesn't it.
+
+Sam: It does. Yesterday we had energy-constrained bounds for communication over optical channels — the point being that real transmitters have a power budget and the old unlimited-power limits flatter you. Today Vishal Singh, Zixin Huang and Mark Wilde do the same job for a different task: quantum reading.
+
+Maya: Which is what, physically?
+
+Sam: A memory where each cell isn't a stored state, it's a physical process. Think of a pit on an optical disc: shining light on it does something slightly different than shining light on a flat region. You send in a probe, measure what comes back, and infer which cell you're looking at. The capacity question is how many bits per cell you can reliably retrieve, given that you're allowed to use quantum probes, entangle them with a reference, and adapt — let each probe depend on everything you've measured so far.
+
+Maya: And the existing bounds were unusable?
+
+Sam: They were either abstract expressions involving reference systems of unbounded size, or they only applied to special channel families that admit a nice simulation. You couldn't hand them a memory and get a number. This paper produces an upper bound you can actually compute — a semidefinite program whose size depends only on the dimensions of the channels, valid against fully adaptive protocols, with the energy constraint built in.
+
+Maya: How does an energy budget get into a convex program?
+
+Sam: That's the technical move I liked. They work with a variant of relative entropy — the Belavkin–Staszewski version — that satisfies a chain rule letting you strip off one use of the memory at a time. Iterate it and the total information telescopes into a sum of terms that each depend linearly on the average probe you sent. Once it's linear in that average, the energy constraint is just another linear constraint, and you dualize it into the objective with a Lagrange multiplier.
+
+Maya: Upper bound is one side. Do they bracket it?
+
+Sam: They give a complementary lower bound from a bilinear program where any feasible point you find is a certified achievable rate — a probe state and a prior you could actually use. They alternate, see-saw style.
+
+Maya: Which means no global optimality guarantee.
+
+Sam: Correct, and the gap doesn't generally close. The upper bound passes through a relaxation that is lossy. There's one family where it does close — memories that are jointly classical-quantum — and there they independently re-derive a recent result that adaptivity buys you nothing, at least without an energy constraint.
+
+Maya: And the disc reading we started with is optical, which means infinite-dimensional light.
+
+Sam: And this paper is finite dimensions and finite alphabets, so strictly speaking the original motivating setting isn't covered. I think the dualization trick is the export: anyone doing energy-constrained adaptive discrimination or estimation should be able to lift it.
+
+[BREAK]
+
+Maya: Last one, and it's the most physics-y. Deep thermalization.
+
+Sam: Here's the setup. Take a chain, cut it into a small subsystem and a big bath. Let it evolve, then measure every site in the bath and write down what you got. The subsystem collapses into some pure state that depends on the outcomes. Repeat, and you have a distribution over pure states — the projected ensemble. That's a far finer probe of equilibration than any local average, because it's asking about the whole shape of the randomness, not the mean.
+
+Maya: And in a chaotic system you expect that distribution to be maximally random.
+
+Sam: Maximally random, but tilted — it's uniform randomness distorted so that its average reproduces the subsystem's thermal state. That tilted object has a great name, the Scrooge ensemble. The expectation was that this is a chaos phenomenon.
+
+Maya: And this chain isn't chaotic at all.
+
+Sam: It's free fermions. Non-interacting, integrable, infinitely many conserved quantities — the textbook case where you'd expect extra structure to survive and spoil universality. Russotto, Klobas, Calabrese and Bertini find it doesn't. Restricted to the manifold of Gaussian states, the late-time ensemble converges to a Gaussian version of Scrooge, and the striking part is that it's determined entirely by the subsystem's own generalized Gibbs state. No reference to the global wavefunction at all.
+
+Maya: Hold on. You said "restricted to the manifold of Gaussian states." Isn't that assuming the answer?
+
+Sam: Partly, and I want to be straight about it. They choose a measurement on the bath that preserves Gaussianity — pairs of Majorana bilinears, which in spin language is a Bell-like basis — so the manifold is put in by hand. The non-trivial claim is that within that manifold you get maximal tilted randomness and nothing more structured.
+
+Maya: What about charge leakage? Each outcome tells you something about particle number in the bath.
+
+Sam: It does, at finite size, and that's the nicest result in the paper. They show the information individual outcomes carry about conserved charges shrinks like the square of the subsystem size divided by the bath size. So a partially revealing measurement becomes effectively non-revealing in the thermodynamic limit. They also prove no charge can ever be perfectly revealed by this protocol — except fermion parity, which is always exactly revealed, for every measurement in the family.
+
+Maya: Evidence?
+
+Sam: Numerics, and modest ones. Subsystems of two to four sites, moments of the correlation matrix up to fourth order. The catch they flag themselves is that the candidate ensembles only differ at moment orders comparable to the subsystem size, so at these sizes the test is barely discriminating. Convergence is observed as a power law, not proven.
+
+Maya: And the finite-temperature argument?
+
+Sam: Heuristic. The clean derivation exists only at infinite temperature. I'd read this as a strong structural proposal with suggestive numerics — and the obvious next target is an interacting integrable model, which they leave open.
+
+[BREAK]
+
+Maya: One result each. Mine is the fault-counting estimator — not because it's deep, but because it's the kind of thing where you think, that information was sitting right there the whole time, and now every error budget gets ten times cheaper.
+
+Sam: Mine's the pentagon. The fact that four outcomes of quantum belief-updating can always be faked by a classical urn, and five sometimes can't, with a sharp line between them — I did not expect the boundary to be a specific small number.
+
+Maya: Links to all five papers are in the show notes, along with the form for sending us questions. We read them, and the backlog does eventually clear.
+
+Sam: Some of it in less than a geological epoch. See you tomorrow.
