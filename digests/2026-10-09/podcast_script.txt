@@ -1,0 +1,155 @@
+Maya: Sam, I did a tally over coffee. Four of today's five papers are, underneath everything, an argument about where the spare qubits go.
+
+Sam: And the fifth is about entanglement you can prove you'll never get out. Which is its own kind of accounting, just with a sadder ending.
+
+Maya: Welcome to the SciRate Daily Digest for Friday, October ninth, twenty twenty-six. Today: a magic state factory built natively inside high-rate codes, a full-chip error correction run on a superconducting processor that routes around its own broken parts, a refuted conjecture in entanglement theory, and a matched pair of results — one making logical readout cheaper, one proving how cheap it can never be.
+
+Sam: Both of those last two are by the same person, posted the same day, pointing in opposite directions. I love when someone does that.
+
+[BREAK]
+
+Maya: Let's start with the one that'll get the most attention. The stake here is blunt: in every serious resource estimate for a fault-tolerant machine, the majority of the hardware is spent manufacturing magic states — the special inputs you need for the gates that error-correcting codes can't do for free.
+
+Sam: Right, and there's been a second problem stacked on top. Low-density parity-check codes — the high-rate ones — pack many logical qubits into one block, so they look wonderful for storage. But nobody had a good way to make magic states inside them. You'd manufacture in surface or color code patches and then surgically inject, and the injection throws away your rate advantage.
+
+Maya: So this is Menon, Lukin, Bonilla Ataides and a fairly large collaboration. What's the move?
+
+Sam: They marry two code families that share algebraic DNA. One family — they call them tricycle codes — happens to support the non-Clifford gate transversally, meaning you just hit every physical qubit with the same rotation and a useful logical operation falls out. But those codes are bad at holding the result. The other family, quadcycles, are great at holding and processing it: balanced distances, and crucially single-shot in both measurement bases, so a single round of checks is enough to correct even when the checks themselves are faulty.
+
+Maya: And the two are compatible how, exactly? "Shared algebraic structure" is doing a lot of work in that sentence.
+
+Sam: Fair. Concretely, the four-dimensional quadcycle complex literally contains the three-dimensional tricycle one inside it, as a sub-object. That means there's a canonical pairing-up of physical qubits between the two blocks, and one single layer of two-qubit gates — depth one, matched pairs, nothing else — teleports every logical from the maker into the keeper.
+
+Maya: Depth one. So the state spends almost no time exposed.
+
+Sam: That's the whole trick. And while it's exposed, it's cheap, so they postselect hard: measure out the maker block, and any detected error means you throw the attempt away before you've invested anything. They even squeeze the magic circuit itself from two layers to one with a fan-out gadget, and the measured error scaling matches what you'd predict if full detection effectively doubles the distance.
+
+Maya: Give me the headline number.
+
+Sam: At a physical error rate of one in a thousand, they get their three-qubit magic states at something like ten to forty times lower space-time volume than cultivation in surface or color codes — and the states arrive already inside a high-rate block, ready to use.
+
+Maya: Cultivation being the front-runner we talked about on Tuesday. So this isn't beating a strawman.
+
+Sam: No, it's beating the current best. Though I want to be honest about the accounting. They simulate exactly one tricycle–quadcycle pair. The full factory needs three maker blocks running at once, so the real acceptance rate is the quoted one cubed. And the space-time budget excludes the logical measurements, the clean-up gates, and decoder latency — excluded for the baselines too, but still excluded.
+
+Maya: And the decoder?
+
+Sam: Most-likely-error decoding, which is not something you run in real time on a live machine. So the numbers are an honest ceiling, not a device forecast. One more thing I liked: they compile it for neutral atoms, where every operation becomes a uniform row or column shift of the atom array — a constant number of traversals. That's unusually hardware-concrete for an LDPC architecture paper.
+
+[BREAK]
+
+Maya: Here's what I find strange about the second paper. Every single configuration they ran is above threshold — their three-by-three patches still outperform the full-chip seven-by-seven. Bigger code, worse result. And yet I think it's one of the more useful experimental papers this year.
+
+Sam: Because the interesting claim isn't "we got a good logical qubit." It's "here is precisely what's stopping you, and here's how much of it you can claw back for free." This is McLauchlan, Harper, Brown and colleagues running a dynamic compass code — a Floquet-style code where the checks change round to round — across all one hundred fifty-six qubits of an IBM Heron chip.
+
+Maya: And real chips aren't uniform.
+
+Sam: That's the premise. A handful of qubits or couplers on any given device are one or two orders of magnitude worse than the median. Once your patch is big enough to swallow one, that single component dominates everything. So they do something almost embarrassingly simple: they identify two bad qubits and their couplers, and redesign the check schedule to route around them — deforming the gauge checks into slightly heavier superstabilizers that just don't touch the dead hardware.
+
+Maya: And that buys?
+
+Sam: Roughly a third off the logical error per round, in both bases. The full-chip patch goes from clearly worse than a small one to matching the median small patch.
+
+Maya: Couldn't a smarter decoder have found that on its own? If you tell the decoder those qubits are terrible, it should downweight them.
+
+Sam: That's exactly the test they ran, and it's the result I'd flag for decoder people. They fed a belief-matching decoder a carefully measured, device-specific noise model — layer-by-layer error rates from the ACES protocol. The defect-exclusion gain stayed at about twenty-seven percent on top of that. The decoder cannot absorb a dead qubit. You have to not use it.
+
+Maya: What about the longer runs? Thirty rounds is a long time for a superconducting chip.
+
+Sam: This is the part that worries me most, in a productive way. In their stability experiments, without defect exclusion the error suppression just stops improving after about a dozen rounds. And they argue it's not Pauli noise — it's leakage, qubits wandering out of the computational states entirely. They can see it because they keep the raw readout signal and fit it to three Gaussians, including the second excited state, so they get a per-shot leakage probability.
+
+Maya: Which connects to yesterday's error-budget paper, in a way. That was about attributing logical failure to noise sources on paper; this is doing it on silicon and finding a source that isn't in the standard model.
+
+Sam: Exactly, and that's the honest verdict. The two-patch lattice surgery they demonstrate goes from a Bell fidelity in the high seventies to above ninety-seven percent — but only by discarding the great majority of attempts. That's a diagnostic, not a logic gate. The transferable result is: fix your layout around defects, and go hunt leakage.
+
+[BREAK]
+
+Maya: Shifting gears entirely. How much pure entanglement can you squeeze out of many copies of a noisy state? That question is as old as quantum information theory and still open.
+
+Sam: And it's open in an annoying way. The physically meaningful operations — local operations plus classical communication — are brutal to optimize over. So for decades people have studied a larger, friendlier class: operations that stay well-behaved under partial transposition. Bigger class, so whatever rate you get is an upper bound on the real thing, and it's tractable.
+
+Maya: And within that friendlier world, there was a candidate answer.
+
+Sam: The Rains bound, regularized. It's been the best known upper bound for a long time, and a recent conjecture said it isn't just a bound — it's the exact answer. Ludovico Lami's paper kills that conjecture.
+
+Maya: With a counterexample?
+
+Sam: With a certified one. He takes a highly symmetric two-qutrit state — a Werner state tuned close to the antisymmetric corner — and proves an upper bound on its distillable rate that sits strictly below the Rains value. About four percent below, roughly six-tenths of an entanglement bit versus six-and-a-half tenths.
+
+Maya: Four percent is small. How do you trust it, if it's numerics?
+
+Sam: That's the right question and the answer is that nothing here is floating-point optimism. The symmetry lets him twirl the problem down to a linear program, and the lower side is certified by an explicit measurement on forty-eight copies, while the upper side uses directed rounding so the arithmetic errors can only go the safe way. The gap is small but it's real.
+
+Maya: What's the machinery?
+
+Sam: Two new converse bounds, and they're the part I think gets reused. One builds a functional out of operator quadratic forms — you work on the space of operators itself and use a weighted geometric mean, and a classical operator inequality hands you the data-processing property for free. The other embeds the state in a family of operators that depends analytically on a complex parameter, and then applies a sharpened version of the Hadamard three-line theorem to interpolate between two boundary estimates.
+
+Maya: Complex analysis showing up in entanglement distillation.
+
+Sam: It's the kind of tool import that tends to pay dividends elsewhere. He also gets an exact characterization of the achievable rate — Rains's old projective bound, but with general measurements instead of projections, then regularized — plus a quantitative version of a previously qualitative theorem: if a state has a negative partial transpose at all, here's a concrete nonzero rate in terms of how negative.
+
+Maya: Downside?
+
+Sam: The exact formula is regularized, meaning it's a limit over growing numbers of copies with no convergence rate, so it's not a calculation you can do. And awkwardly, because the Rains algorithms no longer apply, whether this quantity is even computable is now an open question. It also says nothing directly about the physical case, with local operations. This is a theorist's paper for theorists — but it clears a dead end.
+
+[BREAK]
+
+Maya: Now, the surprise in the fourth paper is methodological, and it's backwards from how these constructions usually go.
+
+Sam: It really is. Setting it up: lattice surgery is how you measure logical information in a code — you glue on an ancillary patch, fuse, measure, split. The catch is you normally have to repeat the measurement for a number of rounds proportional to the code distance, so your logical clock ticks slowly. There's a recent "fast surgery" scheme that does it in constant time instead, but the helper system it needs is enormous.
+
+Maya: Enormous meaning?
+
+Sam: The ancilla scaled with the code size times the number of logical qubits times the distance. Baspin's result removes that factor of distance entirely — you pay the code size times the number of logicals, plus an additive term from the distance. For constant-rate codes that's optimal up to logarithmic factors, and it matches what ordinary slow surgery costs.
+
+Maya: So constant-time logical measurement at roughly the price of the slow version. What's the backwards part?
+
+Sam: Normally you design a sparse ancilla and then struggle to prove it has the robustness property you need — a kind of expansion condition that guarantees small errors produce large, detectable syndromes. He does the opposite. He builds an ancilla that's manifestly robust but has horribly heavy parity checks — some rows are just a random compression, chosen so that every low-weight syndrome gets inflated above the distance. Then he thins the checks out with gadgets proven to preserve the property.
+
+Maya: Random rows. So the construction isn't explicit?
+
+Sam: Correct, that piece is existential — he shows such a matrix exists, with no derandomization. That's a genuine gap if you want to build this.
+
+Maya: And the thinning?
+
+Sam: Two passes. One is an existing gauging technique that reduces check weight by hanging an expander graph off each heavy row. The other is new — call it the dual move: it reduces the degree of overworked qubits by replacing each one with a cluster of vertices on an expander, a generalized layer code, with an explicit path-based map keeping everything consistent.
+
+Maya: What does he give up?
+
+Sam: And he's upfront about this: the metachecks come out dense. So the single-shot structure is lost. Which is striking next to today's first paper, where single-shot behavior in both bases was the whole reason the quadcycle codes were worth building. There are also no simulations, no thresholds, and the hidden constants from the expander degrees aren't tracked. This is an asymptotic existence result, and whether it survives contact with a real architecture is completely open.
+
+[BREAK]
+
+Maya: And then the same author posts the ceiling. Which feels like someone showing their work both ways.
+
+Sam: The question is: how small can a surgery ancilla possibly be, if you want full freedom — the ability to measure any logical subspace you choose? And the answer is a counting argument so clean you could teach it in an afternoon.
+
+Maya: Walk me through the intuition.
+
+Sam: There are astronomically many possible measurement requests. The number of half-dimensional subspaces of your logical space grows like two raised to the square of the number of logical qubits. Now count how many sparse ancilla gadgets you could possibly build with a given number of qubits — sparse means every check touches only a few qubits, so there just aren't that many such objects. If the gadgets can't outnumber the requests, you can't serve all of them. Shuffle the inequality and the ancilla must grow roughly as the square of the number of logical qubits.
+
+Maya: Which for a constant-rate code means the square of the code size. That's brutal.
+
+Sam: It is, and it nearly matches a recent parallel-surgery upper bound, so the picture is essentially closed for that regime. The architectural reading is a space-time trade-off: if your ancilla budget is modest, your compiler can only ever address a tiny structured slice of the possible measurements, and generic readout has to be broken into many sequential rounds.
+
+Maya: Let me push on the scope, though. This bounds static gadgets, one per measurement, with sparsity assumed on both the ancilla and the map into the code. A reconfigurable system — neutral atoms shuttling, say — doesn't obviously fall under it.
+
+Sam: Agreed, and the paper says as much. Adaptive and multi-round protocols aren't covered, there's no matching lower bound on time, and it goes vacuous once your logical count drops below the square root of your code size. It's also worst-case over measurement sets — a scheme that only ever measures a small, structured family escapes entirely.
+
+Maya: Which is arguably what good code design looks like anyway. You don't want arbitrary addressability, you want the operations your algorithm actually needs.
+
+Sam: Right, and that's the bridge back to the magic factory. Part of why that construction is cheap is that it never asks for generic surgery — the handoff is a fixed, structured, depth-one pairing. Today's lower bound says: lean into that. Don't buy addressability you won't use.
+
+[BREAK]
+
+Maya: Pick one. What stuck with you?
+
+Sam: The depth-one escape in the magic factory. Two code families chosen so that one sits inside the other, and the entire transfer of a non-Clifford resource is a single layer of gates. If the full-factory yield holds up once all three blocks are simulated together, that's the missing piece of the LDPC story.
+
+Maya: Mine's the twenty-seven percent. A well-informed decoder, handed a device-specific noise model, still couldn't recover what you get by simply refusing to use two bad qubits. That's a result you can act on this afternoon, and it says something uncomfortable about how much we've been asking decoders to paper over.
+
+Sam: And keep an eye on leakage. That was the ceiling on the long runs, and it's not in anyone's standard error model.
+
+Maya: Links to all five papers are in the show notes, along with a link to send us questions — we read everything, and the backlog does eventually get answered.
+
+Sam: Some of it even quickly. See you Monday.

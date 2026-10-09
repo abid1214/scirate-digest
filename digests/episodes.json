@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-10-09",
+    "title": "SciRate Digest \u2014 2026-10-09",
+    "summary": "Today's 5 papers: Single-shot magic state factories for quantum LDPC codes; Error-Corrected Memory and Logic on a Heavy-Hex Superconducting-Qubit Processor; On PPT entanglement distillation; 2 Fast 2 Surgery: Fast surgery on QLDPC codes with $\\tilde{O}(n(k + d))$ space overhead; A lower bound on the overhead of surgery on sparse stabiliser codes.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-10-09/digest.mp3",
+    "mp3_bytes": 16746669,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2610.10731",
+        "title": "Single-shot magic state factories for quantum LDPC codes",
+        "abs_url": "https://arxiv.org/abs/2610.10731",
+        "scirate_url": "https://scirate.com/arxiv/2610.10731",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2610.11658",
+        "title": "Error-Corrected Memory and Logic on a Heavy-Hex Superconducting-Qubit Processor",
+        "abs_url": "https://arxiv.org/abs/2610.11658",
+        "scirate_url": "https://scirate.com/arxiv/2610.11658",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2610.12454",
+        "title": "On PPT entanglement distillation",
+        "abs_url": "https://arxiv.org/abs/2610.12454",
+        "scirate_url": "https://scirate.com/arxiv/2610.12454",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2610.11079",
+        "title": "2 Fast 2 Surgery: Fast surgery on QLDPC codes with $\\tilde{O}(n(k + d))$ space overhead",
+        "abs_url": "https://arxiv.org/abs/2610.11079",
+        "scirate_url": "https://scirate.com/arxiv/2610.11079",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2610.11097",
+        "title": "A lower bound on the overhead of surgery on sparse stabiliser codes",
+        "abs_url": "https://arxiv.org/abs/2610.11097",
+        "scirate_url": "https://scirate.com/arxiv/2610.11097",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-10-08",
     "title": "SciRate Digest \u2014 2026-10-08",
     "summary": "Today's 5 papers: Building codes with transversal CCZ using projective geometry and SAT solvers; Efficient Estimation of Logical Sensitivities Through Fault-Counting; Witnessing Quantum Bayesian Inference beyond Classical Learning; Efficiently computable bounds on the energy-constrained quantum reading capacity; Gaussian Scrooge Ensemble from Deep Thermalization in Free-Fermions.",
