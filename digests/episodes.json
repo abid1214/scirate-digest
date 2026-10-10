@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-10-10",
+    "title": "SciRate Digest \u2014 2026-10-10",
+    "summary": "Today's 5 papers: Entanglement entropy and magic of ZX-diagrams; Measure Now, Mitigate Later: Virtual Error Cancellation for Logical Quantum Circuits; Energy-constrained two-way capacities of the pure-loss channel; High-Rate Concatenated Quantum Error-Correcting Codes for Qudits; Markov length can diverge in systems whose universal physics is spatially Markovian.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-10-10/digest.mp3",
+    "mp3_bytes": 17483949,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2610.12447",
+        "title": "Entanglement entropy and magic of ZX-diagrams",
+        "abs_url": "https://arxiv.org/abs/2610.12447",
+        "scirate_url": "https://scirate.com/arxiv/2610.12447",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2610.12400",
+        "title": "Measure Now, Mitigate Later: Virtual Error Cancellation for Logical Quantum Circuits",
+        "abs_url": "https://arxiv.org/abs/2610.12400",
+        "scirate_url": "https://scirate.com/arxiv/2610.12400",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2610.12365",
+        "title": "Energy-constrained two-way capacities of the pure-loss channel",
+        "abs_url": "https://arxiv.org/abs/2610.12365",
+        "scirate_url": "https://scirate.com/arxiv/2610.12365",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2610.11225",
+        "title": "High-Rate Concatenated Quantum Error-Correcting Codes for Qudits",
+        "abs_url": "https://arxiv.org/abs/2610.11225",
+        "scirate_url": "https://scirate.com/arxiv/2610.11225",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2610.11235",
+        "title": "Markov length can diverge in systems whose universal physics is spatially Markovian",
+        "abs_url": "https://arxiv.org/abs/2610.11235",
+        "scirate_url": "https://scirate.com/arxiv/2610.11235",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-10-09",
     "title": "SciRate Digest \u2014 2026-10-09",
     "summary": "Today's 5 papers: Single-shot magic state factories for quantum LDPC codes; Error-Corrected Memory and Logic on a Heavy-Hex Superconducting-Qubit Processor; On PPT entanglement distillation; 2 Fast 2 Surgery: Fast surgery on QLDPC codes with $\\tilde{O}(n(k + d))$ space overhead; A lower bound on the overhead of surgery on sparse stabiliser codes.",

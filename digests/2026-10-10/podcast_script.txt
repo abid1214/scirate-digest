@@ -1,0 +1,157 @@
+Maya: Sam, here's my morning. Somebody hands you a quantum circuit drawn on a page. How entangled is the state it makes?
+
+Sam: The honest answer is: build the state, cut it in half, do the linear algebra. Which, for any circuit worth asking about, is the entire hard problem you were trying to avoid.
+
+Maya: Right. And what struck me about today's list is how many of these papers say — stop computing the thing. The answer is already sitting in data you have.
+
+Sam: Structure you drew, or data you already recorded and threw away. It's a good day for people who hate wasted effort.
+
+Maya: Welcome to the SciRate Daily Digest for October tenth, twenty twenty-six. On the slate: a graphical shortcut to entanglement and magic, error mitigation that's free because the data already exists, the last missing capacity formula for a lossy optical fibre, error correction built for thirteen-level qudits, and a warning label on how we classify mixed-state phases.
+
+[BREAK]
+
+Maya: Top of the list is "Entanglement entropy and magic of ZX-diagrams," from Szyniszewski, Shaikh and Kissinger. Start with the apparent contradiction, because I think that's the hook. They claim to bound how entangled a state is without ever building the state.
+
+Sam: And it's not a trick, it's a change of representation. ZX calculus draws a quantum circuit as a graph you're allowed to rewrite by local rules. These authors use known conditions on that graph to push it, in polynomial time, into a very specific shape: a graph state — pure stabilizer, totally classical to handle — with a list of non-Clifford rotations hanging off it like ornaments.
+
+Maya: And the entanglement of a graph state you can get from graph theory alone.
+
+Sam: It's essentially a rank of the adjacency structure across your chosen cut. Flat Schmidt spectrum, no surprises. So the question becomes: how much can those ornaments move the number? And the answer they prove is, each rotation that straddles the cut can shift the entropy by at most an amount set purely by its own angle.
+
+Maya: Upper and lower bound, both.
+
+Sam: Both, which is the part I didn't expect. The lower bound comes from an uncertainty relation — because the stabilizer backbone has that flat spectrum, no product state can overlap it too well, and that floors the entropy. So you get a window. And the window is tight exactly where you want it: for small rotations the correction shrinks roughly like the square of the angle, so near-Clifford circuits get pinned down hard.
+
+Maya: What's the evidence it's useful rather than just true? Bounds can be correct and vacuous.
+
+Sam: They run random, monitored, and Trotterized circuits at twenty to twenty-six qubits and compare to exact entropies. The generic bounds people use — entangling capacity arguments — saturate to the trivial interval almost immediately. These track the real curve long after that. And there's a second bound of the same flavour on magic, on stabilizer extent, additive across the rotations.
+
+Maya: Now the fine print, because I read it and it's load-bearing.
+
+Sam: It is. These are not certified bounds. There's a specific failure mode they name — coherent branch interference — where the product of several rotation operators happens to coincide with a symmetry of the graph state, and then the branches you assumed were independent conspire. They have preprocessing that kills the easy cases, pairwise and low weight, but structured circuits eventually break it. In their Trotter example the first violation lands at step sixty-four, which matches the Clifford periodicity of the circuit exactly.
+
+Maya: So it fails where the circuit is most regular, which is also where people run things.
+
+Sam: Yes, and you should know that going in. The magic benchmarks only go to eight qubits because that's where exact extent is computable. My verdict: this is for two audiences. People building ZX-based compilers who want a resource cost function that doesn't require simulating the output, and people chasing measurement-induced entanglement transitions, where you're in volume law and tensor networks are hopeless. A cheap thermometer that's usually right beats an exact one you can't run.
+
+[BREAK]
+
+Sam: Next one I want to frame by what's literally on the floor of every error-corrected experiment. You run a logical circuit, you record a syndrome stream every round, the decoder eats it, spits out a correction, and then that stream is archived and basically never looked at again.
+
+Maya: This is "Measure Now, Mitigate Later" — Shtanko, Roy, Kumar and Minev. And the claim is that archive still has juice in it.
+
+Sam: The claim is that even below threshold, after decoding, your expectation values carry a small residual bias — and the syndrome record tells you which shots were probably corrupted, and in which logical direction. So you sort your shots into sectors by syndrome, and reweight them in software. Consensus sector gets a weight slightly above one; the suspicious sectors get negative weights. The signed average is unbiased.
+
+Maya: Negative weights is the alarm bell. That's probabilistic error cancellation, and the whole reputation of that technique is exponential sampling overhead.
+
+Sam: Fair, and the distinction matters. In standard error cancellation you're inverting the full physical noise channel, and the cost compounds with every gate. Here the decoder has already done ninety-nine point nine percent of the work. You're only cancelling what's left, and the negative weight sits on a sector that's rarely occupied. Their overhead law comes out as one plus something proportional to the logical error rate. Essentially free.
+
+Maya: And how do you decide which sector a shot belongs to? That's the whole game.
+
+Sam: This is the part I liked most. You run two decoders on the same recorded data. A fast real-time one — the one that had to make a decision during the experiment — and a slow, more accurate offline one you can take all afternoon with. Sort by whether they agree on which logical Pauli to apply. Agreement is your clean sector; disagreement is your suspect pile. No extra shots, no modified circuits, no noise learning.
+
+Maya: And the demonstration?
+
+Sam: Simulation, distance-seven rotated surface code, and they get better than a thousandfold suppression relative to the decoded logical error rate. Compare that to postselection, which throws shots away at an exponential rate and still leaves a bias floor.
+
+Maya: Simulation, though — not hardware. And I want to flag the scaling, because it's in their caveats.
+
+Sam: Partitioning by logical Pauli means the number of sectors grows as four to the power of the number of logical qubits. Fine for one or two logicals, dead for twenty. They also assume the residual logical noise is Pauli, and you still have to estimate the average error within each sector, which brings its own calibration error back in.
+
+Maya: Still — this connects directly to the heavy-hex processor paper we did yesterday, where the point was that real chips have a few outlier qubits dominating the logical failure rate.
+
+Sam: Exactly the regime. If you're running a distance-seven memory with a nonzero logical error rate and you want a clean number out of it, this is a post-processing step, not an experiment. Someone should try it on archived data this month.
+
+[BREAK]
+
+Maya: Paper three is one of those entries that closes a table people have been filling in since the nineties. "Energy-constrained two-way capacities of the pure-loss channel," from Falco, Mele, Lami and Giovannetti.
+
+Sam: The table is: take an optical fibre that just loses photons, nothing else. How many classical bits per use? Known. How much quantum information one-way? Known. How much entanglement or secret key if the two parties can chat back and forth classically as much as they like and the sender can use arbitrarily bright light? Known — that's the famous repeaterless bound.
+
+Maya: And the missing cell is the realistic one.
+
+Sam: The missing cell is: cap the transmitter's average photon number. Which is what every actual laser has. For that case we only had an achievable rate from a known protocol, and separate, looser upper bounds sitting above it. This paper closes the gap. The simple scheme — squeezed light plus reverse reconciliation — is exactly optimal. No adaptive strategy, no memory, no cleverness beats it.
+
+Maya: We covered energy-constrained two-way bounds on Monday, for general noisy Gaussian channels. So this is the same program, but an equality instead of a sandwich.
+
+Sam: Same program, and the technical move that gets them there is worth naming. The usual proof tool is a relative entropy of entanglement bound on how much the channel can add per use. The trouble is it carries sub-linear correction terms — logarithms — that stop the bound from being tight. They prove the bound on the regularized quantity instead, so when you group many copies together those logarithmic terms just divide away.
+
+Maya: Give me the number in units I can feel.
+
+Sam: Half the light survives, one photon per mode on average: about zero point six bits of secret key per channel use. And this is in a regime where the one-way quantum capacity is exactly zero — you cannot send a single qubit without feedback. The two-way rate is comfortably positive.
+
+Maya: Where does it not apply? "Pure loss" sounds like an idealisation.
+
+Sam: It's a better idealisation than it sounds, at telecom wavelengths — the thermal background at optical frequencies is essentially nothing, so a fibre really is mostly just loss. Where it breaks is microwave links, or anything with an amplifier in the path. Thermal noise is explicitly not covered and that's the obvious next target.
+
+Maya: And it's a weak converse, not a strong one.
+
+Sam: Right — it says you can't beat this rate with vanishing error, not that trying to exceed it makes your error jump to one. Also, the authors note concurrent independent work reaching the same formula, which usually means the field was ready. This is the benchmark any repeater or finite-energy key distribution scheme now has to beat to justify itself.
+
+[BREAK]
+
+Maya: Here's a number that made me stop. Nishi and Goto report an error threshold that roughly doubles — from about five percent to about ten percent — purely by swapping two-level qubits for thirteen-level qudits.
+
+Sam: Same code family, same decoder philosophy, just more levels per physical carrier. The family is the many-hypercube code — concatenate a small block code with itself over and over. The base block here packs four logical units into six physical ones, which is a genuinely high rate by error-correction standards, and that two-thirds rate holds at every level of concatenation.
+
+Maya: Why would more levels help? My instinct says more levels means more ways to be wrong.
+
+Sam: More ways to be wrong, but far more informative syndromes. When a block of qubits reports an error, the syndrome tells you a little about where; when a block of thirteen-level systems reports, it tells you both where and by how much. Their explanation is entropic — plot logical failure against the entropy of the noise channel in the right units and the curves for different dimensions collapse onto one line. It's not magic, it's that you were measuring in the wrong currency.
+
+Maya: Is thirteen levels a fantasy number, or is anyone actually doing that?
+
+Sam: Trapped ions have demonstrated coherent control of thirteen-level units, and even twenty-five. That's partly why this is worth doing now rather than as a math exercise. They also build out the machinery — explicit encoders, a transversal logical addition gate, a logical Fourier gate that isn't transversal but is at least local.
+
+Maya: Okay, let me push, because that threshold number is doing a lot of work in the abstract.
+
+Sam: You should push. It's a code-capacity threshold — perfect measurements, no circuit-level noise, and the noise model is a symmetric error channel in one basis only. In that setting Hamming distance is the optimal thing to decode by, which is exactly what their decoder uses. Circuit-level numbers will be much smaller, and the ordering across dimensions could change.
+
+Maya: There's also an apples-to-apples problem. A thirteen-level ion has more decay pathways than a two-level one. Is a one percent error rate on a qudit really the same cost as one percent on a qubit?
+
+Sam: That is the question the hardware people will ask, and this paper doesn't answer it. One more thing that gives me pause: the advantage is decoder-specific. Their level-by-level minimum-distance decoder shows the doubling. The simpler hard-decision decoder shows essentially no dimension dependence at all — flat around one percent. So the gain lives in the decoding, not just in the code.
+
+Maya: Who should read it?
+
+Sam: Anyone running qudit hardware who's been assuming they'll have to collapse down to qubits for error correction. The message is that a high-rate concatenated architecture may actually prefer the extra levels.
+
+[BREAK]
+
+Sam: Last one links back to where we started. Our first paper was about building cheap diagnostics for entanglement transitions. This one is about a diagnostic that, it turns out, you cannot fully trust.
+
+Maya: "Markov length can diverge in systems whose universal physics is spatially Markovian," from Chen and Grover. Set up the stake for me, because the quantity is unfamiliar.
+
+Sam: There's a program to classify phases of mixed states — noisy, decohered, driven states — by asking whether two states can be connected by a short, locally reversible noisy evolution. The diagnostic people use is conditional mutual information: take two regions separated by a buffer, and ask how correlated they remain once you've accounted for everything in between. If that decays exponentially with buffer width, you have a finite Markov length and the machinery works. If it decays as a power law, the length is infinite and reversibility fails.
+
+Maya: And they break it.
+
+Sam: They show it isn't a universal quantity in the renormalization-group sense. Take a critical classical Gibbs state, which has strictly zero conditional mutual information past its interaction range. Add a perturbation that breaks detailed balance but is irrelevant — it does not change the fixed point, every critical exponent you'd normally measure is untouched. And it generically generates power-law conditional correlations. Infinite Markov length, same universality class.
+
+Maya: That's a real tension. Two systems that agree on every long-distance observable, disagreeing on whether they're in the same mixed-state phase.
+
+Sam: With one subtlety that keeps it from being a catastrophe. The tails are what they call cutoff-suppressed — the amplitude scales as a positive power of the lattice spacing, so in a strict continuum limit they vanish. They contrast that with genuine power-law conditional correlations, like at a long-range Ising critical point, which survive.
+
+Maya: Then let me be the skeptic. If it disappears in the continuum, why should anyone care?
+
+Sam: Because no real system is in the continuum. At any fixed lattice spacing, the tail is there, and it obstructs the local reversibility the definition demands. So your phase classification ends up depending on a microscopic detail that renormalization group was built to tell you to ignore. They call the cutoff dangerously irrelevant here, and I think that's the right phrase.
+
+Maya: How much of this is proved versus argued?
+
+Sam: Mixed, and they're upfront. There's a clean one-dimensional theorem relating the decay rate to whether the conditional information survives the continuum limit. The general result is second order in the perturbation strength. The fully nonperturbative check is a solvable two-component cellular-automaton-like model, classical and Gaussian, confirmed numerically on a lattice of a hundred twenty-eight on a side. And there's a concrete prediction for Toom's cellular automaton at its critical point that nobody has tested yet.
+
+Maya: So the practical advice is?
+
+Sam: If you're reading conditional-information numerics out of a decohered or driven simulation and seeing a power law, check how the amplitude moves with your lattice spacing before you announce a new phase. That's a cheap test and it would have changed some interpretations.
+
+[BREAK]
+
+Maya: Sam, one result that stuck.
+
+Sam: The two decoders. The idea that you can sharpen error mitigation just by re-running an algorithm you already ran, slower, on data you already have, and that the disagreement between them is itself the signal. That reframing will outlive the specific protocol.
+
+Maya: Mine is the Markov length paper, and specifically the discomfort of it. We lean on universality as the thing that lets us ignore microscopic detail, and here's a quantity that quietly doesn't obey it. I'd rather know that now than after three years of classification papers.
+
+Sam: And I'd watch the ZX bounds too — if someone finds a cheap certificate for when that branch interference kicks in, those go from heuristic to tool overnight.
+
+Maya: Links to all five papers are in the show notes, along with the form for sending in questions — we read everything, and we work through the backlog in order.
+
+Sam: Thanks for listening. Go look at your archived syndrome data.
