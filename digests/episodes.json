@@ -1,5 +1,54 @@
 [
   {
+    "date": "2026-10-11",
+    "title": "SciRate Digest \u2014 2026-10-11",
+    "summary": "Today's 5 papers: Scaling Quantum Optimization to the Thousand-Qubit Scale with Distributed Quantum Sampling; Parameter-Dependent Noise Resilience in the Quantum Approximate Optimization Algorithm; Geometry-optimized hyperbolic codes for modular fault-tolerant quantum architectures; Improved Local Leakage Resilience of Shamir Secret Sharing and Worst-Case Optimal Polynomial Intersection; Quantum Magic and the Strong Coupling Constant.",
+    "mp3_url": "https://github.com/abid1214/scirate-digest/releases/download/digest-2026-10-11/digest.mp3",
+    "mp3_bytes": 17846061,
+    "papers": [
+      {
+        "rank": 1,
+        "uid": "2610.10772",
+        "title": "Scaling Quantum Optimization to the Thousand-Qubit Scale with Distributed Quantum Sampling",
+        "abs_url": "https://arxiv.org/abs/2610.10772",
+        "scirate_url": "https://scirate.com/arxiv/2610.10772",
+        "scites": null
+      },
+      {
+        "rank": 2,
+        "uid": "2610.11710",
+        "title": "Parameter-Dependent Noise Resilience in the Quantum Approximate Optimization Algorithm",
+        "abs_url": "https://arxiv.org/abs/2610.11710",
+        "scirate_url": "https://scirate.com/arxiv/2610.11710",
+        "scites": null
+      },
+      {
+        "rank": 3,
+        "uid": "2610.10948",
+        "title": "Geometry-optimized hyperbolic codes for modular fault-tolerant quantum architectures",
+        "abs_url": "https://arxiv.org/abs/2610.10948",
+        "scirate_url": "https://scirate.com/arxiv/2610.10948",
+        "scites": null
+      },
+      {
+        "rank": 4,
+        "uid": "2610.12357",
+        "title": "Improved Local Leakage Resilience of Shamir Secret Sharing and Worst-Case Optimal Polynomial Intersection",
+        "abs_url": "https://arxiv.org/abs/2610.12357",
+        "scirate_url": "https://scirate.com/arxiv/2610.12357",
+        "scites": null
+      },
+      {
+        "rank": 5,
+        "uid": "2610.11121",
+        "title": "Quantum Magic and the Strong Coupling Constant",
+        "abs_url": "https://arxiv.org/abs/2610.11121",
+        "scirate_url": "https://scirate.com/arxiv/2610.11121",
+        "scites": null
+      }
+    ]
+  },
+  {
     "date": "2026-10-10",
     "title": "SciRate Digest \u2014 2026-10-10",
     "summary": "Today's 5 papers: Entanglement entropy and magic of ZX-diagrams; Measure Now, Mitigate Later: Virtual Error Cancellation for Logical Quantum Circuits; Energy-constrained two-way capacities of the pure-loss channel; High-Rate Concatenated Quantum Error-Correcting Codes for Qudits; Markov length can diverge in systems whose universal physics is spatially Markovian.",

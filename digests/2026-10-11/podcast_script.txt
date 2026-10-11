@@ -1,0 +1,171 @@
+Maya: I want to lodge a complaint about a title before we even start.
+
+Sam: Only one? Go ahead.
+
+Maya: Today's most-scited paper is called "Scaling quantum optimization to the thousand-qubit scale." The largest circuit they actually run is fifty qubits.
+
+Sam: And yet I'd defend them, because the honest story underneath is the interesting one — you cut a continent-sized problem into chip-sized pieces and glue it back. Which, weirdly, is the theme of about half of today's list.
+
+[BREAK]
+
+Maya: Welcome to the SciRate Daily Digest for Sunday, October eleventh, twenty twenty-six. I'm Maya.
+
+Sam: And I'm Sam. Today: a quantum sampler plugged into a European power grid calculation, a proof that the knobs you tune in a variational algorithm also determine how much noise it survives, hyperbolic codes finally given a floor plan, a result that quietly ties secret sharing to a quantum-advantage candidate, and — to close — a claim that the strength of the strong force sits at a minimum of quantum magic.
+
+Maya: That last one we are going to argue about.
+
+[BREAK]
+
+Maya: So, the grid paper. Liaqat and colleagues, with an industrial team. Start with the actual problem, because "optimization" tells me nothing.
+
+Sam: The concrete stake is a transmission network — roughly fourteen hundred substations, seventeen hundred lines, a standard European benchmark. You have a pattern of demands across that network, and you want to express it as a small number of rounds, where within each round the connections you switch on don't conflict with each other. Think of it as scheduling: who talks to whom in round one, round two, and so on, with nobody double-booked.
+
+Maya: And fewer rounds is better because each round costs you something real.
+
+Sam: Right, and finding the sparsest such decomposition is hard. The classical machinery here is a Frank–Wolfe-style solver that builds the answer greedily, one round at a time. At each step it needs good candidate rounds — conflict-free sets of connections that soak up a lot of the remaining demand. That's the slot the quantum computer gets to fill.
+
+Maya: One slot. Not the whole algorithm.
+
+Sam: Exactly one slot, and I think that's the design lesson. The classical side owns feasibility and convergence; the quantum side supplies diversity. They spectrally chop the network into forty-one pieces, each small enough to fit on an IBM Heron chip, run the shallowest possible version of QAOA — a single layer — on each, stitch the pieces back together, and then run a cheap classical repair that deletes conflicting connections at the seams.
+
+Maya: Here's my problem. The repair step only prunes, never adds, fine — but if I hand that same repair step a stream of uniformly random bit strings, how much worse do I do?
+
+Sam: You do worse, but not catastrophically. Repaired random sampling lands at roughly twice the residual error of the repaired quantum samples, and simulated annealing stalls out earlier, around eighteen rounds. The authors are refreshingly blunt that this is not a compute-matched comparison — annealing got a million and a half sweeps, the quantum run got twenty-five thousand shots — and they claim no advantage anywhere.
+
+Maya: So what's the genuinely new thing, if not a win?
+
+Sam: Two things I'd actually keep. One is an engineering trick: because the sub-circuits are small, they pack four of them onto disjoint regions of one chip — about a hundred and forty of the hundred and fifty-six qubits — and cut wall-clock time roughly threefold. Dispatch overhead, not gate time, is what's killing these workflows.
+
+Maya: And the second?
+
+Sam: A counterintuitive compilation observation. Transpiled two-qubit depth tracks how densely the edges in your sub-problem interact, not how many qubits you used. One of their eighty-qubit partitions compiled shallower than a fifty-two qubit one. If you're writing a partitioning heuristic, that's the quantity to balance on.
+
+Maya: Who should read it?
+
+Sam: People building hybrid pipelines for constrained problems — the orchestration recipe is reusable. Not people looking for evidence of quantum advantage. And I'd want the next version to benchmark against a serious dedicated classical solver, which they explicitly defer.
+
+[BREAK]
+
+Maya: Second paper, and it opens on something that sounds like a mistake. Kirk and Montanaro find that above roughly a one percent error rate, QAOA parameters that were never optimized at all do as well as, or better than, parameters carefully optimized on a noiseless simulator.
+
+Sam: And the explanation is lovely, because it's exact rather than statistical. Take a single Pauli fault somewhere in the middle of a QAOA circuit. Commute it forward through the alternating layers. Every time it anticommutes with a generator, it flips the sign of that layer's angle. By the time it reaches the end, it's been absorbed by the measurement or the initial state.
+
+Maya: So the fault doesn't leave a Pauli error behind at all.
+
+Sam: Not in any lasting sense. What it leaves behind is a different circuit — the ideal one, run with a handful of angle signs flipped. So the damage isn't "how bad is the noise," it's "how far apart are those two circuits," and that distance is controlled by the sizes of the angles the fault passed through.
+
+Maya: Small angles, small damage. Which is why gentle, slowly-varying, adiabatic-looking schedules protect themselves.
+
+Sam: Yes, and it also tells you where in the circuit to worry. Phase errors do the most harm early, because they flip a long tail of later angles. Bit-flip errors do the most harm late. And the cost-layer contribution is weighted by how many neighbours a qubit has, so your highly-connected nodes are fragile to one error type and not the other. That's an error-mitigation triage list you could actually act on.
+
+Maya: Now let me push. A metric that rewards small angles has an obvious degenerate winner: set every angle to zero. Perfectly noise-resilient, perfectly useless.
+
+Sam: Completely fair, and the authors say so. The bound speaks only to how closely the noisy distribution tracks the noiseless one — it is silent on whether the noiseless one is any good. Their two attempts at folding resilience into parameter selection, as a penalty term and as a shrunken search box, they describe as inconclusive. That was tested on five six-node graphs at one noise rate.
+
+Maya: Which is small.
+
+Sam: Everything numerical here is small — six to ten node Max-Cut instances, up to fifteen layers. The theorem is general; the evidence that it's quantitatively useful is thin, and the bound is loose. It ranks strategies correctly, it doesn't predict magnitudes.
+
+Maya: There's a piece on the continuous-time limit too.
+
+Sam: That's the part I'd flag for the annealing community. Push the same argument to an adiabatic schedule and you get an irreducible resilience floor — damage that grows with system size and with the square of the runtime, no matter what schedule you pick. They then check whether you can cheat it by driving two schedule functions independently, and show that once you enforce adiabaticity on an unstructured search problem, you can't. Shrinking the gap you're trying to navigate actually makes resilience worse.
+
+Maya: Here's a connection I want on the record. Yesterday's grid paper froze its QAOA angles at small precomputed values and never ran an online variational loop.
+
+Sam: Which this paper says is close to the right move for the regime they're in. Two groups, totally different motivations, landing on the same operational advice — don't chase the optimum, stay gentle.
+
+[BREAK]
+
+Maya: Let's go back about a decade for the setup on this next one. Surface codes are wonderful and wasteful: lay one flat on a chip and the fraction of qubits doing useful logical work shrinks as you scale up protection.
+
+Sam: Right, and the known escape is curvature. Build your code on a negatively curved surface — a hyperbolic tiling — and the rate stops collapsing. There's a ceiling, due to Delfosse, that says efficiency can at best grow like the square of the logarithm of how much you encode. People have known this since roughly twenty fifteen. What nobody had was a specific code with a specific floor plan.
+
+Maya: And Mahmoud and Rayan supply both?
+
+Sam: They do an exhaustive search within a tightly-defined algebraic family — self-dual tilings built from quotients of a triangle group by projective special linear groups over small prime fields. A hundred and thirty-six candidate cases, thirty-eight genuinely distinct ones, exact distances computed rather than estimated. Their headline code has about fifty thousand physical qubits, seventeen thousand logical qubits, distance ten, with weight-six checks. By the efficiency measure they use, that's roughly thirty times better than a toric code.
+
+Maya: What's the result that would make a code designer sit up?
+
+Sam: This one surprised me. For a fixed tiling, the choice of how you glue the surface up — which periodic identifications you use — can double the distance. Same number of physical qubits, same number of logical qubits, same check weight, same hardware. One case gave distance four, six, or eight depending purely on that combinatorial choice.
+
+Maya: So people have been leaving a factor of four in efficiency on the table for free.
+
+Sam: Within this family, yes. And then the second half is the floor plan: a compiler that carves the code into modules of at most eighty qubits, with the constraint that each module is a connected topological disk, not a shredded mess. They simulate memory experiments at circuit level with remote gates made deliberately worse, and the finite-size threshold only slips from about two-tenths of a percent to a bit under that when remote gate error is tripled.
+
+Maya: That sounds too good. What's the catch?
+
+Sam: Several. About a third of all two-qubit gates are inter-module, and their noise model charges those a higher error rate but ignores latency, bus contention, and the cost of generating the entanglement that makes a remote gate possible. The distances are small in absolute terms — eight to twelve. And the circuit-level fault distances the decoder actually sees are lower than the homological ones, so the quoted efficiency flatters the real protection.
+
+Maya: And no logical operations.
+
+Sam: None costed, which is the gap I'd point at. We spent Friday on surgery overheads for sparse codes — both the fast-surgery construction and the lower bound saying you can't get away for free. A high-rate hyperbolic code with no surgery accounting is half an architecture. Still, this is the most concrete hyperbolic-code proposal I've seen.
+
+[BREAK]
+
+Maya: Fourth paper is the one I didn't expect to find on a quantum list. Sun and Wootters, on Shamir secret sharing.
+
+Sam: And it's here because of a genuine surprise: two problems that nobody thought were related turn out to be governed by the same object.
+
+Maya: Set up both.
+
+Sam: Shamir's scheme splits a secret among many parties by evaluating a random low-degree polynomial — each party gets one evaluation, and enough of them reconstruct the secret. The leakage question asks: suppose an adversary doesn't get whole shares, but gets to compute one bit of their choosing from every single share. Does that leak anything? There's a decade of work pushing down the redundancy you need, and progress had stalled at a natural barrier around rate one-half.
+
+Maya: Meaning you need more than twice as many parties as the reconstruction threshold.
+
+Sam: Roughly. The second problem is called optimal polynomial intersection: find a low-degree polynomial that, at as many points as possible, takes a value from a prescribed allowed set at that point. That's the flagship application of decoded quantum interferometry — currently one of the better candidates for a structured problem where quantum beats the best known classical algorithm.
+
+Maya: And they're the same question?
+
+Sam: Both reduce to asking how many codewords of the dual Reed–Solomon code can land inside prescribed small sets — list recovery, in coding language. Once you see that, you can import the recent breakthroughs on list-recovery up to capacity, and both problems move. On leakage, they break below one-half for the first time. On the polynomial problem, they give a polynomial-time quantum algorithm with a worst-case guarantee that beats not just previous algorithms but previous existence proofs.
+
+Maya: Beating an existence proof is a strange sentence.
+
+Sam: It is, and it's the cleanest sign the old analysis was leaving a lot behind. The technical heart is a weighted thresholding argument on Fourier coefficients: heavy contributions get counted by list recovery, light ones get penalized per coordinate. That machinery alone caps out exactly at rate one-half, which is why the barrier was there. To go below, they stop throwing away phases and bring in Gowers-norm cancellation.
+
+Maya: Now, the quantum-advantage framing. Is this a separation?
+
+Sam: No, and I want to be careful. The main results beat the best known classical ratio — that's a competitive claim, not a hardness claim. They do include an unconditional separation, but it lives in an artificial setting: a membership-oracle model, quasipolynomially large fields, and rate shrinking like one over a polylogarithm. Not the constant-rate regime where the algorithms live.
+
+Maya: And the leakage improvement?
+
+Sam: Below one-half by an unspecified absolute constant, so quantitatively it's a hair. The structural payoff is bigger than the number: any future improvement in list recovery now automatically improves Shamir leakage resilience. That's a pipeline, not a one-off.
+
+[BREAK]
+
+Maya: Last one, and it is the strangest thing on today's list. We've had magic — in the technical sense, distance from the easy-to-simulate stabilizer states — show up three times this week already, in ZX diagrams, in area laws, in states that fake maximal magic.
+
+Sam: And now in particle physics. Liu, Low and Yin take quark–antiquark scattering at tree level, treat the two outgoing spins as two qubits, feed in each of the sixty two-qubit stabilizer states, and ask how much magic the scattering generates — averaged over inputs and over scattering angle.
+
+Maya: And then they turn a dial.
+
+Sam: They scan the strong coupling, holding everything else fixed, and ask where the generated magic is smallest. In the top–antitop colour-singlet channel there's a genuine minimum at a finite coupling — and that minimum tracks the measured running strong coupling to within a few percent, from about a TeV up through five or six orders of magnitude in energy.
+
+Maya: Five or six orders of magnitude is a lot of curve to fit with no free parameters.
+
+Sam: That's what makes it worth a segment. And there's a sharp internal check: take Higgs exchange out — send the Higgs mass to infinity — and the agreement collapses. The discrepancy goes from under three percent to a third or more, and the preferred coupling runs to zero. The heavy top's Yukawa coupling is doing the work, with the two exchange channels entering with opposite signs.
+
+Maya: Okay, I'm going to be the difficult one. Magic of what, exactly? You have to pick a basis to call the spins qubits, you have to pick an ensemble of input states, you have to pick how to weight scattering angles. Change any of those and I'd expect the minimum to move.
+
+Sam: You're right, and the paper concedes it. The lab-frame spin basis and the helicity basis aren't related by a Clifford operation, so the magic measure genuinely differs between them. Uniform weighting over solid angle is a convention. And only the strong coupling is varied — the Yukawas, the mixing matrix, the masses are all pinned — so this is a one-dimensional scan, not a global fit.
+
+Maya: And does the criterion work everywhere?
+
+Sam: No, and that's the honest weak point. The six flavour-diagonal singlet channels sit within about a percent of their minima, which is the good news. But other channels — non-singlet, off-diagonal — want couplings far from reality, with excesses up to forty percent. If this were a universal principle you'd want it to hold in every channel. There's also nothing yet connecting these perturbative quark states to actual hadrons.
+
+Maya: So what's your verdict?
+
+Sam: It's a correlation in search of a derivation, and they say so — they call it a conjecture and list falsifiable questions, which I respect. Read it as a curiosity with an unusually specific numerical coincidence. What would move me is a formulation where the answer doesn't depend on which basis you call the computational one.
+
+[BREAK]
+
+Maya: Closing round. One result each.
+
+Sam: The regluing. Same tiling, same qubit count, same check weight — and changing a purely combinatorial identification doubles the code distance. That's a factor of four in efficiency sitting there for free, and it says the hyperbolic code search space has barely been explored.
+
+Maya: Mine's the sign flip. The idea that a Pauli error in QAOA isn't an error at all in the end — it's just your own angles with some signs reversed. Once you see it that way, "my algorithm's tuning parameters and its noise robustness are the same thing" stops sounding like a slogan and starts sounding like arithmetic.
+
+Sam: And it's rare to get a picture that exact in a field where noise analysis is usually numerical.
+
+Maya: Links to all five papers are in the show notes, along with a link to send us questions — we read them, and we answer them on air.
+
+Sam: Partition responsibly. See you tomorrow.
