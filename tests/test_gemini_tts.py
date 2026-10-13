@@ -7,7 +7,7 @@ from scirate_digest.gemini_tts import (
 
 SPEAKERS = {"Maya", "Sam"}
 
-SCRIPT = """Maya: Welcome to the SciRate Daily Digest for today.
+SCRIPT = """Maya: Welcome to the SciRate Weekly Digest for today.
 Sam: Great to be here. We have five papers.
 Maya: Let's start with the top one on photon detectors.
 It's about spatial light modulation.
@@ -18,7 +18,7 @@ Narrator ignore: this line has an unknown speaker and should attach above.
 
 def test_parse_turns_basic():
     turns = parse_turns(SCRIPT, SPEAKERS)
-    assert turns[0] == ("Maya", "Welcome to the SciRate Daily Digest for today.")
+    assert turns[0] == ("Maya", "Welcome to the SciRate Weekly Digest for today.")
     assert turns[1][0] == "Sam"
     # a wrapped line with no speaker joins the previous turn
     assert "spatial light modulation" in turns[2][1]

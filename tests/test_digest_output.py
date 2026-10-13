@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from scirate_digest.cli import write_digest_markdown
 from scirate_digest.models import Paper
 
@@ -17,7 +19,7 @@ def test_write_digest_markdown(tmp_path):
     out = tmp_path / "digest.md"
     write_digest_markdown(papers, "2026-08-19", out)
     text = out.read_text()
-    assert "# SciRate Daily Digest — 2026-08-19" in text
+    assert "# SciRate Weekly Digest — 2026-08-19" in text
     assert "## 1. Quantum Advantage in Widget Sorting" in text
     assert "42 scites" in text
     assert "widgets sorted faster" in text
@@ -234,3 +236,29 @@ def test_audio_meta_records_the_actual_voices(tmp_path, monkeypatch):
     )
     assert meta["voices"]["Maya"] == "en-US-AvaMultilingualNeural"
     assert meta["voices"]["Sam"] == "en-US-AndrewMultilingualNeural"
+
+
+def test_schedule_is_weekly_and_matches_the_ranking_window():
+    """The cadence and the SciRate window must agree.
+
+    A weekly show pulling a one-day ranking would miss most of the week, and
+    a daily cron pulling a seven-day ranking would repeat itself. Both live
+    in the workflow file, so they are easy to change apart; this pins them
+    together.
+    """
+    import yaml
+
+    wf = yaml.safe_load(
+        Path(".github/workflows/weekly-digest.yml").read_text(encoding="utf-8"))
+    schedule = wf[True]["schedule"]          # PyYAML reads bare "on:" as True
+    assert len(schedule) == 1
+    minute, hour, dom, month, dow = schedule[0]["cron"].split()
+    assert (dom, month) == ("*", "*") and dow in "0123456"   # one fixed weekday
+    # GitHub queues :00 and :30 heavily and a weekly run gets no second chance.
+    assert minute not in ("0", "00", "30")
+
+    window = wf[True]["workflow_dispatch"]["inputs"]["range"]["default"]
+    assert window == "7"
+
+    from scirate_digest.cli import build_parser
+    assert build_parser().parse_args([]).range_days == 7

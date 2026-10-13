@@ -21,7 +21,7 @@ log = logging.getLogger(__name__)
 
 REPO = "abid1214/scirate-digest"
 API = "https://api.github.com/repos/{repo}"
-MAX_QUESTIONS = 2
+MAX_QUESTIONS = 3
 MAX_BODY_CHARS = 1200
 
 

@@ -1,9 +1,11 @@
-name: Daily SciRate Digest
+name: Weekly SciRate Digest
 
 on:
   schedule:
-    # 13:30 UTC daily — after SciRate's morning listing settles.
-    - cron: "30 13 * * *"
+    # Mondays 13:17 UTC — one episode a week, covering the previous seven
+    # days of SciRate. The odd minute is deliberate: GitHub queues the hour
+    # and half-hour heavily, and a weekly run has no next-day second chance.
+    - cron: "17 13 * * 1"
   workflow_dispatch:
     inputs:
       top:
@@ -11,12 +13,12 @@ on:
         default: "5"
       range:
         description: "SciRate ranking window (days)"
-        default: "1"
+        default: "7"
       ids:
         description: "Space-separated arXiv IDs (skips the SciRate scrape)"
         default: ""
       force:
-        description: "Re-render even if today's episode already exists"
+        description: "Re-render even if this week's episode already exists"
         default: "false"
 
 permissions:
@@ -24,7 +26,7 @@ permissions:
   issues: write  # close answered listener questions
 
 concurrency:
-  group: daily-digest
+  group: weekly-digest
   cancel-in-progress: false
 
 defaults:
@@ -58,25 +60,32 @@ jobs:
             sudo apt-get update && sudo apt-get install -y ffmpeg || true
           fi
 
-      # GitHub's cron can fire hours late (observed ~4h). Without this guard a
-      # late firing re-renders a date that already published, spending the
-      # day's Gemini TTS quota and replacing good audio with fallback voices.
-      - name: Skip if today's episode already exists
+      # GitHub's cron can fire hours late (observed ~4h) or not at all. Without
+      # this guard a late firing re-renders a week that already published,
+      # replacing good audio with a fresh render of the same papers. The window
+      # spans a few days rather than just today because a weekly run that slips
+      # past midnight lands on a new date and would otherwise publish twice in
+      # one week.
+      - name: Skip if this week's episode already exists
         id: guard
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          DATE=$(date -u +%F)
           if [ "${{ github.event.inputs.force }}" = "true" ]; then
-            echo "force requested; re-rendering $DATE"
+            echo "force requested; re-rendering $(date -u +%F)"
             echo "skip=false" >> "$GITHUB_OUTPUT"
-          elif [ -f "digests/$DATE/papers.json" ] \
-               && gh release view "digest-$DATE" >/dev/null 2>&1; then
-            echo "::notice::Episode for $DATE is already published; skipping. Dispatch with force=true to re-render."
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "skip=false" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
+          for back in 0 1 2; do
+            D=$(date -u -d "$back days ago" +%F)
+            if [ -f "digests/$D/papers.json" ] \
+               && gh release view "digest-$D" >/dev/null 2>&1; then
+              echo "::notice::Episode for $D is already published; skipping. Dispatch with force=true to re-render."
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          done
+          echo "skip=false" >> "$GITHUB_OUTPUT"
 
       - name: Build digest
         if: steps.guard.outputs.skip != 'true'
@@ -100,7 +109,7 @@ jobs:
           if [ -n "$IDS" ]; then EXTRA="--ids $IDS"; fi
           scirate-digest \
             --top "${{ github.event.inputs.top || '5' }}" \
-            --range "${{ github.event.inputs.range || '1' }}" \
+            --range "${{ github.event.inputs.range || '7' }}" \
             $EXTRA
 
       - name: Commit digest and update podcast feed

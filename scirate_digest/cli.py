@@ -20,12 +20,13 @@ log = logging.getLogger("scirate_digest")
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="scirate-digest",
-        description="Daily audio-podcast digest of the top papers on SciRate.",
+        description="Weekly audio-podcast digest of the top papers on SciRate.",
     )
     p.add_argument("--top", type=int, default=5, help="number of papers (default 5)")
     p.add_argument(
-        "--range", type=int, default=1, dest="range_days",
-        help="SciRate ranking window in days (default 1)",
+        # The show is weekly, so the default window is the week it covers.
+        "--range", type=int, default=7, dest="range_days",
+        help="SciRate ranking window in days (default 7)",
     )
     p.add_argument(
         "--category", default=None,
@@ -38,8 +39,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--model", default=summarize.DEFAULT_MODEL, help="Claude model ID")
     p.add_argument(
         "--voice-engine", choices=["auto", "edge", "gemini"], default="auto",
-        help="TTS backend: 'gemini' = two-host dialogue, 'edge' = single "
-             "narrator, 'auto' = gemini if GEMINI_API_KEY is set else edge",
+        help="TTS backend for the two-host script: 'edge' = deterministic "
+             "Microsoft neural voices, 'gemini' = Gemini TTS, 'auto' = edge",
     )
     p.add_argument("--voice", default=None, help="edge-tts voice name (edge engine)")
     p.add_argument(
@@ -383,9 +384,9 @@ def _dialogue_to_narration(script: str) -> str:
 
 def write_digest_markdown(papers: list[Paper], date_str: str, path: Path) -> None:
     lines = [
-        f"# SciRate Daily Digest — {date_str}",
+        f"# SciRate Weekly Digest — {date_str}",
         "",
-        f"The top {len(papers)} papers on [SciRate](https://scirate.com/) today.",
+        f"The top {len(papers)} papers on [SciRate](https://scirate.com/) this week.",
         "",
     ]
     for rank, p in enumerate(papers, 1):
