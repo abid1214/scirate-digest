@@ -230,8 +230,27 @@ def _render_audio(
             mp3 = tts.synthesize_dialogue(script_text, mp3_path)
             rendered_with = "edge-two-voice"
         except Exception as exc:
-            log.error("Two-voice synthesis failed (%s); single narrator", exc)
-            script_text = _dialogue_to_narration(script_text)
+            log.error("Two-voice synthesis failed (%s)", exc)
+            # The narrator fallback speaks through the same endpoint, so when
+            # edge is down it is down too — that is how two episodes came out
+            # as nothing at all. Gemini goes in between when a key is present:
+            # its voices drift between turns, but a drifting episode beats
+            # silence, and audio_meta.json records which one shipped.
+            if os.environ.get("GEMINI_API_KEY"):
+                from . import gemini_tts
+
+                try:
+                    log.warning("Falling back to Gemini TTS (voices may drift)")
+                    model_used = gemini_model or gemini_tts.DEFAULT_MODEL
+                    mp3 = gemini_tts.synthesize_dialogue(
+                        script_text, mp3_path, model=model_used)
+                    rendered_with = "gemini-per-turn"
+                except Exception as exc2:
+                    log.error("Gemini fallback failed (%s)", exc2)
+                    model_used = gemini_model or None
+            if mp3 is None:
+                log.error("Dropping to a single narrator")
+                script_text = _dialogue_to_narration(script_text)
     if mp3 is None:
         from . import tts  # imported lazily so --skip-audio needs no edge-tts
 

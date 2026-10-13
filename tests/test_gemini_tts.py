@@ -257,3 +257,77 @@ def test_turn_retry_gives_up_eventually(tmp_path, monkeypatch):
 
     with __import__("pytest").raises(RuntimeError, match="failed after 2 attempts"):
         asyncio.run(tts._synthesize_turns([("Maya", "x")], {"Maya": "v"}, tmp_path))
+
+
+def test_endpoint_failover_is_rebound_where_edge_tts_reads_it(monkeypatch):
+    """A 403 must move the URL on the module edge-tts actually reads."""
+    from edge_tts import communicate as ec
+
+    from scirate_digest import tts
+
+    monkeypatch.delenv("EDGE_WSS_URL", raising=False)
+    monkeypatch.setattr(ec, "WSS_URL", "wss://original/edge/v1", raising=False)
+
+    # anything that is not a 403 is this turn's problem, not the endpoint's
+    assert tts._failover_endpoint(RuntimeError("No audio was received.")) is False
+    assert ec.WSS_URL == "wss://original/edge/v1"
+
+    assert tts._failover_endpoint(RuntimeError("403, message='Invalid response'"))
+    assert ec.WSS_URL == tts._alt_wss_url()
+    assert ec.WSS_URL.startswith(tts.ALT_WSS_HOST + "?Ocp-Apim-Subscription-Key=")
+    # concurrent turns all see the same 403; only the first move counts
+    assert tts._failover_endpoint(RuntimeError("403")) is False
+
+
+def test_pinned_endpoint_is_respected(monkeypatch):
+    from edge_tts import communicate as ec
+
+    from scirate_digest import tts
+
+    monkeypatch.setattr(ec, "WSS_URL", "wss://original/edge/v1", raising=False)
+    monkeypatch.setenv("EDGE_WSS_URL", "wss://pinned/by/hand")
+    tts._apply_endpoint_override()
+    assert ec.WSS_URL == "wss://pinned/by/hand"
+    # a pinned URL is a deliberate choice; a 403 must not wander off it
+    assert tts._failover_endpoint(RuntimeError("403")) is False
+    assert ec.WSS_URL == "wss://pinned/by/hand"
+
+
+def test_turns_survive_an_endpoint_wide_403(tmp_path, monkeypatch):
+    """The outage that cost two episodes: every turn 403s on the old host."""
+    import asyncio
+
+    from edge_tts import communicate as ec
+
+    from scirate_digest import tts
+
+    monkeypatch.delenv("EDGE_WSS_URL", raising=False)
+    monkeypatch.setattr(ec, "WSS_URL", "wss://original/edge/v1", raising=False)
+
+    class HostAwareCommunicate:
+        def __init__(self, text, voice=None):
+            pass
+
+        async def save(self, path):
+            if ec.WSS_URL == "wss://original/edge/v1":
+                raise RuntimeError("403, message='Invalid response status'")
+            __import__("pathlib").Path(path).write_bytes(b"\x00" * 8)
+
+    import edge_tts as real_edge_tts
+
+    monkeypatch.setitem(
+        __import__("sys").modules, "edge_tts",
+        type("m", (), {"Communicate": HostAwareCommunicate,
+                       # the failover reads the real token and rebinds the
+                       # real communicate module
+                       "constants": real_edge_tts.constants,
+                       "communicate": ec}),
+    )
+    real_sleep = asyncio.sleep
+    monkeypatch.setattr(asyncio, "sleep", lambda *_a, **_k: real_sleep(0))
+
+    turns = [("Maya", "one"), ("Sam", "two"), ("Maya", "three")]
+    paths = asyncio.run(tts._synthesize_turns(
+        turns, {"Maya": "v1", "Sam": "v2"}, tmp_path))
+    assert all(p.exists() and p.stat().st_size > 0 for p in paths)
+    assert ec.WSS_URL == tts._alt_wss_url()
