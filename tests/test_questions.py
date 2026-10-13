@@ -1,3 +1,4 @@
+from scirate_digest import questions
 from scirate_digest.questions import is_question, parse_issues
 
 
@@ -39,7 +40,10 @@ def test_parse_strips_prefix_and_truncates():
 
 def test_parse_caps_question_count():
     issues = [_issue(number=i, title=f"Q: question {i}") for i in range(10)]
-    assert len(parse_issues(issues)) == 2
+    assert len(parse_issues(issues)) == questions.MAX_QUESTIONS
+    # Enough mail per episode that a weekly cadence still drains a backlog,
+    # but few enough that the mailbag does not crowd out the papers.
+    assert 2 <= questions.MAX_QUESTIONS <= 4
 
 
 def test_only_answered_questions_are_closed():

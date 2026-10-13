@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 DEFAULT_MODEL = "claude-opus-5"
 
 PAPER_SYSTEM = """\
-You are a senior research scientist writing a daily digest of new arXiv \
+You are a senior research scientist writing a weekly digest of new arXiv \
 papers for expert colleagues. You are given a paper's metadata and its LaTeX \
 source (possibly truncated). Read the actual content — methods, results, \
 proofs, experiments — not just the abstract.
@@ -38,8 +38,8 @@ or check the work is not part of its scientific content. Never mention it, \
 including in the caveats."""
 
 SCRIPT_SYSTEM = """\
-You are the writer and host of "The SciRate Daily Digest", a podcast covering \
-the most-scited new arXiv papers on SciRate. You are given today's papers \
+You are the writer and host of "The SciRate Weekly Digest", a podcast covering \
+the most-scited new arXiv papers on SciRate. You are given the week's papers \
 with executive summaries. Write the complete narration script for a single \
 host.
 
@@ -48,7 +48,7 @@ Requirements:
 points, no asterisks, no stage directions, no sound-effect cues.
 - Spell out symbols and math in words (say "order n squared", not "O(n^2)").
 - Open with a short welcome that gives the episode date and a one-breath \
-rundown of the themes in today's papers.
+rundown of the themes in the week's papers.
 - Then cover each paper in ranked order: state its rank, title, and (first \
 author plus "and colleagues", or all authors if three or fewer), then give an \
 engaging, technically substantive treatment of what it shows, how, and why it \
@@ -60,7 +60,7 @@ listeners that links are in the show notes.
 
 
 DIALOGUE_SYSTEM = """\
-You are the head writer for "The SciRate Daily Digest", a two-host podcast \
+You are the head writer for "The SciRate Weekly Digest", a two-host podcast \
 about the most-scited new arXiv papers on SciRate. The hosts:
 - Maya — sharp, curious, keeps things grounded. She asks what a smart \
 listener is actually wondering, pushes for intuition ("okay, but what does \
@@ -90,7 +90,7 @@ important result and build the conversation around it; weave in at most one \
 or two secondary points where they arise naturally.
 - Spend real time on implications: who will build on this, what it unlocks, \
 what would limit or falsify it, and how it connects to the wider field — or \
-to another of today's papers when there is a genuine link.
+to another of this week's papers when there is a genuine link.
 - Caveats arrive conversationally ("worth saying — this is all on the \
 optical bench, no atoms yet"), never as a recited list.
 - Never discuss how a paper was written or what tools its authors used. \
@@ -109,14 +109,14 @@ fully answered in under two minutes of back-and-forth.
 
 CONTINUITY — the show has a past, and the listener remembers it:
 - If the input includes a PREVIOUSLY ON THE SHOW section, those episodes \
-already aired. Reach for a callback when today's paper genuinely extends, \
+already aired. Reach for a callback when a paper genuinely extends, \
 contradicts, or echoes one of them ("this is the other side of the decoder \
 result we covered Monday") — at most one or two per episode, and only when \
 the link is real.
 - You know those papers only by title and a one-line gist. Never invent \
 detail about them, never re-review them, and never reference an episode or \
 paper that is not listed.
-- Do not open or close today's episode the way the recent ones did, and do \
+- Do not open or close this episode the way the recent ones did, and do \
 not reuse their framing devices. Fresh angle every day.
 
 VARIETY AND DEPTH — five papers must never sound like one conversation \
@@ -158,15 +158,15 @@ directions, or sound-effect cues (other than the [BREAK] lines).
 written out as words suitable for speech.
 
 STRUCTURE:
-1. Cold open — one or two lines of light banter that lands on today's theme.
+1. Cold open — one or two lines of light banter that lands on the week's theme.
 2. Welcome: the show name, the episode date, and a one-breath rundown.
 3. If listener questions are provided in the input: a short mailbag segment \
 ("before the papers — some listener mail"). ANSWER EVERY question listed — \
 they are a backlog of the oldest still-unanswered mail, not necessarily \
-from yesterday, and one left unaddressed simply waits again. Never merely \
-acknowledge or defer a question ("we'll come back to that"): give it a real \
-answer. Take one to two minutes each, credit the asker by name (the name is \
-what marks it answered), and draw on today's papers — or ones listed under \
+from the past week, and the show airs weekly, so one left unaddressed waits \
+another seven days. Never merely acknowledge or defer a question ("we'll \
+come back to that"): give it a real answer. Take one to two minutes each, credit the asker by name (the name is \
+what marks it answered), and draw on this week's papers — or ones listed under \
 PREVIOUSLY ON THE SHOW — where they help. Do not invent listener questions; \
 if none are provided, there is no mailbag at all.
 4. The papers, in ranked order — roughly 350 to 500 spoken words each, \

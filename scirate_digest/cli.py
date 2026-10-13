@@ -20,12 +20,13 @@ log = logging.getLogger("scirate_digest")
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="scirate-digest",
-        description="Daily audio-podcast digest of the top papers on SciRate.",
+        description="Weekly audio-podcast digest of the top papers on SciRate.",
     )
     p.add_argument("--top", type=int, default=5, help="number of papers (default 5)")
     p.add_argument(
-        "--range", type=int, default=1, dest="range_days",
-        help="SciRate ranking window in days (default 1)",
+        # The show is weekly, so the default window is the week it covers.
+        "--range", type=int, default=7, dest="range_days",
+        help="SciRate ranking window in days (default 7)",
     )
     p.add_argument(
         "--category", default=None,
@@ -38,8 +39,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--model", default=summarize.DEFAULT_MODEL, help="Claude model ID")
     p.add_argument(
         "--voice-engine", choices=["auto", "edge", "gemini"], default="auto",
-        help="TTS backend: 'gemini' = two-host dialogue, 'edge' = single "
-             "narrator, 'auto' = gemini if GEMINI_API_KEY is set else edge",
+        help="TTS backend for the two-host script: 'edge' = deterministic "
+             "Microsoft neural voices, 'gemini' = Gemini TTS, 'auto' = edge",
     )
     p.add_argument("--voice", default=None, help="edge-tts voice name (edge engine)")
     p.add_argument(
@@ -229,8 +230,27 @@ def _render_audio(
             mp3 = tts.synthesize_dialogue(script_text, mp3_path)
             rendered_with = "edge-two-voice"
         except Exception as exc:
-            log.error("Two-voice synthesis failed (%s); single narrator", exc)
-            script_text = _dialogue_to_narration(script_text)
+            log.error("Two-voice synthesis failed (%s)", exc)
+            # The narrator fallback speaks through the same endpoint, so when
+            # edge is down it is down too — that is how two episodes came out
+            # as nothing at all. Gemini goes in between when a key is present:
+            # its voices drift between turns, but a drifting episode beats
+            # silence, and audio_meta.json records which one shipped.
+            if os.environ.get("GEMINI_API_KEY"):
+                from . import gemini_tts
+
+                try:
+                    log.warning("Falling back to Gemini TTS (voices may drift)")
+                    model_used = gemini_model or gemini_tts.DEFAULT_MODEL
+                    mp3 = gemini_tts.synthesize_dialogue(
+                        script_text, mp3_path, model=model_used)
+                    rendered_with = "gemini-per-turn"
+                except Exception as exc2:
+                    log.error("Gemini fallback failed (%s)", exc2)
+                    model_used = gemini_model or None
+            if mp3 is None:
+                log.error("Dropping to a single narrator")
+                script_text = _dialogue_to_narration(script_text)
     if mp3 is None:
         from . import tts  # imported lazily so --skip-audio needs no edge-tts
 
@@ -383,9 +403,9 @@ def _dialogue_to_narration(script: str) -> str:
 
 def write_digest_markdown(papers: list[Paper], date_str: str, path: Path) -> None:
     lines = [
-        f"# SciRate Daily Digest — {date_str}",
+        f"# SciRate Weekly Digest — {date_str}",
         "",
-        f"The top {len(papers)} papers on [SciRate](https://scirate.com/) today.",
+        f"The top {len(papers)} papers on [SciRate](https://scirate.com/) this week.",
         "",
     ]
     for rank, p in enumerate(papers, 1):

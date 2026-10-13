@@ -1,7 +1,7 @@
-# SciRate Daily Digest 🎙️
+# SciRate Weekly Digest 🎙️
 
-Every day, this repo looks at [SciRate](https://scirate.com/) for the top 5
-most-scited new arXiv papers, downloads each paper's **full LaTeX source**
+Every Monday, this repo looks at [SciRate](https://scirate.com/) for the top
+5 most-scited new arXiv papers of the past week, downloads each paper's **full LaTeX source**
 from arXiv, has Claude read it and write an executive summary and analysis,
 and then turns the whole thing into an **audio podcast episode** — a
 two-host conversation (Maya & Sam) that leads with intuition and
@@ -16,15 +16,15 @@ also carry the ask link.
 ## How it works
 
 ```
-SciRate front page (?range=1)          ──►  ranked top-10 arXiv IDs (+ scite counts)
+SciRate front page (?range=7)          ──►  ranked top-5 arXiv IDs (+ scite counts)
 arXiv API                              ──►  titles, authors, abstracts
 arXiv /e-print/<id> tarballs           ──►  extracted & cleaned LaTeX body
 Claude (per paper)                     ──►  executive summary + analysis
-Claude (whole episode)                 ──►  single-host podcast narration script
+Claude (whole episode)                 ──►  two-host podcast dialogue script
 Microsoft Edge neural TTS (edge-tts)   ──►  digest.mp3
 ```
 
-Each daily run produces, under `output/<YYYY-MM-DD>/`:
+Each run produces, under `output/<YYYY-MM-DD>/`:
 
 | File                 | What it is                                             |
 | -------------------- | ------------------------------------------------------ |
@@ -39,14 +39,14 @@ tagged `digest-<date>` (MP3s stay out of git history).
 
 ## Setup (GitHub Actions)
 
-The daily job runs on GitHub's free hosted runners. Because SciRate is behind
+The weekly job runs on GitHub's free hosted runners. Because SciRate is behind
 Cloudflare — which blocks datacenter IPs — the scrape is routed through a
 **scraping-API service** that fetches the page from residential proxies. No
 server or self-hosted runner to maintain.
 
 1. Add a repository secret **`ANTHROPIC_API_KEY`**
    (Settings → Secrets and variables → Actions).
-2. Sign up for a scraping API (free tiers easily cover one page/day) and add
+2. Sign up for a scraping API (free tiers easily cover one page/week) and add
    its key as a secret:
    - [**ScraperAPI**](https://www.scraperapi.com/) → secret **`SCRAPERAPI_KEY`**
      (free tier ≈ 1,000 credits/month), **or**
@@ -58,9 +58,11 @@ server or self-hosted runner to maintain.
    `SCRAPERAPI_EXTRA=ultra_premium=true` (or `SCRAPINGBEE_EXTRA=...`) as a
    variable — those are merged into the request.
 3. The workflow
-   ([`.github/workflows/daily-digest.yml`](.github/workflows/daily-digest.yml))
-   runs daily at 13:30 UTC, and can also be triggered manually from the
+   ([`.github/workflows/weekly-digest.yml`](.github/workflows/weekly-digest.yml))
+   runs Mondays at 13:17 UTC, and can also be triggered manually from the
    Actions tab (custom paper count, ranking window, or explicit arXiv IDs).
+   A manual run publishes under the date it runs on; the schedule guard then
+   skips the next scheduled firing if an episode went out in the last 3 days.
 
 ### Voice: two-host Gemini TTS (optional) or free edge-tts
 
@@ -154,7 +156,7 @@ default 60,000).
   papers from a larger scraped pool. Override with `--allow-repeats`.
 - **Politeness.** arXiv requests are spaced 3 s apart and retried with
   backoff on 429/5xx.
-- **Cost.** A daily run sends ~10 papers × up to ~60k characters of LaTeX
+- **Cost.** A run sends ~5 papers × up to ~60k characters of LaTeX
   plus one script-writing call — roughly 200–300k input tokens/day on Opus 5.
   Use `--model claude-sonnet-5` (or set it in the workflow) to cut costs.
 

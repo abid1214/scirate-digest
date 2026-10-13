@@ -1,6 +1,6 @@
 """Build a podcast RSS feed from the published episodes.
 
-Each daily run appends an entry to ``digests/episodes.json`` (the durable
+Each run appends an entry to ``digests/episodes.json`` (the durable
 manifest) and regenerates ``docs/feed.xml`` + ``docs/index.html``, which
 GitHub Pages serves. Subscribe to the feed URL in any podcast app and new
 episodes download automatically.
@@ -27,13 +27,13 @@ REPO = "abid1214/scirate-digest"
 SITE_URL = os.environ.get("SCIRATE_DIGEST_SITE_URL", "https://abid1214.github.io/scirate-digest")
 RELEASE_MP3 = "https://github.com/" + REPO + "/releases/download/digest-{date}/digest.mp3"
 
-PODCAST_TITLE = "The SciRate Daily Digest"
+PODCAST_TITLE = "The SciRate Weekly Digest"
 PODCAST_DESCRIPTION = (
-    "A daily audio digest of the most-scited new papers on SciRate. Each "
+    "A weekly audio digest of the most-scited new papers on SciRate. Each "
     "episode reads the papers' full arXiv source and delivers an executive "
     "summary and analysis, generated automatically with Claude."
 )
-PODCAST_AUTHOR = "SciRate Daily Digest"
+PODCAST_AUTHOR = "SciRate Weekly Digest"
 
 MANIFEST = Path("digests/episodes.json")
 DOCS = Path("docs")
@@ -89,7 +89,7 @@ def episode_from_run(date: str, mp3_path: Path, papers_path: Path) -> Episode:
         })
     titles = [p["title"] for p in papers]
     summary = (
-        f"Today's {len(titles)} papers: " + "; ".join(titles) + "."
+        f"This week's {len(titles)} papers: " + "; ".join(titles) + "."
         if titles else PODCAST_DESCRIPTION
     )
     mp3_bytes = mp3_path.stat().st_size if mp3_path.exists() else 0

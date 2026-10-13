@@ -52,11 +52,69 @@ def load_dialogue_voices() -> dict[str, str]:
     return voices or dict(DEFAULT_DIALOGUE_VOICES)
 
 
+# Microsoft moved this endpoint's auth token to a v2 scheme on 2026-10-10 and
+# began answering edge-tts's v1 token with HTTP 403 on every request — the
+# single-narrator fallback speaks through the same endpoint, so two episodes
+# came out as nothing at all. api.msedgeservices.com serves the same voices
+# and takes the trusted client token as a subscription key (rany2/edge-tts
+# issue #490). We stay on edge-tts's own endpoint until it 403s and then move
+# across for the rest of the run, so this heals in both directions: today it
+# fails over on the first turn, and when upstream ships a token fix the
+# original endpoint is simply used again. EDGE_WSS_URL pins a URL by hand if
+# both ever stop working.
+ALT_WSS_HOST = "wss://api.msedgeservices.com/tts/cognitiveservices/websocket/v1"
+
+
+def _alt_wss_url() -> str:
+    from edge_tts import constants
+
+    return f"{ALT_WSS_HOST}?Ocp-Apim-Subscription-Key={constants.TRUSTED_CLIENT_TOKEN}"
+
+
+def _set_wss_url(url: str) -> bool:
+    """Point edge-tts at ``url``; False if it is already there.
+
+    ``edge_tts.communicate`` imports WSS_URL by value, so the name has to be
+    rebound on that module — rebinding ``edge_tts.constants`` does nothing."""
+    from edge_tts import communicate
+
+    if getattr(communicate, "WSS_URL", None) == url:
+        return False
+    communicate.WSS_URL = url
+    return True
+
+
+def _apply_endpoint_override() -> None:
+    url = (os.environ.get("EDGE_WSS_URL") or "").strip()
+    if url and _set_wss_url(url):
+        log.info("Using the edge-tts endpoint pinned by EDGE_WSS_URL")
+
+
+def _failover_endpoint(exc: Exception) -> bool:
+    """Move to the alternate host after a 403. True if this call moved it."""
+    if "403" not in str(exc):
+        return False
+    if (os.environ.get("EDGE_WSS_URL") or "").strip():
+        return False  # an endpoint was pinned deliberately; leave it alone
+    if _set_wss_url(_alt_wss_url()):
+        log.warning("edge-tts endpoint refused the request (403); switching to "
+                    "%s for the rest of this run", ALT_WSS_HOST)
+        return True
+    return False  # already switched by another turn
+
+
 async def _synthesize(text: str, out_path: Path, voice: str) -> None:
     import edge_tts
 
-    communicate = edge_tts.Communicate(text, voice=voice)
-    await communicate.save(str(out_path))
+    _apply_endpoint_override()
+    for attempt in range(2):
+        try:
+            await edge_tts.Communicate(text, voice=voice).save(str(out_path))
+            return
+        except Exception as exc:
+            if attempt == 0 and _failover_endpoint(exc):
+                continue
+            raise
 
 
 def synthesize(text: str, out_path: Path, voice: str = DEFAULT_VOICE) -> Path:
@@ -78,6 +136,7 @@ async def _synthesize_turns(turns, voices, seg_dir: Path) -> list[Path]:
     one narrator, so each turn is retried on its own before giving up."""
     import edge_tts
 
+    _apply_endpoint_override()
     sem = asyncio.Semaphore(4)  # be kind to the free endpoint
     paths = [seg_dir / f"seg{i:04d}.mp3" for i in range(len(turns))]
 
@@ -93,6 +152,10 @@ async def _synthesize_turns(turns, voices, seg_dir: Path) -> list[Path]:
                     last = RuntimeError("empty audio file")
                 except Exception as exc:
                     last = exc
+                    # A 403 is the whole endpoint refusing us, not this turn
+                    # being unlucky; retrying the same host 300 times would
+                    # just lose the episode slowly.
+                    _failover_endpoint(exc)
             if attempt < TURN_ATTEMPTS - 1:
                 wait = 2.0 * (attempt + 1)
                 log.info("Turn %d (%s) failed (%s); retrying in %.0fs",
