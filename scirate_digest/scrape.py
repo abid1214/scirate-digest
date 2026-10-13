@@ -65,7 +65,8 @@ def fetch_html(range_days: int = 1, category: str | None = None) -> str:
         ("Jina Reader", lambda: _fetch_jina(full_url)),
     ]
     if range_days <= 1 and category is None:
-        # Snapshots only exist for the front page, which is the daily ranking.
+        # Snapshots only exist for the front page, which is the daily
+        # ranking — so the weekly run (range=7) does without this one.
         strategies.append(("Wayback Machine", _fetch_wayback))
 
     for name, strategy in strategies:
